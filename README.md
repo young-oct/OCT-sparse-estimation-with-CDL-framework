@@ -4,7 +4,7 @@
 
 We show how a sparsity representation estimation approach that exploits the convolutional structure of optical coherence tomography (OCT) A-line data and that learns the axial point spread function from the image data offers an effective method of removing artefacts and stochastic noise from OCT images. Our method estimates the sparse representation by solving the convolutional basis pursuit denoising with dictionary learning (CPBN-DL) problem to learn the axial point spread function from imaging data and estimate the depth-resolved scattering amplitude on a line-by-line basis.  We demonstrate that this approach achieves effective artefact suppression and super-resolution while preserving anatomical structure and speckle texture in OCT images. The implementation is modified from [SPORCO.](https://github.com/bwohlberg/sporco)
 
-![Picture1](/Users/youngwang/Desktop/OCT-denosing/Picture1.bmp)
+![Picture1](https://tva1.sinaimg.cn/large/008eGmZEly1godi32dqsyj30ki0bkgmz.jpg)
 
 ## Dataset
 
