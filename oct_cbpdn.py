@@ -16,7 +16,7 @@ from sporco.admm import cbpdn
 from pytictoc import TicToc
 from skimage.exposure import match_histograms
 from PIL import Image
-
+from scipy import ndimage
 
 def intensity_norm(data):
     pixels = 255 * (data - data.min()) / (data.max() - data.min())
@@ -74,6 +74,8 @@ for i in range(s.shape[1]):
 ###plot mirror image and selected A-line
 s0_log = 20 * np.log10(abs(s0))
 s0_log = intensity_norm(s0_log)
+s0_log = ndimage.median_filter(s0_log, size=3)
+
 
 # define a test line
 index = 8800
@@ -179,33 +181,43 @@ eps = 1e-14
 x_log = np.where(x_log < 20 * np.log10(eps), 20 * np.log10(eps), x_log)
 x_log = intensity_norm(x_log).T
 
-temp = match_histograms(x_log,s0_log,multichannel=False)
-sparse = np.where(temp <= np.min(temp),0,temp)
+sparse = ndimage.median_filter(x_log, size=3)
 
-vmin = 0
+vmin = 120
 fig = plt.figure(figsize=(18, 13),constrained_layout=True)
 gs = gridspec.GridSpec(3, 2,figure =fig)
 ax = fig.add_subplot(gs[0, 0])
 ax.imshow(s0_log, cmap='gray', vmax=vmax, vmin=vmin)
-ax.set_title('original image: %d dB- %d dB'% (vmax, vmin))
+ax.set_title('original image: %d dB-%d dB'% (vmax, vmin))
 ax.set_aspect(s0_log.shape[1] / s0_log.shape[0])
 ax.axvline(x=index,linewidth=2, color='r')
 ax.set_axis_off()
 
 ax = fig.add_subplot(gs[1, 0])
 ax.plot(abs(s0[:,index]))
-ax.set_title('A-line')
+ax.set_title('original A-line')
 ax.set_xlabel('axial depth(pixel)')
 ax.set_ylabel('magnitude(a.u.)')
+axins = ax.inset_axes([0.02, 0.3, 0.37, 0.67])
+axins.set_xticks([])
+axins.set_yticks([])
+axins.plot(abs(s0[:,index]))
+axins.set_xlim(140, 180)
+axins.set_ylim(0, 65000)
+ax.indicate_inset_zoom(axins)
+
 
 ax = fig.add_subplot(gs[2, 0])
 ax.hist(np.ravel(s0_log),bins = 128, density = True,log=True)
 ax.set_title('histogram')
 ax.set_xlabel('intensity')
-ax.set_ylabel('log value')
+# ax.set_ylabel('log value')
+ax.yaxis.set_visible(False)
+
+vmin = 0
 
 ax = fig.add_subplot(gs[0, 1])
-ax.set_title('sparse image: %d dB- %d dB'% (vmax, vmin))
+ax.set_title('sparse image:%d dB-%d dB'% (vmax, vmin))
 ax.imshow(sparse, cmap='gray', vmax=vmax, vmin=vmin)
 ax.set_aspect(sparse.shape[1] / sparse.shape[0])
 ax.axvline(x=index,linewidth=2, color='r')
@@ -213,15 +225,23 @@ ax.set_axis_off()
 
 ax = fig.add_subplot(gs[1, 1])
 ax.plot(abs(x_line))
-ax.set_title('A-line')
+ax.set_title('sparse A-line')
 ax.set_xlabel('axial depth(pixel)')
 ax.set_ylabel('magnitude(a.u.)')
+axins = ax.inset_axes([0.02, 0.3, 0.37, 0.67])
+axins.set_xticks([])
+axins.set_yticks([])
+axins.plot(abs(x_line))
+axins.set_xlim(140, 180)
+axins.set_ylim(0, 65000)
+ax.indicate_inset_zoom(axins)
 
 ax = fig.add_subplot(gs[2, 1])
 ax.hist(np.ravel(sparse), bins = 128,density = True,log=True)
+ax.yaxis.set_visible(False)
 ax.set_title('histogram')
 ax.set_xlabel('intensity')
-ax.set_ylabel('log value')
+# ax.set_ylabel('log value')
 
 plt.show()
 
@@ -233,4 +253,3 @@ plt.show()
 # image = Image.fromarray(sparse.astype(np.uint8))
 # out = image.resize((512,330))
 # out.save('/Users/youngwang/Desktop/sparse.bmp')
-
