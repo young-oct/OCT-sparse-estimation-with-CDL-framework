@@ -6,7 +6,7 @@ We show how a sparsity representation estimation approach that exploits the conv
 
 ![image-20210311173518567](https://tva1.sinaimg.cn/large/008eGmZEly1gogofzrsawj318g0p0wv8.jpg)
 
-<sub>Figure 1. From left to right: OCT images of a middle ear, index finger (palmar view), index finger (side view), and onion slice. The top row images are obtained from conventional OCT image processing produced from DFT of the histogram and mean subtraction. Both sets of images are mapped onto 256-greyscale intensities. The original images are displayed from 120-255 in grayscale values, the sparse images are displayed in the range of 0-255.<sub>
+<sub>Figure 1. From left to right: OCT images of a middle ear, index finger (palmar view), index finger (side view), and onion slice. The top row images are obtained from conventional OCT image processing produced from DFT of the histogram, mean subtractionand median filter. Both sets of images are mapped onto 256-greyscale intensities. The original images are displayed from 120-255 in grayscale values, the sparse images are displayed in the range of 0-255. White arrow in the orignal image indicates the PSF artefacts<sub>
 
 ## Dataset
 
