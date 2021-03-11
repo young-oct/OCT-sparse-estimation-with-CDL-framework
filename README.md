@@ -1,9 +1,12 @@
 # Convolutional basis pursuit denoising with dictionary learning for deconvolution optical coherence tomography images
 
-
 We show how a sparsity representation estimation approach that exploits the convolutional structure of optical coherence tomography (OCT) A-line data and that learns the axial point spread function from the image data offers an effective method of removing artefacts and stochastic noise from OCT images. Our method estimates the sparse representation by solving the convolutional basis pursuit denoising with dictionary learning (CPBN-DL) problem to learn the axial point spread function from imaging data and estimate the depth-resolved scattering amplitude on a line-by-line basis.  We demonstrate that this approach achieves effective artefact suppression and super-resolution while preserving anatomical structure and speckle texture in OCT images. The implementation is modified from [SPORCO.](https://github.com/bwohlberg/sporco)
 
-![Picture1](../Picture1.svg)
+
+
+![image-20210311173518567](https://tva1.sinaimg.cn/large/008eGmZEly1gogofzrsawj318g0p0wv8.jpg)
+
+<sub>Figure 1. From left to right: OCT images of a middle ear, index finger (palmar view), index finger (side view), and onion slice. The top row images are obtained from conventional OCT image processing produced from DFT of the histogram and mean subtraction. Both sets of images are mapped onto 256-greyscale intensities. The original images are displayed from 120-255 in grayscale values, the sparse images are displayed in the range of 0-255.<sub>
 
 ## Dataset
 
