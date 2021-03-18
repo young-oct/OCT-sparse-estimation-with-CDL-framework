@@ -16,7 +16,6 @@ from sporco.admm import cbpdn
 from pytictoc import TicToc
 from skimage.exposure import match_histograms
 from PIL import Image
-from scipy import ndimage
 
 def intensity_norm(data):
     pixels = 255 * (data - data.min()) / (data.max() - data.min())
@@ -26,7 +25,7 @@ np.seterr(divide='ignore', invalid='ignore')
 # Customize matplotlib
 matplotlib.rcParams.update(
     {
-        'font.size': 20,
+        'font.size': 22,
         'text.usetex': False,
         'font.family': 'stixgeneral',
         'mathtext.fontset': 'stix',
@@ -71,11 +70,9 @@ l2f = prox.norm_l2(s,axis=0).squeeze()
 for i in range(s.shape[1]):
     s[:,i] /= l2f[i]
 
-###plot mirror image and selected A-line
+# log modulation to construct image
 s0_log = 20 * np.log10(abs(s0))
 s0_log = intensity_norm(s0_log)
-s0_log = ndimage.median_filter(s0_log, size=3)
-
 
 # define a test line
 index = 8800
@@ -95,11 +92,11 @@ t.toc('Lambda search elapsed time is ', restart=True)
 
 fig = plt.figure(figsize=(18, 13),constrained_layout=True)
 vmax = 255
-vmin = 120
+vmin = 140
 
 gs = gridspec.GridSpec(3, 2,figure =fig)
 ax = fig.add_subplot(gs[0, 0])
-ax.set_title('%d dB-%d dB' %(vmax,vmin))
+ax.set_title('original image: %d-%d' %(vmin,vmax))
 ax.imshow(s0_log, cmap='gray', vmax=vmax, vmin=vmin)
 ax.set_aspect(s0_log.shape[1] / s0_log.shape[0])
 ax.axvline(x=index,linewidth=2, color='r')
@@ -143,7 +140,7 @@ ax.set_title('sparse coding curve')
 
 plt.show()
 
-index = 6500
+index = 1250
 Maxiter = 20
 opt_par['FastSolve'] = False
 s_line = s[:,index]
@@ -156,7 +153,6 @@ x_line = abs(x)
 scale = np.max(abs(x))/np.max(abs(s_line))
 
 Maxiter = 20
-opt_par['FastSolve'] = False
 b = cbpdn.ConvBPDN(D0, s, lmbda, opt=opt_par, dimK=1, dimN=1)
 x = b.solve()
 its = b.getitstat()
@@ -181,69 +177,69 @@ eps = 1e-14
 x_log = np.where(x_log < 20 * np.log10(eps), 20 * np.log10(eps), x_log)
 x_log = intensity_norm(x_log).T
 
-sparse = ndimage.median_filter(x_log, size=3)
+temp = match_histograms(x_log,s0_log,multichannel=False)
+sparse = np.where(temp <= np.min(temp), 0,temp)
 
-vmin = 120
+vmin = 140
 fig = plt.figure(figsize=(18, 13),constrained_layout=True)
-gs = gridspec.GridSpec(3, 2,figure =fig)
+gs = gridspec.GridSpec(2, 2,figure =fig)
 ax = fig.add_subplot(gs[0, 0])
 ax.imshow(s0_log, cmap='gray', vmax=vmax, vmin=vmin)
-ax.set_title('original image: %d dB-%d dB'% (vmax, vmin))
+ax.set_title('original image: %d -%d'% (vmin, vmax))
 ax.set_aspect(s0_log.shape[1] / s0_log.shape[0])
-ax.axvline(x=index,linewidth=2, color='r')
+ax.axvline(x=index,linewidth=1, color='r',linestyle = '--')
 ax.set_axis_off()
-
-ax = fig.add_subplot(gs[1, 0])
-ax.plot(abs(s0[:,index]))
-ax.set_title('original A-line')
-ax.set_xlabel('axial depth(pixel)')
-ax.set_ylabel('magnitude(a.u.)')
-axins = ax.inset_axes([0.02, 0.3, 0.37, 0.67])
-axins.set_xticks([])
-axins.set_yticks([])
-axins.plot(abs(s0[:,index]))
-axins.set_xlim(140, 180)
-axins.set_ylim(0, 65000)
-ax.indicate_inset_zoom(axins)
-
-
-ax = fig.add_subplot(gs[2, 0])
-ax.hist(np.ravel(s0_log),bins = 128, density = True,log=True)
-ax.set_title('histogram')
-ax.set_xlabel('intensity')
-# ax.set_ylabel('log value')
-ax.yaxis.set_visible(False)
 
 vmin = 0
-
-ax = fig.add_subplot(gs[0, 1])
-ax.set_title('sparse image:%d dB-%d dB'% (vmax, vmin))
-ax.imshow(sparse, cmap='gray', vmax=vmax, vmin=vmin)
+ax = fig.add_subplot(gs[1, 0])
+ax.set_title('sparse image:%d - %d'% (vmin, vmax))
+ax.imshow(sparse, cmap='gray', vmax=vmax, vmin=0)
 ax.set_aspect(sparse.shape[1] / sparse.shape[0])
-ax.axvline(x=index,linewidth=2, color='r')
+ax.axvline(x=index,linewidth=1, color='r',linestyle = '--')
 ax.set_axis_off()
 
-ax = fig.add_subplot(gs[1, 1])
-ax.plot(abs(x_line))
-ax.set_title('sparse A-line')
+ax = fig.add_subplot(gs[0, 1])
+ax.plot(abs(s0[:,index]),label='original A-line',linestyle = '--')
+ax.plot(abs(x_line),label='sparse A-line')
 ax.set_xlabel('axial depth(pixel)')
 ax.set_ylabel('magnitude(a.u.)')
-axins = ax.inset_axes([0.02, 0.3, 0.37, 0.67])
+ax.set_title('A-line')
+ax.legend(loc = 'best')
+axins = ax.inset_axes([0.35, 0.2, 0.6, 0.55])
 axins.set_xticks([])
 axins.set_yticks([])
+axins.plot(abs(s0[:,index]),linestyle = '--')
 axins.plot(abs(x_line))
-axins.set_xlim(140, 180)
-axins.set_ylim(0, 65000)
+axins.set_xlim(35, 65)
+axins.set_ylim(0, 73000)
+
+textstr_an = 'anterior''\n''sidelobe'
+textstr_po = 'posterior''\n''sidelobe'
+
+axins.annotate(textstr_an, xy=(45, 30000),  xycoords='data',
+            xytext=(43, 60000), textcoords='data',fontsize=20,
+            color='red',fontname ='Arial',
+            arrowprops=dict(facecolor='red', shrink=0.025),
+            horizontalalignment='right', verticalalignment='top')
+
+axins.annotate(textstr_po, xy=(57, 47000),  xycoords='data',
+            xytext=(58, 71000), textcoords='data', fontsize=20,
+            color='red',fontname ='Arial',
+            arrowprops=dict(facecolor='red', shrink=0.025),
+            horizontalalignment='left', verticalalignment='top')
+
 ax.indicate_inset_zoom(axins)
 
-ax = fig.add_subplot(gs[2, 1])
-ax.hist(np.ravel(sparse), bins = 128,density = True,log=True)
-ax.yaxis.set_visible(False)
+ax = fig.add_subplot(gs[1, 1])
+ax.hist(np.ravel(s0_log),bins = 128, density = True,log=True,histtype = 'step',label = 'original image')
+ax.hist(np.ravel(sparse), bins = 128,density = True,log=True,histtype = 'step',label = 'sparse image')
+ax.legend(loc = 'best')
 ax.set_title('histogram')
 ax.set_xlabel('intensity')
-# ax.set_ylabel('log value')
+ax.yaxis.set_visible(False)
 
 plt.show()
+
 
 # # save as bmp
 # image = Image.fromarray(s0_log.astype(np.uint8))
