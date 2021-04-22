@@ -28,6 +28,7 @@ from scipy import ndimage, misc
 eps = 1e-14
 
 def imag2uint(data, vmin, vmax):
+    data=np.clip(data,vmin,vmax)
     pixel_vals = np.uint8(np.around(255 * (data - vmin) / (vmax - vmin), 0))
     return pixel_vals
 
@@ -337,9 +338,10 @@ if __name__ == '__main__':
     ax[0, 1].imshow(x_temp,'gray',vmax = 255,vmin = 160)
     ax[0, 1].set_title('final norm_young')
 
-    ax[1, 0].imshow(imag2uint(s_log,rvmin,vmax),'gray',vmax = 255,vmin = 160)
+    ax[1, 0].imshow(imag2uint(s_log,rvmin,vmax),'gray',vmax = 255,vmin = 0)
     ax[1, 0].set_title('reference norm_rob')
-    ax[1, 1].imshow(imag2uint(match1_log,rvmin,vmax),'gray',vmax = 255,vmin = 160)
+    #ax[1, 1].imshow(imag2uint(match1_log,rvmin,vmax),'gray',vmax = 255,vmin = 0)
+    ax[1, 1].imshow(s_log,cmap='gray',vmax = vmax,vmin = rvmin)
     ax[1, 1].set_title('final norm_rob')
 
     plt.tight_layout()
