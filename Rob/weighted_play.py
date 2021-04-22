@@ -39,8 +39,8 @@ def gaussian_blur(noisy, sigma=0.5):
 def load_data(dataset_name, decimation_factor):
     # define signal & dictionary path
     if dataset_name == 'finger':
-        S_PATH = '/Users/youngwang/Desktop/Data/paper/Data/ear'
-        D_PATH = '/Users/youngwang/Desktop/Data/paper/PSF/finger_1.05'
+        S_PATH = '../Data/ear'
+        D_PATH = '../Data/finger_1.05'
 
         # load signal & dictionary
         with open(S_PATH, 'rb') as f:
