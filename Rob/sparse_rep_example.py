@@ -24,7 +24,6 @@ def imag2uint(data,vmin,vmax):
     pixel_vals = np.uint8(np.around(255 * (data - vmin) / (vmax - vmin),0))
     return pixel_vals
 
-
 def gaussian_blur(noisy, sigma=0.5): 
     out = gaussian(noisy, sigma=sigma, output=None, mode='nearest', cval=0, 
              multichannel=None, preserve_range=False, truncate=4.0)
@@ -32,7 +31,8 @@ def gaussian_blur(noisy, sigma=0.5):
 def load_data(dataset_name, decimation_factor=1):
     # define signal & dictionary path
     if dataset_name == 'finger':
-        S_PATH = './finger'
+        # S_PATH = './finger'
+        S_PATH = '/Users/youngwang/Desktop/github/data/ear'
         D_PATH = './finger_1.05'
         
         # load signal & dictionary
@@ -70,6 +70,7 @@ def plot_images(plot_titles, plot_data,
         ax.imshow(im,vmax=vmax,vmin=rvmin,cmap='gray')
         if overlay_plot is not None:
             ax.plot(overlay_plot)
+    plt.show()
 
 def plot_alines(plot_titles, plot_data, 
                 vmin, vmax,
