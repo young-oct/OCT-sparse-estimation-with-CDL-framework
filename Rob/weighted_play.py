@@ -222,6 +222,27 @@ if __name__ == '__main__':
 
     plt.show()
 
+    s_amp = np.zeros(s.shape[1])
+    x_amp = np.zeros(s.shape[1])
+
+    fig,ax = plt.subplots(1, 2,figsize=(16,9))
+    for i in range(s.shape[1]):
+        s_amp[i] = np.max(abs(snorm))
+        x_amp[i] = np.max(abs(xnorm))
+        
+    ax[0].hist(s_amp,label='reference')
+    ax[0].hist(x_amp,label='sparse')
+    ax[0].legend()
+
+    ax[1].plot(abs(snorm[:,200]),label='reference')
+    ax[1].plot(abs(xnorm[:,200]),label='sparse')
+    ax[1].legend()
+
+    plt.show()
+
+
+
+
 
 
 
