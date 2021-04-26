@@ -186,14 +186,10 @@ if __name__ == '__main__':
     rnorm = b.reconstruct().squeeze()
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 
-
-
     ## Convert back from normalized
     x = from_l2_normed(xnorm, l2f)
     r = from_l2_normed(rnorm, l2f)
     s = from_l2_normed(snorm, l2f)
-
-
 
     x_log = 20 * np.log10(abs(x))
     r_log = 20 * np.log10(abs(r))
@@ -235,19 +231,13 @@ if __name__ == '__main__':
 
     plt.show()
 
-    s_amp = np.zeros(s.shape[1])
-    x_amp = np.zeros(s.shape[1])
+    dif = np.zeros(s.shape[1])
 
     fig,ax = plt.subplots(1, 2,figsize=(16,9))
     for i in range(s.shape[1]):
-        s_amp[i] = np.max(abs(snorm[:,i]))
-        x_amp[i] = np.max(abs(xnorm[:,i]))
+        dif[i] = np.max(abs(snorm[:,i])) / np.max(abs(xnorm[:,i]))
 
-    s_amp = s_amp[:,np.newaxis]
-    x_amp = x_amp[:,np.newaxis]
-
-    ax[0].hist(s_amp,density = True, label='reference',histtype = 'step')
-    ax[0].hist(x_amp,density = True,label='sparse',histtype = 'step')
+    ax[0].hist(dif,density = True, label='reference',histtype = 'step')
     ax[0].legend()
 
     ax[1].plot(abs(snorm[:,200]),label='reference')
