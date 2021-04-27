@@ -4,7 +4,7 @@
 # @FileName: image_compare.py
 # @Software: PyCharm
 
-'''this script generates images for the figure as seen in
+'''this script generates images for the figure 2 as seen in
 the paper. From left to right: OCT images of a middle ear,
 index finger (palmar view), index finger (side view),
  and onion slice. The top row images are obtained from
