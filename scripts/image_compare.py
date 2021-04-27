@@ -77,9 +77,8 @@ if __name__ == '__main__':
 
         rvmin = 65  # dB
         vmax = 115  # dB
-        # Weigth factor to apply to the fidelity (l2) term in the cost function
-        # in regions segmented as containing speckle
-        lmbda = 0.03
+
+        lmbda = 0.05
         speckle_weight = 0.5
 
         # obtain weighting mask
