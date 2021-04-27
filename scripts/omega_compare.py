@@ -15,7 +15,7 @@ from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from skimage.morphology import disk
-from skimage.morphology import dilation
+from skimage.morphology import dilation, erosion
 from misc import processing
 from misc import quality
 from functools import partial
@@ -43,6 +43,8 @@ def getWeight(lmbda,speckle_weight):
     x_log = np.where(x_log <= rvmin,0,x_log)
 
     W = dilation(x_log,  disk(5))
+    W = erosion(W,  disk(5))
+    
     W = np.where(W > 0, speckle_weight,1)
     W = np.reshape(W, (W.shape[0], 1, -1, 1))
 
