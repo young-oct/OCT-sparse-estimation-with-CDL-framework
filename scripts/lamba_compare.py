@@ -81,7 +81,7 @@ if __name__ == '__main__':
 
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    speckle_weight = 0.5
+    speckle_weight = 0.3
     lmbda = np.linspace(1e-2, 1e-1, 5)
     lmbda[1] = 0.03
 
@@ -104,7 +104,7 @@ if __name__ == '__main__':
         xnorm = b.solve().squeeze()
 
         #calculate sparsity
-        sparisty[i] = (1-np.count_nonzero(xnorm) / xnorm.size)
+        sparisty[i] = quality.SF(xnorm)
         xnorm += eps
 
         xnorm = np.roll(xnorm, np.argmax(D), axis=0)

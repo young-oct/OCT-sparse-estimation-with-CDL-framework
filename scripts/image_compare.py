@@ -78,7 +78,7 @@ if __name__ == '__main__':
         rvmin = 65  # dB
         vmax = 115  # dB
 
-        lmbda = 0.05
+        lmbda = 0.03
         speckle_weight = 0.5
 
         # obtain weighting mask
