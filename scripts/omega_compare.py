@@ -90,13 +90,13 @@ if __name__ == '__main__':
 
     x_line = np.zeros((snorm.shape[0], len(speckle_weight)))
     sparse = np.zeros((snorm.shape[0], snorm.shape[1], len(speckle_weight)))
-    sparisty = np.zeros(len(speckle_weight))
+    sparsity = np.zeros(len(speckle_weight))
 
     #update opt to include W
 
     for i in range(len(speckle_weight)):
 
-        W = update_weight(speckle_weight[i])
+        W = np.roll(update_weight(speckle_weight[i]),  np.argmax(D), axis=0)
         opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                           'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                           'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
@@ -105,7 +105,7 @@ if __name__ == '__main__':
         xnorm = b.solve().squeeze()
 
         #calculate sparsity
-        sparisty[i] = (1-np.count_nonzero(xnorm) / xnorm.size)
+        sparsity[i] = (1-np.count_nonzero(xnorm) / xnorm.size)
         xnorm += eps
 
         xnorm = np.roll(xnorm, np.argmax(D), axis=0)
@@ -183,7 +183,7 @@ if __name__ == '__main__':
 
         ax = fig.add_subplot(gs[2, i + 1])
         ax.plot(x_line[:, i])
-        ax.set_title('SF = %.3f'% sparisty[i])
+        ax.set_title('SF = %.3f'% sparsity[i])
 
     plt.show()
 
