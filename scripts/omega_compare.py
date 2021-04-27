@@ -9,6 +9,7 @@
 the paper. Sparse reconstructions of the same OCT
 middle ear image using the same learned dictionary for
 various values of the weighting parameter omega'''
+
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt

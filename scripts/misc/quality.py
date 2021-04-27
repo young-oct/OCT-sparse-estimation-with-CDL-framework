@@ -36,35 +36,33 @@ def SF(s):
 
     return (1 - np.count_nonzero(s) / s.size)
 
-def SNR(roi_h):
+def SNR(roi_h,roi_b):
 
     '''compute the SNR of a given homogenous region
 
-    SNR = 10*log10(ur/σr^2)
+    SNR = 10*log10(uh/σb^2)
 
-    μr and σ2^2 represent the mean and the variance of
-    selected homogeneous ROI [pixel value]
-
-    Reference:
-    Stochastic speckle noise compensation in optical
-    coherence tomography using non-stationary spline-based
-    speckle noise modelling  doi: 10.1364/BOE.4.001769
+    uh represents selected homogeneous ROI [pixel value]
+    and σb^2 represents the variance of selected background ROI [pixel value]
 
     parameters
     ----------
     roi_h: array_like
     homogeneous region
 
+    roi_b: array_like
+    background region
+
     '''
     mean_h = np.mean(roi_h)
-    var_h = np.var(roi_h)
+    var_b = np.var(roi_b)
 
     with np.errstate(divide='ignore'):
-        snr = 10*np.log10(mean_h / var_h)
+        snr = 10*np.log10(mean_h / var_b)
     return snr
 
 
-def CNR(roi_h,roi_b):
+def CNR1(roi_h,roi_a):
 
     '''compute the CNR between homogeneous and region free of
     structure
@@ -85,18 +83,30 @@ def CNR(roi_h,roi_b):
     ----------
     roi_h: array_like
     homogeneous region
-    roi_b: array_like
+    roi_a: array_like
     region free of structure
     '''
 
     h_mean = np.mean(roi_h)
-    b_mean = np.mean(roi_b)
+    a_mean = np.mean(roi_a)
 
     h_var = np.var(roi_h)
-    b_var = np.var(roi_b)
+    a_var = np.var(roi_a)
     with np.errstate(divide='ignore'):
 
-        cnr = np.abs(h_mean - b_mean) / np.sqrt(0.5 * (h_var + b_var))
+        cnr = np.abs(h_mean - a_mean) / np.sqrt(0.5 * (h_var + a_var))
+
+    return 10*np.log10(cnr)
+
+def CNR2(region_h, region_b):
+
+    h_mean = np.mean(region_h)
+    b_mean = np.mean(region_b)
+
+    b_std = np.std(region_b)
+    with np.errstate(divide='ignore'):
+
+        cnr = np.abs(h_mean-b_mean)/b_std
 
     return 10*np.log10(cnr)
 
