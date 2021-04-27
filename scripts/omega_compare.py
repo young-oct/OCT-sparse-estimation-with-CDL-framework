@@ -43,7 +43,8 @@ def getWeight(lmbda,speckle_weight):
     x_log = np.where(x_log <= rvmin,0,x_log)
 
     W = dilation(x_log,  disk(5))
-    W = erosion(W,  disk(5))
+
+    # W = erosion(W,  disk(5))
     
     W = np.where(W > 0, speckle_weight,1)
     W = np.reshape(W, (W.shape[0], 1, -1, 1))
@@ -83,7 +84,7 @@ if __name__ == '__main__':
     # in regions segmented as containing speckle
     speckle_weight = np.linspace(1e-1,0.5,5)
     # speckle_weight[2] = 0.
-    lmbda = 0.1
+    lmbda = 0.03
 
     update_weight = partial(getWeight,0.1)
 

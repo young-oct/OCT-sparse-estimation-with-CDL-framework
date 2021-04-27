@@ -83,6 +83,8 @@ if __name__ == '__main__':
 
         # obtain weighting mask
         W = getWeight(0.1, speckle_weight)
+        W = np.roll(W, np.argmax(D), axis=0)
+
         opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                           'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                           'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})

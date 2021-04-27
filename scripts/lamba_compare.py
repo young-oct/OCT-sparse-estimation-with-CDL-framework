@@ -86,6 +86,7 @@ if __name__ == '__main__':
     lmbda[1] = 0.03
 
     W = getWeight(0.1,speckle_weight)
+    W = np.roll(W, np.argmax(D), axis=0)
 
     index = 256 # index A-line
     s_line = abs(snorm[:,index])
