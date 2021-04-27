@@ -22,7 +22,7 @@ from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from skimage.morphology import disk
-from skimage.morphology import dilation
+from skimage.morphology import dilation,erosion
 from misc import processing
 
 # Module level constants
@@ -45,6 +45,8 @@ def getWeight(lmbda,speckle_weight):
     x_log = np.where(x_log <= rvmin,0,x_log)
 
     W = dilation(x_log,  disk(5))
+    W = erosion(W,  disk(5))
+
     W = np.where(W > 0, speckle_weight,1)
     W = np.reshape(W, (W.shape[0], 1, -1, 1))
 
@@ -75,14 +77,14 @@ if __name__ == '__main__':
                                           'MaxMainIter': 20, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                           'RelaxParam': 1.515, 'AutoRho': {'Enabled': True}})
 
-        rvmin = 65  # dB
+        rvmin = 65 # dB
         vmax = 115  # dB
 
-        lmbda = 0.03
-        speckle_weight = 0.5
+        lmbda = 0.1
+        speckle_weight = 0.3
 
         # obtain weighting mask
-        W = getWeight(0.1, speckle_weight)
+        W = getWeight(0.05, speckle_weight)
         W = np.roll(W, np.argmax(D), axis=0)
 
         opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
@@ -126,37 +128,6 @@ if __name__ == '__main__':
                           arrowprops=dict(facecolor='white', shrink=0.05),
                           horizontalalignment='right', verticalalignment='top',
                           )
-
-        if i != 0:
-            axins = inset_axes(ax[0, i],
-                               width="100%",  # width = 5% of parent_bbox width
-                               height="100%",  # height : 50%
-                               loc='upper right',
-                               borderpad=0,
-                               bbox_to_anchor=(0.60, 0.77, 0.38, 0.21),
-                               bbox_transform=ax[0, i].transAxes
-                               )
-            axins.hist(np.ravel(original[i]), bins=18, density=True, log=True)
-            axins.set_xlabel('intensity', color='white', fontname='Arial')
-            axins.yaxis.set_visible(False)
-            axins.set_xlabel('intensity', color='white', fontname='Arial')
-            axins.tick_params(color='white', labelcolor='white')
-
-            axins = inset_axes(ax[1, i],
-                               width="100%",  # width = 5% of parent_bbox width
-                               height="100%",  # height : 50%
-                               loc='upper right',
-                               borderpad=0,
-                               bbox_to_anchor=(0.60, 0.77, 0.38, 0.21),
-                               bbox_transform=ax[1, i].transAxes
-                               )
-
-            axins.hist(np.ravel(sparse[i]), bins=18, density=True, log=True)
-            axins.set_xlabel('intensity', color='white', fontname='Arial')
-            axins.yaxis.set_visible(False)
-
-            axins.set_xlabel('intensity', color='white', fontname='Arial')
-            axins.tick_params(color='white', labelcolor='white')
 
         ax[1, i].imshow(sparse[i], 'gray',aspect=aspect,vmax=vmax, vmin=vmin)
         ax[0, i].set_axis_off()

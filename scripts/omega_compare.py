@@ -38,8 +38,7 @@ def getWeight(lmbda,speckle_weight):
     x_log = np.where(x_log <= rvmin,0,x_log)
 
     W = dilation(x_log,  disk(5))
-
-    # W = erosion(W,  disk(5))
+    W = erosion(W,  disk(5))
     
     W = np.where(W > 0, speckle_weight,1)
     W = np.reshape(W, (W.shape[0], 1, -1, 1))
@@ -78,9 +77,9 @@ if __name__ == '__main__':
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
     speckle_weight = np.linspace(1e-1,1,5)
-    lmbda = 0.05
+    lmbda = 0.1
 
-    update_weight = partial(getWeight,0.1)
+    update_weight = partial(getWeight,0.05)
 
     index = 400 # index A-line
     s_line = abs(snorm[:,index])

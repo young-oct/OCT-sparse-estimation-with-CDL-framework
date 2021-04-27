@@ -14,7 +14,7 @@ from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 from skimage.morphology import disk
-from skimage.morphology import dilation
+from skimage.morphology import dilation,erosion
 from misc import processing,quality,annotation
 from functools import partial
 
@@ -41,6 +41,8 @@ def getWeight(lmbda,speckle_weight):
     x_log = np.where(x_log <= rvmin,0,x_log)
 
     W = dilation(x_log,  disk(5))
+    W = erosion(W,  disk(5))
+
     W = np.where(W > 0, speckle_weight,1)
     W = np.reshape(W, (W.shape[0], 1, -1, 1))
 
@@ -79,10 +81,10 @@ if __name__ == '__main__':
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
     speckle_weight = 0.3
-    lmbda = np.linspace(1e-2, 1e-1, 5)
-    lmbda[1] = 0.03
+    lmbda = np.linspace(1e-2, 2.4e-1, 5)
+    lmbda[2] = 0.1
 
-    W = getWeight(0.1,speckle_weight)
+    W = getWeight(0.05,speckle_weight)
     W = np.roll(W, np.argmax(D), axis=0)
 
     index = 400 # index A-line
