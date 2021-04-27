@@ -96,7 +96,7 @@ if __name__ == '__main__':
 
     for i in range(len(speckle_weight)):
 
-        W = update_weight(speckle_weight[i])
+        W = np.roll(update_weight(speckle_weight[i]),  np.argmax(D), axis=0)
         opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                           'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                           'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
