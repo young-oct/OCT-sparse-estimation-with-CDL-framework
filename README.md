@@ -2,7 +2,7 @@
 
 We show how sparsity-regularized deconvolution with dictionary learning of the axial point spread function offers an effective method of removing artefacts and stochastic noise from OCT images. Our method estimates the sparse representation of the depth-resolved scattering amplitude of OCT A-lines on a line-by-line basis using the convolutional basis pursuit denoising with dictionary learning (CBPDN-DL) framework.  We employ a two two-pass process approach in which the first pass is used to segment the image and obtain a $l_1$ weighting mask that can be applied to the sparsity term in the optimization cost function within tissue-containing regions and the second pass to produce the final image sparse estimate. We show that sparsity-regularized deconvolution employing this weighting factor achieves good preservation of tissue structure while suppressing both noise and sidelobes and allows improved resolution of tissue structures. The implementation is modified from [SPORCO.](https://github.com/bwohlberg/sporco)
 
-![image-20210428174146196](https://tva1.sinaimg.cn/large/008i3skNly1gq04n7n4twj318g0p01kx.jpg)
+![image-20210428174146196](https://tva1.sinaimg.cn/large/008i3skNly1gq04z6lhlcj318g0p0wn1.jpg)
 
 <sub>Figure 1. FFrom left to right: OCT images of a middle ear, index finger (palmar view), index finger (side view), and onion slice. The white arrow indicates the sidelobe artifacts caused by the PSF convolution.<sub>
 
