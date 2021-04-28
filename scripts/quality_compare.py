@@ -17,7 +17,7 @@ from skimage.morphology import disk
 from skimage.morphology import dilation, erosion
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
-
+from pytictoc import TicToc
 
 # Module level constants
 eps = 1e-14
@@ -78,9 +78,11 @@ if __name__ == '__main__':
 
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    speckle_weight = 0.3
+    speckle_weight = 0.1
     lmbda = 0.1
 
+    t = TicToc()
+    t.tic()
     # update opt to include W
     W = np.roll(getWeight(0.05,speckle_weight), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
@@ -90,7 +92,7 @@ if __name__ == '__main__':
 
     b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
     xnorm = b.solve().squeeze() +eps
-
+    t.toc()
     # calculate sparsity
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 
@@ -122,7 +124,6 @@ if __name__ == '__main__':
     ba_x = quality.ROI(*background[0], x_log)
 
     vmax,vmin = 255,0
-    # fig = plt.figure(constrained_layout=True, figsize=(16, 9))
     fig = plt.figure(figsize=(16, 9))
 
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
@@ -164,7 +165,7 @@ if __name__ == '__main__':
         r'${CNR_{H/A}}$''\n'
         r'%.1f dB' % (quality.CNR2(ho_s_1,ar_s)),
         r'${MIR_{{R_1}/{R_2}}}$''\n'
-        r'%.1f' % (quality.MIR(ho_s_1, ho_s_2)),
+        r'%.2f' % (quality.MIR(ho_s_1, ho_s_2)),
     ))
     ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=27,
             verticalalignment='top', fontname='Arial', color='red')
@@ -206,7 +207,7 @@ if __name__ == '__main__':
         r'${CNR_{H/A}}$''\n'
         r'%.1f dB' % (quality.CNR2(ho_x_1,ar_x)),
         r'${MIR_{{R_1}/{R_2}}}$''\n'
-        r'%.1f' % (quality.MIR(ho_x_1, ho_x_2)),
+        r'%.2f' % (quality.MIR(ho_x_1, ho_x_2)),
     ))
     ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=27,
             verticalalignment='top', fontname='Arial', color='red')

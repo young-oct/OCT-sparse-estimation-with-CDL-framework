@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    speckle_weight = np.linspace(1e-1,1,5)
+    speckle_weight = np.linspace(0.1,1,5)
     lmbda = 0.1
 
     update_weight = partial(getWeight,0.05)

@@ -52,6 +52,9 @@ def plot_images(plot_titles, image,line,
                 vmin, vmax,suptitle=None):
     assert len(plot_titles) == len(image), 'Length of plot_titles does not match length of plot_data'
 
+    width, height = (17, 10)
+    background = [[315, 30, width*5, height*5]]
+
     nplots = len(plot_titles)
     fig, axes = plt.subplots(2, nplots,figsize=(16,9))
 
@@ -86,6 +89,15 @@ def plot_images(plot_titles, image,line,
                     color='red', fontname='Arial',
                     arrowprops=dict(facecolor='red', shrink=0.025),
                     horizontalalignment='right', verticalalignment='top')
+
+        for i in range(len(background)):
+            for j in annotation.get_background(*background[i]):
+                ax.add_patch(j)
+        ba = quality.ROI(*background[0], im)
+        textstr = r'${SF_{B}}$''\n'r'%.1f' % (quality.SF(ba))
+
+        ax.text(0.8, 0.18, textstr, transform=ax.transAxes, fontsize=20,
+                verticalalignment='top', fontname='Arial', color='red')
 
     for n,(ax,l) in enumerate(zip(axes[1,:],line)):
         ax.plot(l)
@@ -135,7 +147,7 @@ if __name__ == '__main__':
 
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    speckle_weight = 0.3
+    speckle_weight = 0.1
     lmbda = 0.1
 
     b0 = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)

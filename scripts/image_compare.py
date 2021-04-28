@@ -59,7 +59,10 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 12
+            'font.size': 18,
+            'text.usetex': False,
+            'font.family': 'stixgeneral',
+            'mathtext.fontset': 'stix',
         }
     )
 
@@ -67,6 +70,10 @@ if __name__ == '__main__':
 
     original = []
     sparse = []
+
+    lmbda = [0.1,0.05,0.03,0.03]
+    speckle_weight = [0.1,0.5,0.3,0.5]
+
     for i in range(len(file_name)):
         # Load the example dataset
         s, D = processing.load_data(file_name[i], decimation_factor=20)
@@ -80,18 +87,17 @@ if __name__ == '__main__':
         rvmin = 65 # dB
         vmax = 115  # dB
 
-        lmbda = 0.1
-        speckle_weight = 0.3
+
 
         # obtain weighting mask
-        W = getWeight(0.05, speckle_weight)
+        W = getWeight(0.05, speckle_weight[i])
         W = np.roll(W, np.argmax(D), axis=0)
 
         opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                           'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                           'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
 
-        b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
+        b = cbpdn.ConvBPDN(D, snorm, lmbda[i], opt=opt_par, dimK=1, dimN=1)
         xnorm = b.solve().squeeze() + eps
         rnorm = b.reconstruct().squeeze()
         xnorm = np.roll(xnorm, np.argmax(D), axis=0)
@@ -117,11 +123,13 @@ if __name__ == '__main__':
 
     vmax, vmin = 255,0
 
-    aspect = original[0].shape[1]/original[0].shape[1]
-    fig, ax = plt.subplots(nrows=2, ncols=4, sharey=True, sharex=True, figsize=(16, 9))
+    aspect = original[0].shape[1]/original[0].shape[0]
+    fig, ax = plt.subplots(nrows=2, ncols=4, sharey=True, sharex=True, figsize=(16, 9),constrained_layout=True )
 
     for i in range(len(file_name)):
-        ax[0, i].set_title(file_name[i],fontsize=20)
+        title = '\n'.join((file_name[i],'𝜆 = %.2f $\omega$ = %.1f' % (lmbda[i], speckle_weight[i])))
+
+        ax[0, i].set_title(title,fontsize=20)
         ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=vmin)
         ax[0, i].annotate('', xy=(x_head[i], y_head[i]), xycoords='data',
                           xytext=(x_end[i], y_end[i]), textcoords='data',
@@ -132,6 +140,5 @@ if __name__ == '__main__':
         ax[1, i].imshow(sparse[i], 'gray',aspect=aspect,vmax=vmax, vmin=vmin)
         ax[0, i].set_axis_off()
         ax[1, i].set_axis_off()
-    plt.subplots_adjust(top=1, bottom=0, left= 0.005, right=0.995, hspace=-0.575,
-                        wspace= 0.05)
+
     plt.show()
