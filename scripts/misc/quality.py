@@ -58,7 +58,7 @@ def SNR(roi_h,roi_b):
     var_b = np.var(roi_b)
 
     with np.errstate(divide='ignore'):
-        snr = 10*np.log10(mean_h / var_b)
+        snr = 10*np.log10(mean_h**2 / var_b)
     return snr
 
 
