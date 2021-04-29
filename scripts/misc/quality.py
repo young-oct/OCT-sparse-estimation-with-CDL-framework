@@ -110,6 +110,17 @@ def CNR2(region_h, region_b):
 
     return 10*np.log10(cnr)
 
+def CNR3(region_h, region_b):
+
+    h_mean = np.mean(region_h)
+    b_mean = np.mean(region_b)
+
+    with np.errstate(divide='ignore'):
+
+        cnr = h_mean/b_mean
+
+    return 10*np.log10(cnr)
+
 def MIR(roi_1,roi_2):
     '''Mean intensity ratio (MIR) measures the ratio in
     image intensity between a bright and dim structural
