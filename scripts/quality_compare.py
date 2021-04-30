@@ -33,7 +33,7 @@ def getWeight(lmbda, speckle_weight):
 
     x = processing.from_l2_normed(xnorm, l2f)
     x_log = 20 * np.log10(abs(x))
-    x_log = processing.imag2uint(x_log, rvmin, vmax)
+    #x_log = processing.imag2uint(x_log, rvmin, vmax)
 
     # set thresdhold
     x_log = np.where(x_log <= rvmin, 0, x_log)
@@ -67,7 +67,7 @@ if __name__ == '__main__':
     vmax = 115  # dB
 
     s_log = 20 * np.log10(abs(s))
-    s_log = processing.imag2uint(s_log, rvmin, vmax)
+    #s_log = processing.imag2uint(s_log, rvmin, vmax)
 
     # l2 norm data and save the scaling factor
     l2f, snorm = processing.to_l2_normed(s)
@@ -100,7 +100,7 @@ if __name__ == '__main__':
     x = processing.from_l2_normed(xnorm, l2f)
 
     x_log = 20 * np.log10(abs(x))
-    x_log = processing.imag2uint(x_log, rvmin, vmax)
+    #x_log = processing.imag2uint(x_log, rvmin, vmax)
 
     width, height = (17, 10)
     artifact = [[185, 113, width*2, height*2]]
@@ -123,12 +123,12 @@ if __name__ == '__main__':
     ba_s = quality.ROI(*background[0], s_log)
     ba_x = quality.ROI(*background[0], x_log)
 
-    vmax,vmin = 255,0
+    #vmax,vmin = 255,0
     fig = plt.figure(figsize=(16, 9))
 
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
-    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=vmin)
+    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin)
 
     text = r'${R_{1}}$'
     ax.annotate(text, xy=(190, 145), xycoords='data',
@@ -172,7 +172,7 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[1])
 
-    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=vmin)
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin)
 
     text = r'${R_{1}}$'
     ax.annotate(text, xy=(190, 145), xycoords='data',
