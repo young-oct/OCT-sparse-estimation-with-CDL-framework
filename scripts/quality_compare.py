@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
 
     b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
-    xnorm = b.solve().squeeze() +eps
+    xnorm = b.solve().squeeze() + eps
     t.toc()
     # calculate sparsity
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)

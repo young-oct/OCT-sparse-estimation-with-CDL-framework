@@ -58,7 +58,7 @@ def SNR(roi_h,roi_b):
     var_b = np.var(roi_b)
 
     with np.errstate(divide='ignore'):
-        snr = 10*np.log10(mean_h / var_b)
+        snr = 10*np.log10(mean_h**2 / var_b)
     return snr
 
 
@@ -107,6 +107,17 @@ def CNR2(region_h, region_b):
     with np.errstate(divide='ignore'):
 
         cnr = np.abs(h_mean-b_mean)/b_std
+
+    return 10*np.log10(cnr)
+
+def CNR3(region_h, region_b):
+
+    h_mean = np.mean(region_h)
+    b_mean = np.mean(region_b)
+
+    with np.errstate(divide='ignore'):
+
+        cnr = h_mean/b_mean
 
     return 10*np.log10(cnr)
 
