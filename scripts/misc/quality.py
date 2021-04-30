@@ -5,6 +5,13 @@
 # @Software: PyCharm
 
 import numpy as np
+from skimage.filters import gaussian
+
+
+def gaussian_blur(noisy, sigma=0.5):
+    out = gaussian(noisy, sigma=sigma, output=None, mode='nearest', cval=0,
+                   multichannel=None, preserve_range=False, truncate=4.0)
+    return (out)
 
 def ROI(x, y, width, height,s):
     '''obtain the ROI from the standard layout [330x512]
@@ -120,6 +127,7 @@ def CNR3(region_h, region_b):
         cnr = h_mean/b_mean
 
     return 10*np.log10(cnr)
+
 
 def MIR(roi_1,roi_2):
     '''Mean intensity ratio (MIR) measures the ratio in
