@@ -19,6 +19,7 @@ from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from scipy.signal import find_peaks
 from skimage import filters
+from scipy import ndimage, misc
 
 from skimage import feature
 from pytictoc import TicToc
@@ -49,12 +50,15 @@ def getWeight(lmbda, speckle_weight, Paddging = True):
 
     W = np.where(W > 0, speckle_weight, 1)
 
+    # remove residual noise with the median filter,
+    # with a kernel size of 5
+    W = ndimage.median_filter(W, size=5)
 
     if Paddging == True:
         pad = 10 #
         # find the bottom edge of the mask with canny edge filter
-        temp = feature.canny(W, sigma=4)
-        # temp = filters.sobel(W)
+        temp = filters.sobel(W)
+
         # temp = quality.gaussian_blur(temp)
         # define a pad value
         pad_value = np.linspace(speckle_weight,1,pad)
@@ -190,12 +194,14 @@ if __name__ == '__main__':
     textstr = '\n'.join((
         r'${SNR_{H/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_s_1,ba_s)),
+        r'${C_{H/B}}$''\n'
+        r'%.1f dB' % (quality.Contrast(ho_s_1, ar_s)),
         r'${CNR_{H/A}}$''\n'
-        r'%.1f dB' % (quality.CNR3(ho_s_1,ar_s)),
+        r'%.1f dB' % (quality.CNR(ho_s_1,ar_s)),
         r'${MIR_{{R_1}/{R_2}}}$''\n'
         r'%.2f' % (quality.MIR(ho_s_1, ho_s_2)),
     ))
-    ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=27,
+    ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
 
     ax = fig.add_subplot(gs[1])
@@ -232,12 +238,14 @@ if __name__ == '__main__':
     textstr = '\n'.join((
         r'${SNR_{H/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_x_1,ba_x)),
+        r'${C_{H/B}}$''\n'
+        r'%.1f dB' % (quality.Contrast(ho_x_1, ar_x)),
         r'${CNR_{H/A}}$''\n'
-        r'%.1f dB' % (quality.CNR3(ho_x_1,ar_x)),
+        r'%.1f dB' % (quality.CNR(ho_x_1,ar_x)),
         r'${MIR_{{R_1}/{R_2}}}$''\n'
         r'%.2f' % (quality.MIR(ho_x_1, ho_x_2)),
     ))
-    ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=27,
+    ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
     plt.tight_layout()
     plt.show()

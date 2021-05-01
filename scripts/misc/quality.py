@@ -61,15 +61,16 @@ def SNR(roi_h,roi_b):
     background region
 
     '''
-    mean_h = np.mean(roi_h)
+    var_h = np.var(roi_h)
     var_b = np.var(roi_b)
 
     with np.errstate(divide='ignore'):
-        snr = 10*np.log10(mean_h**2 / var_b)
+
+        snr = 10*np.log10(var_h/ var_b)
+
     return snr
 
-
-def CNR1(roi_h,roi_a):
+def CNR(roi_h,roi_a):
 
     '''compute the CNR between homogeneous and region free of
     structure
@@ -101,33 +102,19 @@ def CNR1(roi_h,roi_a):
     a_var = np.var(roi_a)
     with np.errstate(divide='ignore'):
 
-        cnr = np.abs(h_mean - a_mean) / np.sqrt(0.5 * (h_var + a_var))
+        cnr = h_mean - a_mean / np.sqrt(h_var + a_var)
 
     return 10*np.log10(cnr)
 
-def CNR2(region_h, region_b):
-
-    h_mean = np.mean(region_h)
-    b_mean = np.mean(region_b)
-
-    b_std = np.std(region_b)
-    with np.errstate(divide='ignore'):
-
-        cnr = np.abs(h_mean-b_mean)/b_std
-
-    return 10*np.log10(cnr)
-
-def CNR3(region_h, region_b):
+def Contrast(region_h, region_b):
 
     h_mean = np.mean(region_h)
     b_mean = np.mean(region_b)
 
     with np.errstate(divide='ignore'):
+        contrast = h_mean / b_mean
 
-        cnr = h_mean/b_mean
-
-    return 10*np.log10(cnr)
-
+        return 10*np.log10(contrast)
 
 def MIR(roi_1,roi_2):
     '''Mean intensity ratio (MIR) measures the ratio in
