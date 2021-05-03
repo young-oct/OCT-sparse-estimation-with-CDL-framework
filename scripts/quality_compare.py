@@ -147,18 +147,20 @@ if __name__ == '__main__':
     roi['homogeneous'] = [[190, 165, int(width*1.5), int(height*1.5)],
                    [390, 215, width, height]]
 
-    
-    ho_s_1 = quality.ROI(*roi['homogeneous'][0], abs(s)**2)
-    ho_s_2 = quality.ROI(*roi['homogeneous'][1], abs(s)**2)
+    s_intensity = abs(s)**2
+    x_intensity = abs(x)**2
 
-    ho_x_1 = quality.ROI(*roi['homogeneous'][0], abs(x)**2)
-    ho_x_2 = quality.ROI(*roi['homogeneous'][1], abs(x)**2)
+    ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
+    ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
 
-    ar_s = quality.ROI(*roi['artifact'][0], abs(s)**2)
-    ar_x = quality.ROI(*roi['artifact'][0], abs(x)**2)
+    ho_x_1 = quality.ROI(*roi['homogeneous'][0], x_intensity)
+    ho_x_2 = quality.ROI(*roi['homogeneous'][1], x_intensity)
 
-    ba_s = quality.ROI(*roi['background'][0], abs(s)**2)
-    ba_x = quality.ROI(*roi['background'][0], abs(x)**2)
+    ar_s = quality.ROI(*roi['artifact'][0], s_intensity)
+    ar_x = quality.ROI(*roi['artifact'][0], x_intensity)
+
+    ba_s = quality.ROI(*roi['background'][0], s_intensity)
+    ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
     fig = plt.figure(figsize=(16, 9))
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)

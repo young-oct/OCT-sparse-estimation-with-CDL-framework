@@ -47,10 +47,12 @@ def SNR(roi_h,roi_b):
 
     '''compute the SNR of a given homogenous region
 
-    SNR = 10*log10(uh/σb^2)
+    SNR = 10*log10(uh/σb)
 
-    uh represents selected homogeneous ROI [pixel value]
-    and σb^2 represents the variance of selected background ROI [pixel value]
+    Improving ultrasound images with
+    elevational angular compounding based on
+    acoustic refraction
+    https://doi.org/10.1038/s41598-020-75092-8
 
     parameters
     ----------
@@ -61,31 +63,31 @@ def SNR(roi_h,roi_b):
     background region
 
     '''
-    var_h = np.var(np.sqrt(roi_h))
-    var_b = np.var(np.sqrt(roi_b))
 
+    mean_h = np.mean(roi_h)
+    std_b = np.std(roi_b)
+    
     with np.errstate(divide='ignore'):
 
-        snr = 10*np.log10(var_h/ var_b)
+        snr = 10*np.log10(mean_h/ std_b)
 
     return snr
+
+
 
 def CNR(roi_h,roi_a):
 
     '''compute the CNR between homogeneous and region free of
     structure
 
-    CNR = 10*log((|uh-ub|/sqrt(0.5*(σh^2+σb^2)))
-
-    uh and σh^2 represent the mean and the variance of
-    selected homogeneous ROI [pixel value]
-
-    ub and σb^2 represent the mean and the variance of
-    selected background ROI [pixel value]
+    CNR = 10*log((|uh-ub|/σb)
 
     Reference:
-    OCT Image Restoration Using Non-Local Deep Image Prior
-    https://doi.org/10.3390/electronics9050784
+    Improving ultrasound images with
+    elevational angular compounding based on
+    acoustic refraction
+    https://doi.org/10.1038/s41598-020-75092-8
+
 
     parameters
     ----------
@@ -98,11 +100,11 @@ def CNR(roi_h,roi_a):
     h_mean = np.mean(roi_h)
     a_mean = np.mean(roi_a)
 
-    h_var = np.var(np.sqrt(roi_h))
-    a_var = np.var(np.sqrt(roi_a))
+    a_std = np.var(roi_a)
+
     with np.errstate(divide='ignore'):
 
-        cnr = (h_mean - a_mean) / np.sqrt(h_var + a_var)
+        cnr = abs(h_mean - a_mean) / a_std
 
     return 10*np.log10(cnr)
 
