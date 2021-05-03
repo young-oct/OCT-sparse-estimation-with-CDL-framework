@@ -116,20 +116,3 @@ def Contrast(region_h, region_b):
 
         return 10*np.log10(contrast)
 
-def MIR(roi_1,roi_2):
-    '''Mean intensity ratio (MIR) measures the ratio in
-    image intensity between a bright and dim structural
-    region within an image
-
-    MIR = u1/u2
-
-    u1 and u2 represent the mean
-    selected homogeneous ROIs [pixel value]
-
-    '''
-
-    with np.errstate(divide='ignore'):
-
-        mir = np.mean(roi_1)/np.mean(roi_2)
-
-    return mir
