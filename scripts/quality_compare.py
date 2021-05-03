@@ -29,7 +29,10 @@ from scipy import signal
 # Module level constants
 eps = 1e-14
 
-def getWeight(lmbda, speckle_weight, Paddging = True):
+def getWeight(s, lmbda, speckle_weight, Paddging = True, opt_par={}):
+    
+    l2f, snorm = processing.to_l2_normed(s)
+    
     b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
     # Calculate the sparse vector and an an epsilon to keep the log finite
     xnorm = b.solve().squeeze() + eps
@@ -78,44 +81,20 @@ def getWeight(lmbda, speckle_weight, Paddging = True):
 
     return W
 
-if __name__ == '__main__':
-
-    plt.close('all')
-    # Customize matplotlib params
-    matplotlib.rcParams.update(
-        {
-            'font.size': 20,
-            'text.usetex': False,
-            'font.family': 'stixgeneral',
-            'mathtext.fontset': 'stix',
-        }
-    )
-    file_name = ['ear']
-    # Load the example dataset
-    s, D = processing.load_data(file_name[0], decimation_factor=20)
-
-    rvmin = 65  # dB
-    vmax = 115  # dB
-
-    s_log = 20 * np.log10(abs(s))
-
-    #copy abs(s) to array for image quailty comparsion
-    q_s = abs(s)
-    # s_log = processing.imag2uint(s_log, rvmin, vmax)
-
+def make_sparse_representation(s, lmbda, speckle_weight):
+    ''' s -- 2D array of complex A-lines with dims (width, depth)
+    '''
     # l2 norm data and save the scaling factor
+      
     l2f, snorm = processing.to_l2_normed(s)
 
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 20, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                       'RelaxParam': 1.515, 'AutoRho': {'Enabled': True}})
 
-    # Weigth factor to apply to the fidelity (l2) term in the cost function
+    # Weight factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    speckle_weight = 0.1
-    lmbda = 0.1
-
-    W = np.roll(getWeight(0.05,speckle_weight,Paddging = True), np.argmax(D), axis=0)
+    W = np.roll(getWeight(s, 0.05,speckle_weight,Paddging = True, opt_par = opt_par), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                       'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
@@ -127,12 +106,30 @@ if __name__ == '__main__':
 
     ## Convert back from normalized
     x = processing.from_l2_normed(xnorm, l2f)
+    return(x)
 
-    #copy abs(x) to array for image quailty comparsion
-    q_x = abs(x)
+if __name__ == '__main__':
 
-    x_log = 20 * np.log10(abs(x))
-    # x_log = processing.imag2uint(x_log, rvmin, vmax)
+    
+    #Image processing and display paramaters
+    speckle_weight = 0.5
+    lmbda = 0.05
+    rvmin = 65  # dB
+    vmax = 115  # dB
+
+    plt.close('all')
+    # Customize matplotlib params
+    matplotlib.rcParams.update(
+        {
+            'font.size': 20,
+            'text.usetex': False,
+            'font.family': 'stixgeneral',
+            'mathtext.fontset': 'stix',
+        }
+    )
+    file_name = 'ear'
+    # Load the example dataset
+    s, D = processing.load_data(file_name, decimation_factor=20)
 
 
     x = make_sparse_representation(s, lmbda, speckle_weight)
@@ -186,14 +183,14 @@ if __name__ == '__main__':
 
     ax.set_aspect(s_log.shape[1] / s_log.shape[0])
 
-    for i in range(len(artifact)):
-        for j in annotation.get_artifact(*artifact[i]):
+    for i in range(len(roi['artifact'])):
+        for j in annotation.get_artifact(*roi['artifact'][i]):
             ax.add_patch(j)
-    for i in range(len(background)):
-        for j in annotation.get_background(*background[i]):
+    for i in range(len(roi['background'])):
+        for j in annotation.get_background(*roi['background'][i]):
             ax.add_patch(j)
-    for i in range(len(homogeneous)):
-        for j in annotation.get_homogeneous(*homogeneous[i]):
+    for i in range(len(roi['homogeneous'])):
+        for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
             ax.add_patch(j)
 
     textstr = '\n'.join((
@@ -230,14 +227,14 @@ if __name__ == '__main__':
     ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda, speckle_weight))
 
     ax.set_axis_off()
-    for i in range(len(artifact)):
-        for j in annotation.get_artifact(*artifact[i]):
+    for i in range(len(roi['artifact'])):
+        for j in annotation.get_artifact(*roi['artifact'][i]):
             ax.add_patch(j)
-    for i in range(len(background)):
-        for j in annotation.get_background(*background[i]):
+    for i in range(len(roi['background'])):
+        for j in annotation.get_background(*roi['background'][i]):
             ax.add_patch(j)
-    for i in range(len(homogeneous)):
-        for j in annotation.get_homogeneous(*homogeneous[i]):
+    for i in range(len(roi['homogeneous'])):
+        for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
             ax.add_patch(j)
 
     textstr = '\n'.join((
