@@ -115,7 +115,7 @@ if __name__ == '__main__':
     
     #Image processing and display paramaters
     speckle_weight = 0.1
-    lmbda = 0.1
+    lmbda = 0.05
     rvmin = 65  # dB
     vmax = 115  # dB
 
@@ -129,7 +129,7 @@ if __name__ == '__main__':
             'mathtext.fontset': 'stix',
         }
     )
-    file_name = 'ear'
+    file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
 
@@ -142,10 +142,10 @@ if __name__ == '__main__':
     # Define ROIs
     roi = {}
     width, height = (17, 10)
-    roi['artifact'] = [[185, 113, width*2, height*2]]
+    roi['artifact'] = [[185, 135, width*2, height*2]]
     roi['background'] = [[270, 20, width*8, height*8]]
-    roi['homogeneous'] = [[190, 140, int(width*1.5), int(height*1.5)],
-                   [390, 190, width, height]]
+    roi['homogeneous'] = [[190, 165, int(width*1.5), int(height*1.5)],
+                   [390, 215, width, height]]
 
     
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], abs(s)**2)
@@ -166,18 +166,18 @@ if __name__ == '__main__':
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin)
     
     text = r'${R_{1}}$'
-    ax.annotate(text, xy=(190, 145), xycoords='data',
-                xytext=(170, 125), textcoords='data', fontsize=30,
+    ax.annotate(text, xy=(roi['homogeneous'][0][0],  roi['homogeneous'][0][1]+height), xycoords='data',
+                xytext=(roi['homogeneous'][0][0]-50, roi['homogeneous'][0][1]+50), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
     text = r'${R_{2}}$'
-    ax.annotate(text, xy=(412, 195), xycoords='data',
-                xytext=(437, 165), textcoords='data', fontsize=30,
+    ax.annotate(text, xy=(roi['homogeneous'][1][0],  roi['homogeneous'][1][1]+height), xycoords='data',
+                xytext=(roi['homogeneous'][1][0]-50, roi['homogeneous'][1][1]+50), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='left', verticalalignment='top')
+                horizontalalignment='right', verticalalignment='top')
 
     ax.set_axis_off()
     ax.set_title('reference')
@@ -203,7 +203,7 @@ if __name__ == '__main__':
         r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
         r'${CNR_{H/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_s_1,ar_s))))
-    ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
+    ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
 
     ax = fig.add_subplot(gs[1])
@@ -211,18 +211,18 @@ if __name__ == '__main__':
     ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin)
 
     text = r'${R_{1}}$'
-    ax.annotate(text, xy=(190, 145), xycoords='data',
-                xytext=(170, 125), textcoords='data', fontsize=30,
+    ax.annotate(text, xy=(roi['homogeneous'][0][0],  roi['homogeneous'][0][1]+height), xycoords='data',
+                xytext=(roi['homogeneous'][0][0]-50, roi['homogeneous'][0][1]+50), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
     text = r'${R_{2}}$'
-    ax.annotate(text, xy=(412, 195), xycoords='data',
-                xytext=(437, 165), textcoords='data', fontsize=30,
+    ax.annotate(text, xy=(roi['homogeneous'][1][0],  roi['homogeneous'][1][1]+height), xycoords='data',
+                xytext=(roi['homogeneous'][1][0]-50, roi['homogeneous'][1][1]+50), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='left', verticalalignment='top')
+                horizontalalignment='right', verticalalignment='top')
 
     ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda, speckle_weight))
 
@@ -246,7 +246,7 @@ if __name__ == '__main__':
         r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
         r'${CNR_{H/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_x_1,ar_x))))
-    ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
+    ax.text(0.05,  0.95, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
     plt.tight_layout()
     plt.show()
