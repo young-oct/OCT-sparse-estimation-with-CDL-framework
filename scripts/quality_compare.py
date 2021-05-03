@@ -19,7 +19,7 @@ from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from scipy.signal import find_peaks
 from skimage import filters
-from scipy import ndimage, misc
+from scipy import ndimage
 from tabulate import tabulate
 
 
@@ -114,8 +114,8 @@ if __name__ == '__main__':
 
     
     #Image processing and display paramaters
-    speckle_weight = 0.5
-    lmbda = 0.05
+    speckle_weight = 0.1
+    lmbda = 0.1
     rvmin = 65  # dB
     vmax = 115  # dB
 
@@ -132,7 +132,6 @@ if __name__ == '__main__':
     file_name = 'ear'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-
 
     x = make_sparse_representation(s, lmbda, speckle_weight)
 
@@ -194,23 +193,16 @@ if __name__ == '__main__':
     for i in range(len(roi['homogeneous'])):
         for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
             ax.add_patch(j)
-            
-            
-
-
-
-
     
     textstr = '\n'.join((
         r'${SNR_{H/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_s_1,ba_s)),
         r'${C_{H/B}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ar_s)),
+        r'${C_{{R_1}/{R_2}}}$''\n'
+        r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
         r'${CNR_{H/A}}$''\n'
-        r'%.1f dB' % (quality.CNR(ho_s_1,ar_s)),
-        r'${MIR_{{R_1}/{R_2}}}$''\n'
-        r'%.2f' % (quality.Contrast(ho_s_1, ho_s_2)),
-    ))
+        r'%.1f dB' % (quality.CNR(ho_s_1,ar_s))))
     ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
 
@@ -250,11 +242,10 @@ if __name__ == '__main__':
         r'%.1f dB' % (quality.SNR(ho_x_1,ba_x)),
         r'${C_{H/B}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ar_x)),
+        r'${C_{{R_1}/{R_2}}}$''\n'
+        r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
         r'${CNR_{H/A}}$''\n'
-        r'%.1f dB' % (quality.CNR(ho_x_1,ar_x)),
-        r'${MIR_{{R_1}/{R_2}}}$''\n'
-        r'%.2f' % (quality.Contrast(ho_x_1, ho_x_2)),
-    ))
+        r'%.1f dB' % (quality.CNR(ho_x_1,ar_x))))
     ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
     plt.tight_layout()
@@ -274,7 +265,6 @@ if __name__ == '__main__':
              ['CNR between homogeneous and artifact ROIs',  quality.CNR(ho_s_1, ar_s), quality.CNR(ho_x_1, ar_x)],
              ['CNR between homogeneous and background ROIs', quality.CNR(ho_s_1, ba_s), quality.CNR(ho_x_1, ba_x)],
              ['Contrast between homogeneous 1 and homogeneous 2 ROIs', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)]]
-
 
     print(tabulate(table, headers=['IQA', 'Original image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
