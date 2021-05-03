@@ -102,7 +102,7 @@ def CNR(roi_h,roi_a):
     a_var = np.var(roi_a)
     with np.errstate(divide='ignore'):
 
-        cnr = h_mean - a_mean / np.sqrt(h_var + a_var)
+        cnr = (h_mean - a_mean) / np.sqrt(h_var + a_var)
 
     return 10*np.log10(cnr)
 
