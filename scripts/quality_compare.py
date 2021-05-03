@@ -39,7 +39,7 @@ def getWeight(lmbda, speckle_weight, Paddging = True):
     # Convert back from normalized
     rvmin,vmax = 65,115
     x = processing.from_l2_normed(xnorm, l2f)
-    x_log = 20 * np.log10(abs(x))
+    x_log = 10 * np.log10(abs(x)**2)
     x_log = processing.imag2uint(x_log, rvmin, vmax)
 
     # set thresdhold
@@ -134,34 +134,39 @@ if __name__ == '__main__':
     x_log = 20 * np.log10(abs(x))
     # x_log = processing.imag2uint(x_log, rvmin, vmax)
 
+
+    x = make_sparse_representation(s, lmbda, speckle_weight)
+
+    # Generate log intensity arrays
+    s_log = 10 * np.log10(abs(s)**2)
+    x_log = 10 * np.log10(abs(x)**2)
+    
+    # Define ROIs
+    roi = {}
     width, height = (17, 10)
-    artifact = [[185, 113, width*2, height*2]]
-    # artifact = [[320, 280, width*2, height*2]]
-
-    background = [[270, 20, width*8, height*8]]
-
-    homogeneous = [[190, 140, int(width*1.5), int(height*1.5)],
+    roi['artifact'] = [[185, 113, width*2, height*2]]
+    roi['background'] = [[270, 20, width*8, height*8]]
+    roi['homogeneous'] = [[190, 140, int(width*1.5), int(height*1.5)],
                    [390, 190, width, height]]
 
-    ho_s_1 = quality.ROI(*homogeneous[0], q_s)
-    ho_s_2 = quality.ROI(*homogeneous[1], q_s)
+    
+    ho_s_1 = quality.ROI(*roi['homogeneous'][0], abs(s)**2)
+    ho_s_2 = quality.ROI(*roi['homogeneous'][1], abs(s)**2)
 
-    ho_x_1 = quality.ROI(*homogeneous[0], q_x)
-    ho_x_2 = quality.ROI(*homogeneous[1], q_x)
+    ho_x_1 = quality.ROI(*roi['homogeneous'][0], abs(x)**2)
+    ho_x_2 = quality.ROI(*roi['homogeneous'][1], abs(x)**2)
 
-    ar_s = quality.ROI(*artifact[0], q_s)
-    ar_x = quality.ROI(*artifact[0], q_x)
+    ar_s = quality.ROI(*roi['artifact'][0], abs(s)**2)
+    ar_x = quality.ROI(*roi['artifact'][0], abs(x)**2)
 
-    ba_s = quality.ROI(*background[0], q_s)
-    ba_x = quality.ROI(*background[0], q_x)
+    ba_s = quality.ROI(*roi['background'][0], abs(s)**2)
+    ba_x = quality.ROI(*roi['background'][0], abs(x)**2)
 
-    # vmax,vmin = 255,0
     fig = plt.figure(figsize=(16, 9))
-
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin)
-
+    
     text = r'${R_{1}}$'
     ax.annotate(text, xy=(190, 145), xycoords='data',
                 xytext=(170, 125), textcoords='data', fontsize=30,
