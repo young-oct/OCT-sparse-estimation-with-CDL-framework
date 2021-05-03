@@ -61,8 +61,8 @@ def SNR(roi_h,roi_b):
     background region
 
     '''
-    var_h = np.var(roi_h)
-    var_b = np.var(roi_b)
+    var_h = np.var(np.sqrt(roi_h))
+    var_b = np.var(np.sqrt(roi_b))
 
     with np.errstate(divide='ignore'):
 
@@ -98,8 +98,8 @@ def CNR(roi_h,roi_a):
     h_mean = np.mean(roi_h)
     a_mean = np.mean(roi_a)
 
-    h_var = np.var(roi_h)
-    a_var = np.var(roi_a)
+    h_var = np.var(np.sqrt(roi_h))
+    a_var = np.var(np.sqrt(roi_a))
     with np.errstate(divide='ignore'):
 
         cnr = (h_mean - a_mean) / np.sqrt(h_var + a_var)
