@@ -192,7 +192,30 @@ if __name__ == '__main__':
     for i in range(len(roi['homogeneous'])):
         for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
             ax.add_patch(j)
+            
+            
 
+    print('*'*25)    
+    print('Original image')
+    print('-'*25)
+    print('SNR between homogeneous and background ROIs = %0.2f dB' % quality.SNR(ho_s_1,ba_s))
+    print('Contrast between homogeneous and artifact ROIs = %0.2f dB' % quality.Contrast(ho_s_1,ar_s))
+    print('Contrast between homogeneous and background ROIs = %0.2f dB' % quality.Contrast(ho_s_1,ba_s))
+    print('CNR between homogeneous and artifact ROIs = %0.2f dB' % quality.CNR(ho_s_1, ar_s))
+    print('CNR between homogeneous and background ROIs = %0.2f dB' % quality.CNR(ho_s_1, ba_s))
+    print('Contrast between homogeneous 1 and homogeneous 2 ROIs = %0.2f dB' % quality.MIR(ho_s_1, ho_s_2))
+    print('*'*25)
+    print('Deconvolved image')
+    print('-'*25)
+    print('SNR between homogeneous and background ROIs = %0.2f dB' % quality.SNR(ho_x_1,ba_x))
+    print('Contrast between homogeneous and artifact ROIs = %0.2f dB' % quality.Contrast(ho_x_1,ar_x))
+    print('Contrast between homogeneous and background ROIs = %0.2f dB' % quality.Contrast(ho_x_1,ba_x))
+    print('CNR between homogeneous and artifact ROIs = %0.2f dB' % quality.CNR(ho_x_1, ar_x))
+    print('CNR between homogeneous and background ROIs = %0.2f dB' % quality.CNR(ho_x_1, ba_x))
+    print('Contrast between homogeneous 1 and homogeneous 2 ROIs = %0.2f dB' % quality.MIR(ho_x_1, ho_x_2))
+
+
+    
     textstr = '\n'.join((
         r'${SNR_{H/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_s_1,ba_s)),
@@ -252,6 +275,7 @@ if __name__ == '__main__':
     plt.tight_layout()
     plt.show()
 
+    plt.figure()
     M = getWeight(0.05,speckle_weight=0.1,Paddging=True)
     im = plt.imshow(M.squeeze())
     plt.colorbar(im)
