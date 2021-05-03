@@ -20,6 +20,8 @@ import matplotlib.gridspec as gridspec
 from scipy.signal import find_peaks
 from skimage import filters
 from scipy import ndimage, misc
+from tabulate import tabulate
+
 
 from skimage import feature
 from pytictoc import TicToc
@@ -195,24 +197,7 @@ if __name__ == '__main__':
             
             
 
-    print('*'*25)    
-    print('Original image')
-    print('-'*25)
-    print('SNR between homogeneous and background ROIs = %0.2f dB' % quality.SNR(ho_s_1,ba_s))
-    print('Contrast between homogeneous and artifact ROIs = %0.2f dB' % quality.Contrast(ho_s_1,ar_s))
-    print('Contrast between homogeneous and background ROIs = %0.2f dB' % quality.Contrast(ho_s_1,ba_s))
-    print('CNR between homogeneous and artifact ROIs = %0.2f dB' % quality.CNR(ho_s_1, ar_s))
-    print('CNR between homogeneous and background ROIs = %0.2f dB' % quality.CNR(ho_s_1, ba_s))
-    print('Contrast between homogeneous 1 and homogeneous 2 ROIs = %0.2f dB' % quality.MIR(ho_s_1, ho_s_2))
-    print('*'*25)
-    print('Deconvolved image')
-    print('-'*25)
-    print('SNR between homogeneous and background ROIs = %0.2f dB' % quality.SNR(ho_x_1,ba_x))
-    print('Contrast between homogeneous and artifact ROIs = %0.2f dB' % quality.Contrast(ho_x_1,ar_x))
-    print('Contrast between homogeneous and background ROIs = %0.2f dB' % quality.Contrast(ho_x_1,ba_x))
-    print('CNR between homogeneous and artifact ROIs = %0.2f dB' % quality.CNR(ho_x_1, ar_x))
-    print('CNR between homogeneous and background ROIs = %0.2f dB' % quality.CNR(ho_x_1, ba_x))
-    print('Contrast between homogeneous 1 and homogeneous 2 ROIs = %0.2f dB' % quality.MIR(ho_x_1, ho_x_2))
+
 
 
     
@@ -224,7 +209,7 @@ if __name__ == '__main__':
         r'${CNR_{H/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_s_1,ar_s)),
         r'${MIR_{{R_1}/{R_2}}}$''\n'
-        r'%.2f' % (quality.MIR(ho_s_1, ho_s_2)),
+        r'%.2f' % (quality.Contrast(ho_s_1, ho_s_2)),
     ))
     ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
@@ -268,15 +253,28 @@ if __name__ == '__main__':
         r'${CNR_{H/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_x_1,ar_x)),
         r'${MIR_{{R_1}/{R_2}}}$''\n'
-        r'%.2f' % (quality.MIR(ho_x_1, ho_x_2)),
+        r'%.2f' % (quality.Contrast(ho_x_1, ho_x_2)),
     ))
     ax.text(0.8, 0.325, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
     plt.tight_layout()
     plt.show()
 
-    plt.figure()
-    M = getWeight(0.05,speckle_weight=0.1,Paddging=True)
-    im = plt.imshow(M.squeeze())
-    plt.colorbar(im)
-    plt.show()
+
+    # plt.figure()
+    # M = getWeight(0.05,speckle_weight=0.1,Paddging=True)
+    # im = plt.imshow(M.squeeze())
+    # plt.colorbar(im)
+    # plt.show()
+
+    # table formant original then sparse
+    table = [['SNR between homogeneous and background ROIs', quality.SNR(ho_s_1,ba_s), quality.SNR(ho_x_1,ba_x)],
+             ['Contrast between homogeneous and artifact ROIs', quality.Contrast(ho_s_1,ar_s),quality.Contrast(ho_x_1,ar_x)],
+             ['Contrast between homogeneous and background ROIs', quality.Contrast(ho_s_1,ba_s), quality.Contrast(ho_x_1,ba_x)],
+             ['CNR between homogeneous and artifact ROIs',  quality.CNR(ho_s_1, ar_s), quality.CNR(ho_x_1, ar_x)],
+             ['CNR between homogeneous and background ROIs', quality.CNR(ho_s_1, ba_s), quality.CNR(ho_x_1, ba_x)],
+             ['Contrast between homogeneous 1 and homogeneous 2 ROIs', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)]]
+
+
+    print(tabulate(table, headers=['IQA', 'Original image', 'Deconvolved image'],
+                   tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
