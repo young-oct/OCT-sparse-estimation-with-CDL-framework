@@ -119,12 +119,26 @@ def Contrast(region_h, region_b):
 
 def gCNR(region_h, region_b, N):
 
-    h = stats.relfreq(np.ravel(region_h), numbins=N)
-    h_hist = h.frequency
-    b = stats.relfreq(np.ravel(region_b), numbins=N)
-    b_hist = b.frequency
+    region_h = np.ravel(region_h)
+    region_b = np.ravel(region_b)
 
-    min_val = np.zeros(N)
+    min_val = min(np.min(region_h), np.min(region_b))
+    max_val = max(np.max(region_h), np.max(region_b))
+
+    h_hist, edge = np.histogram(region_h, bins=N, range=(min_val, max_val), density=True)
+
+    # in histogram when density flag is set to be true, the integral is
+    # 1 instead of the cumulative PDF, to address this, bin width needs to
+    # be the same
+    h_hist = h_hist * np.diff(edge)
+    b_hist, edge = np.histogram(region_b, bins=N, range=(min_val, max_val), density=True)
+    b_hist = b_hist * np.diff(edge)
+
+    ovl = 0
+
     for i in range(N):
-        min_val[i] = min(h_hist[i], b_hist[i])
-    return 1 - min_val.sum()
+        ovl += min(h_hist[i], b_hist[i])
+
+    temp = 1 - ovl
+
+    print(temp)

@@ -205,7 +205,10 @@ if __name__ == '__main__':
         r'${C_{{R_1}/{R_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
         r'${CNR_{H/A}}$''\n'
-        r'%.1f dB' % (quality.CNR(ho_s_1,ar_s))))
+        r'%.1f dB' % (quality.CNR(ho_s_1,ar_s)),
+        r'${gCNR_{H/A}}$''\n'
+        r'%.1f ' % (quality.gCNR(ho_s_1, ar_s,N = 100))
+    ))
     ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
 
@@ -248,7 +251,10 @@ if __name__ == '__main__':
         r'${C_{{R_1}/{R_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
         r'${CNR_{H/A}}$''\n'
-        r'%.1f dB' % (quality.CNR(ho_x_1,ar_x))))
+        r'%.1f dB' % (quality.CNR(ho_x_1,ar_x)),
+        r'${gCNR_{H/A}}$''\n'
+        r'%.1f ' % (quality.gCNR(ho_x_1, ar_x, N = 100))
+    ))
     ax.text(0.05,  0.95, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
     plt.tight_layout()
@@ -272,6 +278,8 @@ if __name__ == '__main__':
     print(tabulate(table, headers=['IQA', 'Original image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
 
-    print('gCNR of orignal %.2f '% quality.gCNR(ho_s_1, ar_s, N = int(ho_s_1.size+ar_s.size)))
-    print('gCNR of sparse %.2f '% quality.gCNR(ho_x_1, ar_x, N = int(ho_x_1.size+ar_x.size)))
-
+    # print('gCNR of orignal %.2f '% quality.gCNR(ho_s_1, ar_s, N = int(ho_s_1.size+ar_s.size)))
+    # print('gCNR of sparse %.2f '% quality.gCNR(ho_x_1, ar_x, N = int(ho_x_1.size+ar_x.size)))
+    #
+    #
+    # N = 100
