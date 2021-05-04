@@ -198,18 +198,18 @@ if __name__ == '__main__':
             ax.add_patch(j)
 
     textstr = '\n'.join((
-        r'${SNR_{H/B}}$''\n'
+        r'${SNR_{{R_1}/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_s_1,ba_s)),
-        r'${C_{H/B}}$''\n'
+        r'${C_{{R_1}/B}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ar_s)),
         r'${C_{{R_1}/{R_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
-        r'${CNR_{H/A}}$''\n'
+        r'${CNR_{{R_1}/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_s_1,ar_s)),
-        r'${gCNR_{H/A}}$''\n'
+        r'${gCNR_{{R_1}/A}}$''\n'
         r'%.1f ' % (quality.gCNR(ho_s_1, ar_s,N = 100))
     ))
-    ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=20,
+    ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=23,
             verticalalignment='top', fontname='Arial', color='red')
 
     ax = fig.add_subplot(gs[1])
@@ -244,18 +244,18 @@ if __name__ == '__main__':
             ax.add_patch(j)
 
     textstr = '\n'.join((
-        r'${SNR_{H/B}}$''\n'
+        r'${SNR_{{R_1}/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_x_1,ba_x)),
-        r'${C_{H/B}}$''\n'
+        r'${C_{{R_1}/B}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ar_x)),
         r'${C_{{R_1}/{R_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
-        r'${CNR_{H/A}}$''\n'
+        r'${CNR_{{R_1}/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_x_1,ar_x)),
-        r'${gCNR_{H/A}}$''\n'
+        r'${gCNR_{{R_1}/A}}$''\n'
         r'%.1f ' % (quality.gCNR(ho_x_1, ar_x, N = 100))
     ))
-    ax.text(0.05,  0.95, textstr, transform=ax.transAxes, fontsize=20,
+    ax.text(0.05,  0.95, textstr, transform=ax.transAxes, fontsize=23,
             verticalalignment='top', fontname='Arial', color='red')
     plt.tight_layout()
     plt.show()
