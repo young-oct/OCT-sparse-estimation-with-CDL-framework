@@ -138,7 +138,7 @@ if __name__ == '__main__':
     # Generate log intensity arrays
     s_log = 10 * np.log10(abs(s)**2)
     x_log = 10 * np.log10(abs(x)**2)
-    
+
     # Define ROIs
     roi = {}
     width, height = (17, 10)
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin)
-    
+
     text = r'${R_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0],  roi['homogeneous'][0][1]+height), xycoords='data',
                 xytext=(roi['homogeneous'][0][0]-50, roi['homogeneous'][0][1]+50), textcoords='data', fontsize=30,
@@ -195,7 +195,7 @@ if __name__ == '__main__':
     for i in range(len(roi['homogeneous'])):
         for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
             ax.add_patch(j)
-    
+
     textstr = '\n'.join((
         r'${SNR_{H/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_s_1,ba_s)),
@@ -270,3 +270,7 @@ if __name__ == '__main__':
 
     print(tabulate(table, headers=['IQA', 'Original image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
+
+
+    print('gCNR of orignal %.2f '% quality.gCNR(ho_s_1, ar_s, N = 50) )
+    print('gCNR of sparse %.2f '% quality.gCNR(ho_x_1, ar_x, N = 50) )

@@ -66,14 +66,12 @@ def SNR(roi_h,roi_b):
 
     mean_h = np.mean(roi_h)
     std_b = np.std(roi_b)
-    
+
     with np.errstate(divide='ignore'):
 
         snr = 10*np.log10(mean_h/ std_b)
 
     return snr
-
-
 
 def CNR(roi_h,roi_a):
 
@@ -100,7 +98,7 @@ def CNR(roi_h,roi_a):
     h_mean = np.mean(roi_h)
     a_mean = np.mean(roi_a)
 
-    a_std = np.var(roi_a)
+    a_std = np.std(roi_a)
 
     with np.errstate(divide='ignore'):
 
@@ -116,5 +114,15 @@ def Contrast(region_h, region_b):
     with np.errstate(divide='ignore'):
         contrast = h_mean / b_mean
 
-        return 10*np.log10(contrast)
+    return 10*np.log10(contrast)
+    # return contrast
 
+
+def gCNR(region_h, region_b, N):
+    h_hist, _ = np.histogram(np.ravel(region_h), bins=N, density=True)
+    b_hist, _ = np.histogram(np.ravel(region_b), bins=N, density=True)
+
+    min_val = np.zeros(N)
+    for i in range(N):
+        min_val[i] = min(h_hist[i], b_hist[i])
+    return 1 - np.sum(min_val)
