@@ -125,20 +125,25 @@ def gCNR(region_h, region_b, N):
     min_val = min(np.min(region_h), np.min(region_b))
     max_val = max(np.max(region_h), np.max(region_b))
 
-    h_hist, edge = np.histogram(region_h, bins=N, range=(min_val, max_val), density=True)
-
     # in histogram when density flag is set to be true, the integral is
     # 1 instead of the cumulative PDF, to address this, bin width needs to
     # be the same
+
+    h_hist, edge = np.histogram(region_h, bins=N, range=(min_val, max_val), density=True)
+    # h_hist = h_hist * (edge[1]-edge[0])
     h_hist = h_hist * np.diff(edge)
+
+
     b_hist, edge = np.histogram(region_b, bins=N, range=(min_val, max_val), density=True)
+    # b_hist = b_hist * (edge[1]-edge[0])
     b_hist = b_hist * np.diff(edge)
 
     ovl = 0
 
-    for i in range(N):
+    for i in range(N-1):
+
         ovl += min(h_hist[i], b_hist[i])
 
-    temp = 1 - ovl
+    return 1 - ovl
 
-    print(temp)
+
