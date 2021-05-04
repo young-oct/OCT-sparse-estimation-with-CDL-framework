@@ -6,7 +6,7 @@
 
 import numpy as np
 from skimage.filters import gaussian
-
+from scipy import stats
 
 def gaussian_blur(noisy, sigma=0.5):
     out = gaussian(noisy, sigma=sigma, output=None, mode='nearest', cval=0,
@@ -117,12 +117,14 @@ def Contrast(region_h, region_b):
     return 10*np.log10(contrast)
     # return contrast
 
-
 def gCNR(region_h, region_b, N):
-    h_hist, _ = np.histogram(np.ravel(region_h), bins=N, density=True)
-    b_hist, _ = np.histogram(np.ravel(region_b), bins=N, density=True)
+
+    h = stats.relfreq(np.ravel(region_h), numbins=N)
+    h_hist = h.frequency
+    b = stats.relfreq(np.ravel(region_b), numbins=N)
+    b_hist = b.frequency
 
     min_val = np.zeros(N)
     for i in range(N):
         min_val[i] = min(h_hist[i], b_hist[i])
-    return 1 - np.sum(min_val)
+    return 1 - min_val.sum()

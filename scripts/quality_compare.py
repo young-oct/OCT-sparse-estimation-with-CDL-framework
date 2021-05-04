@@ -32,9 +32,9 @@ from scipy import signal
 eps = 1e-14
 
 def getWeight(s, lmbda, speckle_weight, Paddging = True, opt_par={}):
-    
+
     l2f, snorm = processing.to_l2_normed(s)
-    
+
     b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
     # Calculate the sparse vector and an an epsilon to keep the log finite
     xnorm = b.solve().squeeze() + eps
@@ -87,7 +87,7 @@ def make_sparse_representation(s, lmbda, speckle_weight):
     ''' s -- 2D array of complex A-lines with dims (width, depth)
     '''
     # l2 norm data and save the scaling factor
-      
+
     l2f, snorm = processing.to_l2_normed(s)
 
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
@@ -112,7 +112,7 @@ def make_sparse_representation(s, lmbda, speckle_weight):
 
 if __name__ == '__main__':
 
-    
+
     #Image processing and display paramaters
     speckle_weight = 0.1
     lmbda = 0.05
@@ -142,10 +142,10 @@ if __name__ == '__main__':
     # Define ROIs
     roi = {}
     width, height = (17, 10)
-    roi['artifact'] = [[185, 135, width*2, height*2]]
+    roi['artifact'] = [[210, 135, width*2, height*2]]
     roi['background'] = [[270, 20, width*8, height*8]]
-    roi['homogeneous'] = [[190, 165, int(width*1.5), int(height*1.5)],
-                   [390, 215, width, height]]
+    roi['homogeneous'] = [[210, 165, int(width*1.5), int(height*1.5)],
+                   [390, 225, width, height]]
 
     s_intensity = abs(s)**2
     x_intensity = abs(x)**2
@@ -157,6 +157,7 @@ if __name__ == '__main__':
     ho_x_2 = quality.ROI(*roi['homogeneous'][1], x_intensity)
 
     ar_s = quality.ROI(*roi['artifact'][0], s_intensity)
+
     ar_x = quality.ROI(*roi['artifact'][0], x_intensity)
 
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
@@ -271,6 +272,6 @@ if __name__ == '__main__':
     print(tabulate(table, headers=['IQA', 'Original image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
 
+    print('gCNR of orignal %.2f '% quality.gCNR(ho_s_1, ar_s, N = int(ho_s_1.size+ar_s.size)))
+    print('gCNR of sparse %.2f '% quality.gCNR(ho_x_1, ar_x, N = int(ho_x_1.size+ar_x.size)))
 
-    print('gCNR of orignal %.2f '% quality.gCNR(ho_s_1, ar_s, N = 50) )
-    print('gCNR of sparse %.2f '% quality.gCNR(ho_x_1, ar_x, N = 50) )
