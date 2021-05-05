@@ -117,7 +117,10 @@ def Contrast(region_h, region_b):
     return 10*np.log10(contrast)
     # return contrast
 
+
 def gCNR(region_h, region_b, N):
+    assert np.size(region_h) == np.size(region_b), \
+        'size of image patch'
 
     region_h = np.ravel(region_h)
     region_b = np.ravel(region_b)
@@ -130,20 +133,18 @@ def gCNR(region_h, region_b, N):
     # be the same
 
     h_hist, edge = np.histogram(region_h, bins=N, range=(min_val, max_val), density=True)
-    # h_hist = h_hist * (edge[1]-edge[0])
     h_hist = h_hist * np.diff(edge)
 
-
     b_hist, edge = np.histogram(region_b, bins=N, range=(min_val, max_val), density=True)
-    # b_hist = b_hist * (edge[1]-edge[0])
     b_hist = b_hist * np.diff(edge)
 
     ovl = 0
 
-    for i in range(N-1):
+    for i in range(N - 1):
 
         ovl += min(h_hist[i], b_hist[i])
 
     return 1 - ovl
+
 
 

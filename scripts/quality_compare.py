@@ -141,8 +141,8 @@ if __name__ == '__main__':
 
     # Define ROIs
     roi = {}
-    width, height = (17, 10)
-    roi['artifact'] = [[210, 135, width*2, height*2]]
+    width, height = (20, 10)
+    roi['artifact'] = [[210, 140, int(width*1.5), int(height*1.5)]]
     roi['background'] = [[270, 20, width*8, height*8]]
     roi['homogeneous'] = [[210, 165, int(width*1.5), int(height*1.5)],
                    [390, 225, width, height]]
@@ -207,7 +207,7 @@ if __name__ == '__main__':
         r'${CNR_{{R_1}/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_s_1,ar_s)),
         r'${gCNR_{{R_1}/A}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_s_1, ar_s,N = max(np.size(ho_s_1),np.size(ar_s))))
+        r'%.2f ' % (quality.gCNR(ho_s_1, ar_s,N = 300))
     ))
     ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=23,
             verticalalignment='top', fontname='Arial', color='red')
@@ -253,7 +253,7 @@ if __name__ == '__main__':
         r'${CNR_{{R_1}/A}}$''\n'
         r'%.1f dB' % (quality.CNR(ho_x_1,ar_x)),
         r'${gCNR_{{R_1}/A}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_x_1, ar_x,N = max(np.size(ho_x_1),np.size(ar_x))))
+        r'%.2f ' % (quality.gCNR(ho_x_1, ar_x,N = 300))
     ))
     ax.text(0.05,  0.95, textstr, transform=ax.transAxes, fontsize=23,
             verticalalignment='top', fontname='Arial', color='red')
@@ -278,3 +278,17 @@ if __name__ == '__main__':
     print(tabulate(table, headers=['IQA', 'Original image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
 
+
+    def count_pixel(a,b):
+        c = 0
+        mean = np.mean(b)
+        for i in range(a.shape[0]):
+            for j in range(a.shape[1]):
+                if mean < a[i,j]:
+                    c += 1
+                else:
+                    continue
+        return c
+
+    count_pixel(ho_s_1,ar_s)/ ho_s_1.size
+    count_pixel(ho_x_1,ar_x)/ ho_x_1.size
