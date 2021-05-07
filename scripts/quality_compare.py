@@ -137,18 +137,23 @@ if __name__ == '__main__':
 
     # Generate log intensity arrays
     s_log = 10 * np.log10(abs(s)**2)
+    s_log = filters.median(s_log,disk(1))
     x_log = 10 * np.log10(abs(x)**2)
+    x_log = filters.median(x_log,disk(1))
 
+    bin_n = 200
     # Define ROIs
     roi = {}
     width, height = (20, 10)
-    roi['artifact'] = [[210, 140, int(width*1.5), int(height*1.5)]]
-    roi['background'] = [[270, 20, width*8, height*8]]
-    roi['homogeneous'] = [[210, 165, int(width*1.5), int(height*1.5)],
-                   [390, 225, width, height]]
+    roi['artifact'] = [[212, 142, int(width*1.2), int(height*1.2)]]
+    roi['background'] = [[390, 247, int(width*1.2), int(height*1.2)]]
+    roi['homogeneous'] = [[212, 167, int(width*1.2), int(height*1.2)],
+                   [390, 225, int(width*1.2), int(height*1.2)]]
 
     s_intensity = abs(s)**2
+    s_intensity = filters.median(s_intensity,disk(1))
     x_intensity = abs(x)**2
+    x_intensity = filters.median(x_intensity,disk(1))
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
@@ -157,25 +162,25 @@ if __name__ == '__main__':
     ho_x_2 = quality.ROI(*roi['homogeneous'][1], x_intensity)
 
     ar_s = quality.ROI(*roi['artifact'][0], s_intensity)
-
     ar_x = quality.ROI(*roi['artifact'][0], x_intensity)
 
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
+
 
     fig = plt.figure(figsize=(16, 9))
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin)
 
-    text = r'${R_{1}}$'
+    text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0],  roi['homogeneous'][0][1]+height), xycoords='data',
                 xytext=(roi['homogeneous'][0][0]-50, roi['homogeneous'][0][1]+50), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
-    text = r'${R_{2}}$'
+    text = r'${H_{2}}$'
     ax.annotate(text, xy=(roi['homogeneous'][1][0],  roi['homogeneous'][1][1]+height), xycoords='data',
                 xytext=(roi['homogeneous'][1][0]-50, roi['homogeneous'][1][1]+50), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
@@ -198,18 +203,19 @@ if __name__ == '__main__':
             ax.add_patch(j)
 
     textstr = '\n'.join((
-        r'${SNR_{{R_1}/B}}$''\n'
-        r'%.1f dB' % (quality.SNR(ho_s_1,ba_s)),
-        r'${C_{{R_1}/B}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_s_1, ar_s)),
-        r'${C_{{R_1}/{R_2}}}$''\n'
+        r'${SNR_{{H_2}/B}}$''\n'
+        r'%.1f dB' % (quality.SNR(ho_s_2,ba_s)),
+        r'${C_{{H_2}/B}}$''\n'
+        r'%.1f dB' % (quality.Contrast(ho_s_2, ba_s)),
+        r'${C_{{H_1}/{H1_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
-        r'${CNR_{{R_1}/A}}$''\n'
-        r'%.1f dB' % (quality.CNR(ho_s_1,ar_s)),
-        r'${gCNR_{{R_1}/A}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_s_1, ar_s,N = 300))
-    ))
-    ax.text(0.05, 0.95, textstr, transform=ax.transAxes, fontsize=23,
+        r'${gCNR_{{H_1}/{A}}}$''\n'
+        r'%.2f ' % (quality.gCNR(ho_s_1,ar_s, N = bin_n)),
+        r'${gCNR_{{H_2}/B}}$''\n'
+        r'%.2f ' % (quality.gCNR(ho_s_2, ba_s,N = bin_n)),
+        r'${gCNR_{{H_1}/{H_2}}}$''\n'
+        r'%.2f ' % (quality.gCNR(ho_s_1, ho_s_2, N=bin_n))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
 
     ax = fig.add_subplot(gs[1])
@@ -244,51 +250,31 @@ if __name__ == '__main__':
             ax.add_patch(j)
 
     textstr = '\n'.join((
-        r'${SNR_{{R_1}/B}}$''\n'
-        r'%.1f dB' % (quality.SNR(ho_x_1,ba_x)),
-        r'${C_{{R_1}/B}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_x_1, ar_x)),
-        r'${C_{{R_1}/{R_2}}}$''\n'
+        r'${SNR_{{H_2}/B}}$''\n'
+        r'%.1f dB' % (quality.SNR(ho_s_2,ba_x)),
+        r'${C_{{H_2}/B}}$''\n'
+        r'%.1f dB' % (quality.Contrast(ho_x_2, ba_x)),
+        r'${C_{{H_1}/{H1_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
-        r'${CNR_{{R_1}/A}}$''\n'
-        r'%.1f dB' % (quality.CNR(ho_x_1,ar_x)),
-        r'${gCNR_{{R_1}/A}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_x_1, ar_x,N = 300))
-    ))
-    ax.text(0.05,  0.95, textstr, transform=ax.transAxes, fontsize=23,
+        r'${gCNR_{{H_1}/{A}}}$''\n'
+        r'%.2f ' % (quality.gCNR(ho_x_1,ar_x, N = bin_n)),
+        r'${gCNR_{{H_2}/B}}$''\n'
+        r'%.2f ' % (quality.gCNR(ho_x_2, ba_x,N = bin_n)),
+        r'${gCNR_{{H_1}/{H_2}}}$''\n'
+        r'%.2f ' % (quality.gCNR(ho_x_1, ho_x_2, N=bin_n))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='red')
     plt.tight_layout()
     plt.show()
 
-
-    # plt.figure()
-    # M = getWeight(0.05,speckle_weight=0.1,Paddging=True)
-    # im = plt.imshow(M.squeeze())
-    # plt.colorbar(im)
-    # plt.show()
-
     # table formant original then sparse
-    table = [['SNR between homogeneous and background ROIs', quality.SNR(ho_s_1,ba_s), quality.SNR(ho_x_1,ba_x)],
-             ['Contrast between homogeneous and artifact ROIs', quality.Contrast(ho_s_1,ar_s),quality.Contrast(ho_x_1,ar_x)],
-             ['Contrast between homogeneous and background ROIs', quality.Contrast(ho_s_1,ba_s), quality.Contrast(ho_x_1,ba_x)],
-             ['CNR between homogeneous and artifact ROIs',  quality.CNR(ho_s_1, ar_s), quality.CNR(ho_x_1, ar_x)],
-             ['CNR between homogeneous and background ROIs', quality.CNR(ho_s_1, ba_s), quality.CNR(ho_x_1, ba_x)],
-             ['Contrast between homogeneous 1 and homogeneous 2 ROIs', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)]]
+    table = [['SNR','H_2/B', quality.SNR(ho_s_2,ba_s), quality.SNR(ho_x_2,ba_x)],
+             ['Contrast','H_2/B', quality.Contrast(ho_s_1,ar_s),quality.Contrast(ho_x_1,ar_x)],
+             ['Contrast','H_1/H_2', quality.Contrast(ho_s_1,ba_s), quality.Contrast(ho_x_1,ba_x)],
+             ['gCNR ', 'H_1/A', quality.gCNR(ho_s_1,ar_s, N = bin_n),quality.gCNR(ho_x_1,ar_x, N = bin_n)],
+             ['gCNR','H_2/B',  quality.gCNR(ho_s_2,ba_s, N = bin_n),  quality.gCNR(ho_x_2,ba_x, N = bin_n)],
+             ['gCNR','H_1/H_2',  quality.gCNR(ho_s_1,ho_s_2, N = bin_n),  quality.gCNR(ho_x_1,ho_x_2, N = bin_n)]]
 
-    print(tabulate(table, headers=['IQA', 'Original image', 'Deconvolved image'],
+    print(tabulate(table, headers=['IQA','Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
 
-
-    def count_pixel(a,b):
-        c = 0
-        mean = np.mean(b)
-        for i in range(a.shape[0]):
-            for j in range(a.shape[1]):
-                if mean < a[i,j]:
-                    c += 1
-                else:
-                    continue
-        return c
-
-    count_pixel(ho_s_1,ar_s)/ ho_s_1.size
-    count_pixel(ho_x_1,ar_x)/ ho_x_1.size

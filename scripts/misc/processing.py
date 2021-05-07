@@ -7,8 +7,6 @@ import numpy as np
 from sporco import prox
 import pickle
 from pathlib import Path
-
-
 def imag2uint(data, vmin, vmax):
     data=np.clip(data,vmin,vmax)
     pixel_vals = np.uint8(np.around(255 * (data - vmin) / (vmax - vmin), 0))

@@ -117,7 +117,6 @@ def Contrast(region_h, region_b):
     return 10*np.log10(contrast)
     # return contrast
 
-
 def gCNR(region_h, region_b, N):
     assert np.size(region_h) == np.size(region_b), \
         'size of image patch'

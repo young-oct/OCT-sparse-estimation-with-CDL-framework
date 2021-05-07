@@ -128,3 +128,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 Rob/rob_finger_analyzer_working.py
+*.xml
+*.iml
