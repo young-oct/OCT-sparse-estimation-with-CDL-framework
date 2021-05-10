@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
+from skimage import filters
 from skimage.morphology import disk
 from skimage.morphology import dilation, erosion
 from misc import processing, quality, annotation
@@ -23,32 +24,8 @@ import matplotlib.gridspec as gridspec
 # Module level constants
 eps = 1e-14
 
-def getWeight(lmbda, speckle_weight):
-    b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
-    # Calculate the sparse vector and an an epsilon to keep the log finite
-    xnorm = b.solve().squeeze() + eps
-    # Caclulate sparse reconstruction
-    xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 
-    # Convert back from normalized
-
-    x = processing.from_l2_normed(xnorm, l2f)
-    x_log = 20 * np.log10(abs(x))
-    x_log = processing.imag2uint(x_log, rvmin, vmax)
-
-    # set thresdhold
-    x_log = np.where(x_log <= rvmin, 0, x_log)
-
-    W = dilation(x_log, disk(5))
-    W = erosion(W, disk(5))
-
-    W = np.where(W > 0, speckle_weight, 1)
-    W = np.reshape(W, (W.shape[0], 1, -1, 1))
-
-    return W
-
-
-def plot_images(plot_titles, image,line,
+def plot_images(plot_titles, image,
                 vmin, vmax,suptitle=None):
     assert len(plot_titles) == len(image), 'Length of plot_titles does not match length of plot_data'
 
@@ -64,7 +41,7 @@ def plot_images(plot_titles, image,line,
         ax.set_title(title)
         ax.set_axis_off()
         ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
-        ax.axvline(x=index,linewidth=1, color='orange', linestyle='--')
+        # ax.axvline(x=index,linewidth=1, color='orange', linestyle='--')
 
         ax.annotate('', xy=(200, 120), xycoords='data',
                     xytext=(180, 100), textcoords='data', fontsize=30,
@@ -93,28 +70,72 @@ def plot_images(plot_titles, image,line,
         for i in range(len(background)):
             for j in annotation.get_background(*background[i]):
                 ax.add_patch(j)
+
+        im = np.where(im <= rvmin,0,im)
         ba = quality.ROI(*background[0], im)
         textstr = r'${SF_{B}}$''\n'r'%.1f' % (quality.SF(ba))
 
-        ax.text(0.8, 0.18, textstr, transform=ax.transAxes, fontsize=20,
+        ax.text(0.8, 0.2, textstr, transform=ax.transAxes, fontsize=20,
                 verticalalignment='top', fontname='Arial', color='red')
 
-    for n,(ax,l) in enumerate(zip(axes[1,:],line)):
-        ax.plot(l)
-        ax.set_ylim(0, 0.52)
-        ax.set_xlabel('axial depth [pixels]', fontname='Arial')
-        if n != 0:
-            ax.set_yticks([])
-        else:
-            ax.set_ylabel('normalized intensity [a.u.]', fontname='Arial')
+    for n, (ax, im) in enumerate(zip(axes[1,:], image)):
+        ax.set_title('median')
+        ax.set_axis_off()
+        im =  filters.median(im, disk(1))
+        ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
+        # ax.axvline(x=index,linewidth=1, color='orange', linestyle='--')
+
+        ax.annotate('', xy=(200, 120), xycoords='data',
+                    xytext=(180, 100), textcoords='data', fontsize=30,
+                    color='white', fontname='Arial',
+                    arrowprops=dict(facecolor='white', shrink=0.025),
+                    horizontalalignment='right', verticalalignment='top')
+
+        ax.annotate('', xy=(350, 295), xycoords='data',
+                    xytext=(380, 275), textcoords='data', fontsize=30,
+                    color='white', fontname='Arial',
+                    arrowprops=dict(facecolor='white', shrink=0.025),
+                    horizontalalignment='left', verticalalignment='top')
+
+        ax.annotate('', xy=(140, 270), xycoords='data',
+                    xytext=(170, 290), textcoords='data', fontsize=30,
+                    color='red', fontname='Arial',
+                    arrowprops=dict(facecolor='red', shrink=0.025),
+                    horizontalalignment='right', verticalalignment='top')
+
+        ax.annotate('', xy=(50, 90), xycoords='data',
+                    xytext=(70, 110), textcoords='data', fontsize=30,
+                    color='red', fontname='Arial',
+                    arrowprops=dict(facecolor='red', shrink=0.025),
+                    horizontalalignment='right', verticalalignment='top')
+
+        for i in range(len(background)):
+            for j in annotation.get_background(*background[i]):
+                ax.add_patch(j)
+
+        im = np.where(im <= rvmin,0,im)
+        ba = quality.ROI(*background[0], im)
+        textstr = r'${SF_{B}}$''\n'r'%.1f' % (quality.SF(ba))
+
+        ax.text(0.8, 0.2, textstr, transform=ax.transAxes, fontsize=20,
+                verticalalignment='top', fontname='Arial', color='red')
+
+    # for n,(ax,l) in enumerate(zip(axes[1,:],line)):
+    #     ax.plot(l)
+    #     ax.set_ylim(0, 0.52)
+    #     ax.set_xlabel('axial depth [pixels]', fontname='Arial')
+    #     if n != 0:
+    #         ax.set_yticks([])
+    #     else:
+    #         ax.set_ylabel('normalized magnitude [a.u.]', fontname='Arial')
     plt.tight_layout()
     plt.show()
 
-def get_line(index,data):
-    aline = []
-    for i in range(len(data)):
-        aline.append(abs(data[i][:,index]))
-    return aline
+# def get_line(index,data):
+#     aline = []
+#     for i in range(len(data)):
+#         aline.append(abs(data[i][:,index]))
+#     return aline
 
 if __name__ == '__main__':
 
@@ -136,7 +157,6 @@ if __name__ == '__main__':
     vmax = 115  # dB
 
     s_log = 20 * np.log10(abs(s))
-    s_log = processing.imag2uint(s_log, rvmin, vmax)
 
     # l2 norm data and save the scaling factor
     l2f, snorm = processing.to_l2_normed(s)
@@ -160,40 +180,19 @@ if __name__ == '__main__':
 
     x0_log = 20 * np.log10(abs(x0))
     r0_log = 20 * np.log10(abs(r0))
-    s_log = 20 * np.log10(abs(s))
-
-    # normalize intensity
-    x0_log = processing.imag2uint(x0_log, rvmin, vmax)
-    r0_log = processing.imag2uint(r0_log, rvmin, vmax)
-    s_log = processing.imag2uint(s_log, rvmin, vmax)
 
     # update opt to include W
-    W = np.roll(getWeight(0.05,speckle_weight), np.argmax(D), axis=0)
-    opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
-                                      'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
-                                      'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
-
-
-    b1 = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
-    x1norm = b1.solve().squeeze() + eps
-
-    # calculate sparsity
-    x1norm = np.roll(x1norm, np.argmax(D), axis=0)
-
-    ## Convert back from normalized
-    x1 = processing.from_l2_normed(x1norm, l2f)
-
+    # index = 290
+    x1 = processing.make_sparse_representation(s, D, lmbda, speckle_weight)
     x1_log = 20 * np.log10(abs(x1))
-    x1_log = processing.imag2uint(x1_log, rvmin, vmax)
 
-    vmax,vmin = 255,0
+    # data = [snorm,r0norm,x0norm]
+    # aline = get_line(index,data)
+    # median_line = filters.median(line[:,np.newaxis], disk(1)).squeeze()
+    # aline.append(line)
+    # aline.append(median_line)
 
-    data = [snorm,r0norm,x0norm,x1norm]
-    index = 290
-    aline = get_line(index,data)
+    title = ['reference','sparse estimation \n 𝜆 = %.2f'% (lmbda),'𝜆 = %.2f'% (lmbda),
+             '𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda,speckle_weight)]
 
-    title = ['reference','sparse estimation \n 𝜆 = %.1f'% (lmbda),'𝜆 = %.2f'% (lmbda),
-             '𝜆 = %.1f \n $\omega$ = %.1f' % (lmbda,speckle_weight)]
-
-    plot_images(title,[s_log,r0_log,x0_log,x1_log],
-                aline,vmin,vmax)
+    plot_images(title,[s_log,r0_log,x0_log,x1_log],rvmin,vmax)
