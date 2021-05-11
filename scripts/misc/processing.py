@@ -33,27 +33,42 @@ def from_l2_normed(s, l2f):
     return (s * l2f)
 
 
-def load_data(dataset_name, decimation_factor):
+def load_data(dataset_name, decimation_factor,data_only = False):
     # check if such file exists
     S_PATH = '../Data/' + dataset_name
-    D_PATH = '../Data/PSF/' + dataset_name
-    if Path(S_PATH).is_file() and Path(D_PATH).is_file():
-        # load data & dictionary
-        with open(S_PATH, 'rb') as f:
-            s = pickle.load(f).T
-            f.close()
 
-        with open(D_PATH, 'rb') as f:
-            D = pickle.load(f)
-            f.close()
+    if data_only == False:
+        D_PATH = '../Data/PSF/' + dataset_name
+        if Path(S_PATH).is_file() and Path(D_PATH).is_file():
+            # load data & dictionary
+            with open(S_PATH, 'rb') as f:
+                s = pickle.load(f).T
+                f.close()
 
-        # (2) remove background noise: minus the frame mean
-        s = s - np.mean(s, axis=1)[:, np.newaxis]
-        # (3) sample every decimation_factor line,
-        s = s[:, ::decimation_factor]
-        return (s, D)
+            with open(D_PATH, 'rb') as f:
+                D = pickle.load(f)
+                f.close()
+
+            # (2) remove background noise: minus the frame mean
+            s = s - np.mean(s, axis=1)[:, np.newaxis]
+            # (3) sample every decimation_factor line,
+            s = s[:, ::decimation_factor]
+            return (s, D)
+        else:
+            raise Exception("Dataset %s not found" % dataset_name)
     else:
-        raise Exception("Dataset %s not found" % dataset_name)
+        if Path(S_PATH).is_file():
+            # load data & dictionary
+            with open(S_PATH, 'rb') as f:
+                s = pickle.load(f).T
+                f.close()
+            # (2) remove background noise: minus the frame mean
+            s = s - np.mean(s, axis=1)[:, np.newaxis]
+            # (3) sample every decimation_factor line,
+            s = s[:, ::decimation_factor]
+            return s
+        else:
+            raise Exception("Dataset %s not found" % dataset_name)
 
 
 def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={}):

@@ -40,10 +40,10 @@ if __name__ == '__main__':
     )
 
     # s, D,path = load_data('finger', decimation_factor=20)
-    file_name = ['onion']
+    file_name = ['finger']
     for i in range(len(file_name)):
-        decimation_factor = 1
-        s, _ = processing.load_data(file_name[i], decimation_factor=decimation_factor)
+        decimation_factor = 20
+        s = processing.load_data(file_name[i], decimation_factor=decimation_factor, data_only= True)
         l2f, snorm = processing.to_l2_normed(s)
 
         K = snorm.shape[1]  # number of A-line signal
@@ -61,7 +61,7 @@ if __name__ == '__main__':
 
         #
         # uniform random sample the training set from input test, 10%
-        train_index = np.random.choice(snorm.shape[1], int(0.1 * K), replace=False)
+        train_index = np.random.choice(snorm.shape[1], int(0.25 * K), replace=False)
         s_train = snorm[:, train_index]
         #
         Maxiter = 1000
@@ -152,7 +152,7 @@ if __name__ == '__main__':
         # with open(D_PATH,'wb') as f:
         #     pickle.dump(D1,f)
         #     f.close()
-
+        #
 
 
 

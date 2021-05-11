@@ -33,15 +33,14 @@ def plot_images(plot_titles, image,
     background = [[315, 30, width*5, height*5]]
 
     nplots = len(plot_titles)
-    fig, axes = plt.subplots(2, nplots,figsize=(16,9))
+    fig, axes = plt.subplots(1, nplots,figsize=(16,9),constrained_layout=True)
 
     if suptitle is not None:
         plt.suptitle(suptitle)
-    for n, (ax, title, im) in enumerate(zip(axes[0,:], plot_titles, image)):
+    for n, (ax, title, im) in enumerate(zip(axes.flatten(), plot_titles, image)):
         ax.set_title(title)
         ax.set_axis_off()
         ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
-        # ax.axvline(x=index,linewidth=1, color='orange', linestyle='--')
 
         ax.annotate('', xy=(200, 120), xycoords='data',
                     xytext=(180, 100), textcoords='data', fontsize=30,
@@ -78,64 +77,9 @@ def plot_images(plot_titles, image,
         ax.text(0.8, 0.2, textstr, transform=ax.transAxes, fontsize=20,
                 verticalalignment='top', fontname='Arial', color='red')
 
-    for n, (ax, im) in enumerate(zip(axes[1,:], image)):
-        ax.set_title('median')
-        ax.set_axis_off()
-        im =  filters.median(im, disk(1))
-        ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
-        # ax.axvline(x=index,linewidth=1, color='orange', linestyle='--')
-
-        ax.annotate('', xy=(200, 120), xycoords='data',
-                    xytext=(180, 100), textcoords='data', fontsize=30,
-                    color='white', fontname='Arial',
-                    arrowprops=dict(facecolor='white', shrink=0.025),
-                    horizontalalignment='right', verticalalignment='top')
-
-        ax.annotate('', xy=(350, 295), xycoords='data',
-                    xytext=(380, 275), textcoords='data', fontsize=30,
-                    color='white', fontname='Arial',
-                    arrowprops=dict(facecolor='white', shrink=0.025),
-                    horizontalalignment='left', verticalalignment='top')
-
-        ax.annotate('', xy=(140, 270), xycoords='data',
-                    xytext=(170, 290), textcoords='data', fontsize=30,
-                    color='red', fontname='Arial',
-                    arrowprops=dict(facecolor='red', shrink=0.025),
-                    horizontalalignment='right', verticalalignment='top')
-
-        ax.annotate('', xy=(50, 90), xycoords='data',
-                    xytext=(70, 110), textcoords='data', fontsize=30,
-                    color='red', fontname='Arial',
-                    arrowprops=dict(facecolor='red', shrink=0.025),
-                    horizontalalignment='right', verticalalignment='top')
-
-        for i in range(len(background)):
-            for j in annotation.get_background(*background[i]):
-                ax.add_patch(j)
-
-        im = np.where(im <= rvmin,0,im)
-        ba = quality.ROI(*background[0], im)
-        textstr = r'${SF_{B}}$''\n'r'%.1f' % (quality.SF(ba))
-
-        ax.text(0.8, 0.2, textstr, transform=ax.transAxes, fontsize=20,
-                verticalalignment='top', fontname='Arial', color='red')
-
-    # for n,(ax,l) in enumerate(zip(axes[1,:],line)):
-    #     ax.plot(l)
-    #     ax.set_ylim(0, 0.52)
-    #     ax.set_xlabel('axial depth [pixels]', fontname='Arial')
-    #     if n != 0:
-    #         ax.set_yticks([])
-    #     else:
-    #         ax.set_ylabel('normalized magnitude [a.u.]', fontname='Arial')
-    plt.tight_layout()
     plt.show()
 
-# def get_line(index,data):
-#     aline = []
-#     for i in range(len(data)):
-#         aline.append(abs(data[i][:,index]))
-#     return aline
+
 
 if __name__ == '__main__':
 
@@ -186,13 +130,12 @@ if __name__ == '__main__':
     x1 = processing.make_sparse_representation(s, D, lmbda, speckle_weight)
     x1_log = 20 * np.log10(abs(x1))
 
-    # data = [snorm,r0norm,x0norm]
-    # aline = get_line(index,data)
-    # median_line = filters.median(line[:,np.newaxis], disk(1)).squeeze()
-    # aline.append(line)
-    # aline.append(median_line)
+    x1_median = filters.median(x1_log, disk(1)).squeeze()
+
+
 
     title = ['reference','sparse estimation \n 𝜆 = %.2f'% (lmbda),'𝜆 = %.2f'% (lmbda),
-             '𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda,speckle_weight)]
+             '𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda,speckle_weight),
+             '𝜆 = %.2f \n $\omega$ = %.1f(median)' % (lmbda, speckle_weight)]
 
-    plot_images(title,[s_log,r0_log,x0_log,x1_log],rvmin,vmax)
+    plot_images(title,[s_log,r0_log,x0_log,x1_log,x1_median],rvmin,vmax)

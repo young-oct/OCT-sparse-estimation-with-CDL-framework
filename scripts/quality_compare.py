@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2021-05-07 2:54 p.m.
+# @Time    : 2021-05-10 10:05 p.m.
 # @Author  : young wang
-# @FileName: lambda_gCNR.py
+# @FileName: quality_compare.py
 # @Software: PyCharm
+
 
 """this script generates images for the figure 5 as seen in
 the paper. Sparse reconstructions of the same OCT
@@ -31,89 +32,7 @@ roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
 # Module level constants
 eps = 1e-14
 
-def lmbda_search(s,lmbda,speckle_weight):
 
-    x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
-
-    s_intensity = abs(s)**2
-    s_intensity = filters.median(s_intensity,disk(1))
-    x_intensity = abs(x)**2
-    x_intensity = filters.median(x_intensity,disk(1))
-
-    ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
-    ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
-
-    ho_x_1 = quality.ROI(*roi['homogeneous'][0], x_intensity)
-    ho_x_2 = quality.ROI(*roi['homogeneous'][1], x_intensity)
-
-    ar_s = quality.ROI(*roi['artifact'][0], s_intensity)
-    ar_x = quality.ROI(*roi['artifact'][0], x_intensity)
-
-    ba_s = quality.ROI(*roi['background'][0], s_intensity)
-    ba_x = quality.ROI(*roi['background'][0], x_intensity)
-
-    # calcuate image quality metrics
-    #'SNR', 'H_2/B'
-    # snrh2b = quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)
-
-    #'Contrast', 'H_2/B',
-    # conh2b = quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)
-
-    #'Contrast', 'H_1/H_2',
-    # conh1h2= quality.Contrast(ho_s_1, ba_s), quality.Contrast(ho_x_1, ba_x)
-
-    #'gCNR ', 'H_1/A',
-    gcnrh1a = quality.gCNR(ho_s_1, ar_s, N=bin_n), quality.gCNR(ho_x_1, ar_x, N=bin_n)
-
-    #'gCNR', 'H_2/B',
-    gcnrh2b = quality.gCNR(ho_s_2, ba_s, N=bin_n), quality.gCNR(ho_x_2, ba_x, N=bin_n)
-
-    #'gCNR', 'H_1/H_2',
-    gcnrh12 = quality.gCNR(ho_s_1, ho_s_2, N=bin_n), quality.gCNR(ho_x_1, ho_x_2, N=bin_n)
-
-    #'gCNR', 'H_2/A',
-    gcnrh2a = quality.gCNR(ho_s_2, ar_s, N=bin_n), quality.gCNR(ho_x_2, ar_x, N=bin_n)
-
-    return (gcnrh1a,gcnrh2b,gcnrh12,gcnrh2a)
-
-def value_plot(lmbda,value):
-
-    fig,ax = plt.subplots(1,1, figsize=(16,9))
-    fig.suptitle('image quality curves with 𝜆')
-    reference = []
-
-    for i in range(4):
-        temp = value[0]
-        reference.append(temp[i][0])
-
-    gcnrh1a,gcnrh2b,gcnrh12,gcnrh2a = [],[],[],[]
-    for i in range(len(value)):
-
-        temp = value[i]
-        gcnrh1a.append(temp[0][1])
-        gcnrh2b.append(temp[1][1])
-        gcnrh12.append(temp[2][1])
-        gcnrh2a.append(temp[3][1])
-
-    ax.plot(lmbda, gcnrh1a,color='green', label = r'${gCNR_{{H_1}/{A}}}$')
-    ax.axhline(reference[0],color='green',linestyle = '--')
-
-    ax.plot(lmbda, gcnrh2b,color='red',label = r'${gCNR_{{H_2}/{B}}}$')
-    ax.axhline(reference[1],color='red',linestyle = '--')
-
-    ax.plot(lmbda, gcnrh12, color='orange',label = r'${gCNR_{{H_1}/{H_2}}}$')
-    ax.axhline(reference[2],color='orange',linestyle = '--')
-
-    ax.plot(lmbda, gcnrh2a, color='purple',label = r'${gCNR_{{H_2}/{A}}}$')
-    ax.axhline(reference[3],color='purple',linestyle = '--')
-
-    ax.set_ylabel(r'${gCNR}$')
-    ax.set_xlabel('𝜆 ')
-    ax.legend()
-    plt.tight_layout()
-    plt.show()
-
-    return lmbda[np.argmax(gcnrh2a)]
 
 if __name__ == '__main__':
 
@@ -135,15 +54,10 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.linspace(0.01,0.1,20)
-    value = []
-    for i in range(len(lmbda)):
 
-        value.append(lmbda_search(s,lmbda[i],0.05))
+    lmbda = 0.02
 
-    best = value_plot(lmbda,value)
-
-    x = processing.make_sparse_representation(s,D, best, speckle_weight)
+    x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
 
     # Generate log intensity arrays
     s_log = 20 * np.log10(abs(s))
@@ -239,7 +153,7 @@ if __name__ == '__main__':
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
-    ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (best, speckle_weight))
+    ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda, speckle_weight))
 
     ax.set_axis_off()
     for i in range(len(roi['artifact'])):
