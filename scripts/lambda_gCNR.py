@@ -276,7 +276,7 @@ if __name__ == '__main__':
 
     # table formant original then sparse
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
-             ['Contrast', 'H_2/B', quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)],
+             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
              ['gCNR ', 'H_1/A', quality.gCNR(ho_s_1, ar_s, N=bin_n), quality.gCNR(ho_x_1, ar_x, N=bin_n)],
              ['gCNR', 'H_2/B', quality.gCNR(ho_s_2, ba_s, N=bin_n), quality.gCNR(ho_x_2, ba_x, N=bin_n)],
