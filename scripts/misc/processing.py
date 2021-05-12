@@ -123,7 +123,7 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={}):
     return W
 
 
-def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=None):
+def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=None, Mask = False):
     ''' s -- 2D array of complex A-lines with dims (width, depth)
     '''
     # l2 norm data and save the scaling factor
@@ -146,12 +146,26 @@ def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=No
     # calculate sparsity
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 
-    if Line == False:
+    if Line == False and Mask == False:
         ## Convert back from normalized
         x = from_l2_normed(xnorm, l2f)
         return (x)
-    else:
+    elif Line == True and Mask == False:
         assert index != None and 0 <= index <= s.shape[1]
         x = from_l2_normed(xnorm, l2f)
         x_line = abs(xnorm[:, index])
         return x, x_line
+    elif Line == False and Mask == True:
+        x = from_l2_normed(xnorm, l2f)
+        W_mask = np.roll(W, -np.argmax(D), axis=0).squeeze()
+        return x, W_mask
+    else:
+        x = from_l2_normed(xnorm, l2f)
+        x_line = abs(xnorm[:, index])
+        W_mask = np.roll(W, -np.argmax(D), axis=0).squeeze()
+        return x,x_line, W_mask
+
+
+
+
+

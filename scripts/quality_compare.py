@@ -32,8 +32,6 @@ roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
 # Module level constants
 eps = 1e-14
 
-
-
 if __name__ == '__main__':
 
     #Image processing and display paramaters
@@ -199,3 +197,14 @@ if __name__ == '__main__':
 
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
+
+    # from PIL import Image
+    # out = processing.imag2uint(s_log,rvmin,vmax)
+    # out = Image.fromarray(out)
+    # out.save('/Users/youngwang/Desktop/original.bmp')
+    #
+    # out = processing.imag2uint(x_log,rvmin,vmax)
+    # out = Image.fromarray(out)
+    # out.save('/Users/youngwang/Desktop/sparse.bmp')
+
+

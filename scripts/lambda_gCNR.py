@@ -79,7 +79,7 @@ def lmbda_search(s,lmbda,speckle_weight):
 def value_plot(lmbda,value):
 
     fig,ax = plt.subplots(1,1, figsize=(16,9))
-    fig.suptitle('image quality curves with 𝜆')
+    fig.suptitle(r'$gCNR$ curves versus 𝜆')
     reference = []
 
     for i in range(4):
@@ -109,6 +109,8 @@ def value_plot(lmbda,value):
 
     ax.set_ylabel(r'${gCNR}$')
     ax.set_xlabel('𝜆 ')
+    ax.set_xscale('log')
+
     ax.legend()
     plt.tight_layout()
     plt.show()
@@ -135,7 +137,7 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.linspace(0.01,0.1,20)
+    lmbda = np.logspace(-4,-1,100)
     value = []
     for i in range(len(lmbda)):
 
@@ -269,7 +271,6 @@ if __name__ == '__main__':
         r'%.2f ' % (quality.gCNR(ho_x_1, ho_x_2, N=bin_n))))
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
             verticalalignment='top', fontname='Arial', color='white')
-
 
     plt.tight_layout()
     plt.show()

@@ -16,70 +16,92 @@ from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
 from skimage import filters
 from skimage.morphology import disk
-from skimage.morphology import dilation, erosion
-from misc import processing, quality, annotation
-import matplotlib.gridspec as gridspec
-
+from misc import processing
 
 # Module level constants
 eps = 1e-14
 
 
 def plot_images(plot_titles, image,
-                vmin, vmax,suptitle=None):
-    assert len(plot_titles) == len(image), 'Length of plot_titles does not match length of plot_data'
+                vmin, vmax,suptitle=None, overlays = False):
 
-    width, height = (17, 10)
-    background = [[315, 30, width*5, height*5]]
+    if overlays != True:
+        assert len(plot_titles) == len(image),'Length of plot_titles does not match length of plot_data'
+        image = image
+    else:
+        assert len(plot_titles)+1 == len(image)
+        mask = image[-1]
+        image.pop(-1)
 
     nplots = len(plot_titles)
-    fig, axes = plt.subplots(1, nplots,figsize=(16,9),constrained_layout=True)
+    # fig, axes = plt.subplots(2, (nplots+1)//2,figsize=(16,9), constrained_layout= True)
+    fig, axes = plt.subplots(2, (nplots+1)//2,figsize=(18,13))
 
     if suptitle is not None:
         plt.suptitle(suptitle)
     for n, (ax, title, im) in enumerate(zip(axes.flatten(), plot_titles, image)):
+
         ax.set_title(title)
-        ax.set_axis_off()
-        ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
 
-        ax.annotate('', xy=(200, 120), xycoords='data',
-                    xytext=(180, 100), textcoords='data', fontsize=30,
-                    color='white', fontname='Arial',
-                    arrowprops=dict(facecolor='white', shrink=0.025),
-                    horizontalalignment='right', verticalalignment='top')
+        if n != int(nplots-1):
+            ax.annotate('', xy=(200, 120), xycoords='data',
+                        xytext=(180, 100), textcoords='data', fontsize=30,
+                        color='white', fontname='Arial',
+                        arrowprops=dict(facecolor='red', shrink=0.025),
+                        horizontalalignment='right', verticalalignment='top')
 
-        ax.annotate('', xy=(350, 295), xycoords='data',
-                    xytext=(380, 275), textcoords='data', fontsize=30,
-                    color='white', fontname='Arial',
-                    arrowprops=dict(facecolor='white', shrink=0.025),
-                    horizontalalignment='left', verticalalignment='top')
+            ax.annotate('', xy=(350, 295), xycoords='data',
+                        xytext=(380, 275), textcoords='data', fontsize=30,
+                        color='white', fontname='Arial',
+                        arrowprops=dict(facecolor='red', shrink=0.025),
+                        horizontalalignment='left', verticalalignment='top')
 
-        ax.annotate('', xy=(140, 270), xycoords='data',
-                    xytext=(170, 290), textcoords='data', fontsize=30,
-                    color='red', fontname='Arial',
-                    arrowprops=dict(facecolor='red', shrink=0.025),
-                    horizontalalignment='right', verticalalignment='top')
+            ax.annotate('', xy=(140, 270), xycoords='data',
+                        xytext=(170, 290), textcoords='data', fontsize=30,
+                        color='red', fontname='Arial',
+                        arrowprops=dict(facecolor='white', shrink=0.025),
+                        horizontalalignment='right', verticalalignment='top')
 
-        ax.annotate('', xy=(50, 90), xycoords='data',
-                    xytext=(70, 110), textcoords='data', fontsize=30,
-                    color='red', fontname='Arial',
-                    arrowprops=dict(facecolor='red', shrink=0.025),
-                    horizontalalignment='right', verticalalignment='top')
+            ax.annotate('', xy=(50, 90), xycoords='data',
+                        xytext=(70, 110), textcoords='data', fontsize=30,
+                        color='red', fontname='Arial',
+                        arrowprops=dict(facecolor='white', shrink=0.025),
+                        horizontalalignment='right', verticalalignment='top')
+            ax.set_axis_off()
 
-        for i in range(len(background)):
-            for j in annotation.get_background(*background[i]):
-                ax.add_patch(j)
+            if n == 2 and overlays == True:
+                ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
+                ax.contour(mask, [0.99],colors='orange',alpha = 0.75, linestyles = 'dashed')
 
-        im = np.where(im <= rvmin,0,im)
-        ba = quality.ROI(*background[0], im)
-        textstr = r'${SF_{B}}$''\n'r'%.1f' % (quality.SF(ba))
+            else:
+                ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
 
-        ax.text(0.8, 0.2, textstr, transform=ax.transAxes, fontsize=20,
-                verticalalignment='top', fontname='Arial', color='red')
+        else:
+            ax.plot(im)
+            ax.set_xlabel('axial depth [pixels]', fontname='Arial')
+            ax.set_ylabel('normalized \nmagnitude [a.u.]', fontname='Arial',fontsize=20)
 
+            axins = ax.inset_axes([0.58, 0.2, 0.41, 0.6])
+            axins.set_xticks([])
+            axins.set_yticks([])
+            axins.plot(im)
+            axins.annotate('', xy=(156, 0.07), xycoords='data',
+                        xytext=(150, 0.1), textcoords='data', fontsize=30,
+                        color='red', fontname='Arial',
+                        arrowprops=dict(facecolor='red', shrink=0.025),
+                        horizontalalignment='left', verticalalignment='top')
+            axins.annotate('', xy=(172, 0.09), xycoords='data',
+                        xytext=(178, 0.12), textcoords='data', fontsize=30,
+                        color='red', fontname='Arial',
+                        arrowprops=dict(facecolor='red', shrink=0.025),
+                        horizontalalignment='right', verticalalignment='top')
+
+            axins.set_xlim(145, 180)
+            axins.set_ylim(0, 0.15)
+            ax.indicate_inset_zoom(axins)
+
+    plt.tight_layout(pad = 0.5)
     plt.show()
-
-
 
 if __name__ == '__main__':
 
@@ -126,16 +148,18 @@ if __name__ == '__main__':
     r0_log = 20 * np.log10(abs(r0))
 
     # update opt to include W
-    # index = 290
-    x1 = processing.make_sparse_representation(s, D, lmbda, speckle_weight)
+
+    x1,W = processing.make_sparse_representation(s, D, lmbda, speckle_weight,Mask=True)
     x1_log = 20 * np.log10(abs(x1))
 
     x1_median = filters.median(x1_log, disk(1)).squeeze()
 
+    title = ['reference(a)','sparse estimation \n 𝜆 = %.2f(b)'% (lmbda),'𝜆 = %.2f(c)'% (lmbda),
+             '𝜆 = %.2f \n $\omega$ = %.1f(d)' % (lmbda,speckle_weight),
+             '𝜆 = %.2f \n $\omega$ = %.1f(median)(e)' % (lmbda, speckle_weight),
+             'learned PSF(f)']
+
+    # mask = filters.sobel(W)
+    plot_images(title,[s_log,r0_log,x0_log,x1_log,x1_median,abs(D),W],rvmin,vmax, overlays=True)
 
 
-    title = ['reference','sparse estimation \n 𝜆 = %.2f'% (lmbda),'𝜆 = %.2f'% (lmbda),
-             '𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda,speckle_weight),
-             '𝜆 = %.2f \n $\omega$ = %.1f(median)' % (lmbda, speckle_weight)]
-
-    plot_images(title,[s_log,r0_log,x0_log,x1_log,x1_median],rvmin,vmax)
