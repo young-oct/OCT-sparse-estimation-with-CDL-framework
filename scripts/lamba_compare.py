@@ -55,6 +55,8 @@ if __name__ == '__main__':
         x, line = processing.make_sparse_representation(s, D, lmbda[i], speckle_weight,Line=True,index = index )
         x_log = 20 * np.log10(abs(x))
         sparse[:,:,i] = filters.median(x_log, disk(1))
+        # sparse[:,:,i] = x_log
+
         x_line[:, i] = line
 
     width, height = (100, 80)
