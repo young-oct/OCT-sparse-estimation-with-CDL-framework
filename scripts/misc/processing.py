@@ -8,7 +8,7 @@ from sporco import prox
 import pickle
 from pathlib import Path
 from scipy import ndimage
-from skimage.morphology import disk
+from skimage.morphology import disk,square
 from sporco.admm import cbpdn
 from skimage.morphology import dilation, erosion
 from skimage import filters
@@ -89,17 +89,17 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={}):
     # set thresdhold
     x_log = np.where(x_log <= rvmin, 0, x_log)
 
-    W = dilation(x_log, disk(5))
-    W = erosion(W, disk(5))
+    W = dilation(x_log, square(3))
+    W = erosion(W, square(3))
 
     W = np.where(W > 0, speckle_weight, 1)
 
     # remove residual noise with the median filter,
     # with a kernel size of 5
-    W = ndimage.median_filter(W, size=5)
+    W = filters.median(W,square(9))
 
     if Paddging == True:
-        pad = 10  #
+        pad = 20  #
         # find the bottom edge of the mask with Sobel edge filter
         temp = filters.sobel(W)
 
@@ -135,7 +135,7 @@ def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=No
 
     # Weight factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    W = np.roll(getWeight(s, D, 0.05, speckle_weight, Paddging=True, opt_par=opt_par), np.argmax(D), axis=0)
+    W = np.roll(getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par=opt_par), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                       'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})

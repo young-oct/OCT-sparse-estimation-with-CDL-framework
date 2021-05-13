@@ -20,9 +20,7 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
-from skimage.morphology import disk
 from misc import processing
-from skimage import filters
 
 # Module level constants
 eps = 1e-14
@@ -47,8 +45,8 @@ if __name__ == '__main__':
     original = []
     sparse = []
 
-    lmbda = [0.1,0.04,0.02,0.03]
-    speckle_weight = [0.1,0.1,0.3,0.1]
+    lmbda = 0.04
+    speckle_weight = 0.1
     rvmin = 65  # dB
     vmax = 115  # dB
 
@@ -63,14 +61,11 @@ if __name__ == '__main__':
                                           'RelaxParam': 1.515, 'AutoRho': {'Enabled': True}})
 
         # obtain weighting mask
-        x = processing.make_sparse_representation(s, D, lmbda[i], speckle_weight[i])
+        x = processing.make_sparse_representation(s, D, lmbda, speckle_weight)
 
         x_log = 20 * np.log10(abs(x))
         s_log = 20 * np.log10(abs(s))
 
-        # apply median filter
-        s_log = filters.median(s_log, disk(1))
-        x_log = filters.median(x_log, disk(1))
 
         original.append(s_log)
         sparse.append(x_log)
@@ -85,10 +80,10 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(nrows=2, ncols=4, sharey=True, sharex=True, figsize=(16, 9),constrained_layout=True )
 
     for i in range(len(file_name)):
-        title = '\n'.join((title_name[i],'𝜆 = %.2f $\omega$ = %.1f' % (lmbda[i], speckle_weight[i])))
+        title = '\n'.join((title_name[i],'𝜆 = %.2f $\omega$ = %.1f' % (lmbda, speckle_weight)))
 
         ax[0, i].set_title(title,fontsize=20)
-        ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin)
+        ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')
         ax[0, i].annotate('', xy=(x_head[i], y_head[i]), xycoords='data',
                           xytext=(x_end[i], y_end[i]), textcoords='data',
                           arrowprops=dict(facecolor='white', shrink=0.05),
