@@ -100,7 +100,7 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={}):
 
     if Paddging == True:
         pad = 10  #
-        # find the bottom edge of the mask with canny edge filter
+        # find the bottom edge of the mask with Sobel edge filter
         temp = filters.sobel(W)
 
         # temp = quality.gaussian_blur(temp)

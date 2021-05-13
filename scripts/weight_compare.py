@@ -43,7 +43,7 @@ def plot_images(plot_titles, image,
 
         ax.set_title(title)
 
-        if n != 1:
+        if n != int(nplots-1):
             ax.annotate('', xy=(200, 120), xycoords='data',
                         xytext=(180, 100), textcoords='data', fontsize=30,
                         color='white', fontname='Arial',
@@ -69,17 +69,28 @@ def plot_images(plot_titles, image,
                         horizontalalignment='right', verticalalignment='top')
             ax.set_axis_off()
 
-            if n == 3 and overlays == True:
-                ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
+            #axins = ax.inset_axes([258/512, 7/330, 389/512, 103/330])
+            scale=2.5
+            axins = ax.inset_axes([0.58, 0.45, 80/512*scale, 87/330*scale])
+            axins.imshow(im, cmap='gray',vmax=vmax, vmin=vmin, interpolation='none')
+            axins.set_xticklabels('')
+            axins.set_yticklabels('')
+            
+            print(title)
+            axins.set_xlim(22, 102)
+            axins.set_ylim(93, 6)
+            ax.indicate_inset_zoom(axins, edgecolor='white')
+
+
+            if n == 2 and overlays == True:
                 ax.contour(mask, [0.99],colors='orange',alpha = 0.75, linestyles = 'dashed')
 
             else:
-                ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
 
         else:
             ax.plot(im)
-            ax.set_xlabel('axial depth [pixels]', fontname='Arial')
-            ax.set_ylabel('normalized \nmagnitude [a.u.]', fontname='Arial',fontsize=20)
+            ax.set_xlabel('Axial depth [pixels]', fontname='Arial')
+            ax.set_ylabel('Normalized \nmagnitude [a.u.]', fontname='Arial',fontsize=20)
 
             axins = ax.inset_axes([0.58, 0.2, 0.41, 0.6])
             axins.set_xticks([])
@@ -148,18 +159,21 @@ if __name__ == '__main__':
     r0_log = 20 * np.log10(abs(r0))
 
     # update opt to include W
-
     x1,W = processing.make_sparse_representation(s, D, lmbda, speckle_weight,Mask=True)
     x1_log = 20 * np.log10(abs(x1))
 
     x1_median = filters.median(x1_log, disk(1)).squeeze()
 
-    title = ['reference(a)','learned PSF(b)',
-             'sparse estimation \n 𝜆 = %.2f(c)'% (lmbda),'𝜆 = %.2f(d)'% (lmbda),
-             '𝜆 = %.2f \n $\omega$ = %.1f(e)' % (lmbda,speckle_weight),
-             '𝜆 = %.2f \n $\omega$ = %.1f(median)(f)' % (lmbda, speckle_weight)]
+    title = ['reference(a)','sparse estimation \n 𝜆 = %.2f(b)'% (lmbda),'𝜆 = %.2f(c)'% (lmbda),
+             '𝜆 = %.2f \n $\omega$ = %.1f(d)' % (lmbda,speckle_weight),
+             '𝜆 = %.2f \n $\omega$ = %.1f(median)(e)' % (lmbda, speckle_weight),
+             'learned PSF(f)']
 
     # mask = filters.sobel(W)
     plot_images(title,[s_log,abs(D),r0_log,x0_log,x1_log,x1_median,W],rvmin,vmax, overlays=True)
 
 
+    
+                        
+                    
+            
