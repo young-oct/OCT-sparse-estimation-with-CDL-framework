@@ -43,7 +43,7 @@ def plot_images(plot_titles, image,
 
         ax.set_title(title)
 
-        if n != int(nplots-1):
+        if n != 1:
             ax.annotate('', xy=(200, 120), xycoords='data',
                         xytext=(180, 100), textcoords='data', fontsize=30,
                         color='white', fontname='Arial',
