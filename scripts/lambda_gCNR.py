@@ -36,9 +36,9 @@ def lmbda_search(s,lmbda,speckle_weight):
     x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
 
     s_intensity = abs(s)**2
-    s_intensity = filters.median(s_intensity,disk(1))
+    #s_intensity = filters.median(s_intensity,disk(1))
     x_intensity = abs(x)**2
-    x_intensity = filters.median(x_intensity,disk(1))
+    #x_intensity = filters.median(x_intensity,disk(1))
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
@@ -149,15 +149,15 @@ if __name__ == '__main__':
 
     # Generate log intensity arrays
     s_log = 20 * np.log10(abs(s))
-    s_log = filters.median(s_log, disk(1))
+    #s_log = filters.median(s_log, disk(1))
     x_log = 20 * np.log10(abs(x))
-    x_log = filters.median(x_log, disk(1))
+    #x_log = filters.median(x_log, disk(1))
 
     s_intensity = abs(s) ** 2
-    s_intensity = filters.median(s_intensity, disk(1))
+    #s_intensity = filters.median(s_intensity, disk(1))
 
     x_intensity = abs(x) ** 2
-    x_intensity = filters.median(x_intensity, disk(1))
+    #x_intensity = filters.median(x_intensity, disk(1))
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
