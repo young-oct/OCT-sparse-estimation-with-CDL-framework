@@ -61,7 +61,10 @@ if __name__ == '__main__':
 
     # Generate log intensity arrays
     s_log = 20 * np.log10(abs(s))
+    # s_log = filters.median(s_log, disk(1))
     x_log = 20 * np.log10(abs(x))
+
+    # x_log = filters.median(x_log, disk(1))
 
     s_intensity = abs(s) ** 2
     s_intensity = filters.median(s_intensity, disk(1))
@@ -123,13 +126,13 @@ if __name__ == '__main__':
         r'${C_{{H_1}/{H_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
         r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s)),
+        r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s, N=bin_n)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ar_s)),
+        r'%.2f ' % (quality.log_gCNR(ho_s_2, ar_s, N=bin_n)),
         r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s)),
+        r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s, N=bin_n)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2))))
+        r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2, N=bin_n))))
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
             verticalalignment='top', fontname='Arial', color='white')
 
@@ -172,13 +175,13 @@ if __name__ == '__main__':
         r'${C_{{H_1}/{H_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
         r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x)),
+        r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x, N=bin_n)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ar_x)),
+        r'%.2f ' % (quality.log_gCNR(ho_x_2, ar_x, N=bin_n)),
         r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x)),
+        r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x, N=bin_n)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2))))
+        r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2, N=bin_n))))
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
             verticalalignment='top', fontname='Arial', color='white')
 
@@ -190,12 +193,21 @@ if __name__ == '__main__':
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
              ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
-             ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)],
-             ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)],
-             ['gCNR', 'H_1/H_2', quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)],
-             ['gCNR', 'H_2/A', quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)]]
+             ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s, N=bin_n), quality.log_gCNR(ho_x_1, ar_x, N=bin_n)],
+             ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s, N=bin_n), quality.log_gCNR(ho_x_2, ba_x, N=bin_n)],
+             ['gCNR', 'H_1/H_2', quality.log_gCNR(ho_s_1, ho_s_2, N=bin_n), quality.log_gCNR(ho_x_1, ho_x_2, N=bin_n)],
+             ['gCNR', 'H_2/A', quality.log_gCNR(ho_s_2, ar_s, N=bin_n), quality.log_gCNR(ho_x_2, ar_x, N=bin_n)]]
 
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
+
+    # from PIL import Image
+    # out = processing.imag2uint(s_log,rvmin,vmax)
+    # out = Image.fromarray(out)
+    # out.save('/Users/youngwang/Desktop/original.bmp')
+    #
+    # out = processing.imag2uint(x_log,rvmin,vmax)
+    # out = Image.fromarray(out)
+    # out.save('/Users/youngwang/Desktop/sparse.bmp')
 
 

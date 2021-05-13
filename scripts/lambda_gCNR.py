@@ -12,8 +12,10 @@ optimal values of the weighting parameter and lambda"""
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
+from skimage.morphology import disk
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
+from skimage import filters
 from tabulate import tabulate
 
 bin_n = 200
@@ -34,7 +36,9 @@ def lmbda_search(s,lmbda,speckle_weight):
     x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
 
     s_intensity = abs(s)**2
+    s_intensity = filters.median(s_intensity,disk(1))
     x_intensity = abs(x)**2
+    x_intensity = filters.median(x_intensity,disk(1))
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
@@ -59,16 +63,16 @@ def lmbda_search(s,lmbda,speckle_weight):
     # conh1h2= quality.Contrast(ho_s_1, ba_s), quality.Contrast(ho_x_1, ba_x)
 
     #'gCNR ', 'H_1/A',
-    gcnrh1a = quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)
+    gcnrh1a = quality.gCNR(ho_s_1, ar_s, N=bin_n), quality.gCNR(ho_x_1, ar_x, N=bin_n)
 
     #'gCNR', 'H_2/B',
-    gcnrh2b = quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)
+    gcnrh2b = quality.gCNR(ho_s_2, ba_s, N=bin_n), quality.gCNR(ho_x_2, ba_x, N=bin_n)
 
     #'gCNR', 'H_1/H_2',
-    gcnrh12 = quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)
+    gcnrh12 = quality.gCNR(ho_s_1, ho_s_2, N=bin_n), quality.gCNR(ho_x_1, ho_x_2, N=bin_n)
 
     #'gCNR', 'H_2/A',
-    gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
+    gcnrh2a = quality.gCNR(ho_s_2, ar_s, N=bin_n), quality.gCNR(ho_x_2, ar_x, N=bin_n)
 
     return (gcnrh1a,gcnrh2b,gcnrh12,gcnrh2a)
 
@@ -133,7 +137,7 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4,-0.5,100)
+    lmbda = np.logspace(-4,-1,5)
     value = []
     for i in range(len(lmbda)):
 
@@ -144,11 +148,16 @@ if __name__ == '__main__':
     x = processing.make_sparse_representation(s,D, best, speckle_weight)
 
     # Generate log intensity arrays
-    s_intensity = abs(s) ** 2
-    x_intensity = abs(x) ** 2
+    s_log = 20 * np.log10(abs(s))
+    s_log = filters.median(s_log, disk(1))
+    x_log = 20 * np.log10(abs(x))
+    x_log = filters.median(x_log, disk(1))
 
-    s_log = 10 * np.log10(s_intensity)
-    x_log = 10 * np.log10(x_intensity)
+    s_intensity = abs(s) ** 2
+    s_intensity = filters.median(s_intensity, disk(1))
+
+    x_intensity = abs(x) ** 2
+    x_intensity = filters.median(x_intensity, disk(1))
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
@@ -165,7 +174,7 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16, 9))
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
-    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin, interpolation='none')
+    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin)
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -204,19 +213,19 @@ if __name__ == '__main__':
         r'${C_{{H_1}/{H_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
         r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s)),
+        r'%.2f ' % (quality.gCNR(ho_s_1, ar_s, N=bin_n)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ar_s)),
+        r'%.2f ' % (quality.gCNR(ho_s_2, ar_s, N=bin_n)),
         r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s)),
+        r'%.2f ' % (quality.gCNR(ho_s_2, ba_s, N=bin_n)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2))))
+        r'%.2f ' % (quality.gCNR(ho_s_1, ho_s_2, N=bin_n))))
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
             verticalalignment='top', fontname='Arial', color='white')
 
     ax = fig.add_subplot(gs[1])
 
-    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin, interpolation='none')
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin)
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -253,13 +262,13 @@ if __name__ == '__main__':
         r'${C_{{H_1}/{H_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
         r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x)),
+        r'%.2f ' % (quality.gCNR(ho_x_1, ar_x, N=bin_n)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ar_x)),
+        r'%.2f ' % (quality.gCNR(ho_x_2, ar_x, N=bin_n)),
         r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x)),
+        r'%.2f ' % (quality.gCNR(ho_x_2, ba_x, N=bin_n)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2))))
+        r'%.2f ' % (quality.gCNR(ho_x_1, ho_x_2, N=bin_n))))
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
             verticalalignment='top', fontname='Arial', color='white')
 
@@ -270,10 +279,10 @@ if __name__ == '__main__':
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
              ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
-             ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)],
-             ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)],
-             ['gCNR', 'H_1/H_2', quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)],
-             ['gCNR', 'H_2/A', quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)]]
+             ['gCNR ', 'H_1/A', quality.gCNR(ho_s_1, ar_s, N=bin_n), quality.gCNR(ho_x_1, ar_x, N=bin_n)],
+             ['gCNR', 'H_2/B', quality.gCNR(ho_s_2, ba_s, N=bin_n), quality.gCNR(ho_x_2, ba_x, N=bin_n)],
+             ['gCNR', 'H_1/H_2', quality.gCNR(ho_s_1, ho_s_2, N=bin_n), quality.gCNR(ho_x_1, ho_x_2, N=bin_n)],
+             ['gCNR', 'H_2/A', quality.gCNR(ho_s_2, ar_s, N=bin_n), quality.gCNR(ho_x_2, ar_x, N=bin_n)]]
 
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
