@@ -84,7 +84,7 @@ if __name__ == '__main__':
 
     aspect = s_log.shape[1] / s_log.shape[0]
     ax = fig.add_subplot(gs[0, 0])
-    ax.imshow(s_log, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+    ax.imshow(s_log, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin, interpolation='none')
     ax.set_axis_off()
     ax.set_title('reference', fontname='Arial')
     ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
