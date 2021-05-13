@@ -125,7 +125,7 @@ if __name__ == '__main__':
             'mathtext.fontset': 'stix',
         }
     )
-    file_name = ['nail']
+    file_name = ['ear']
     # Load the example dataset
     s, D = processing.load_data(file_name[0], decimation_factor=20)
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
     speckle_weight = 0.1
-    lmbda = 0.02
+    lmbda = 0.04
 
     b0 = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
     x0norm = b0.solve().squeeze() + eps
