@@ -30,7 +30,7 @@ roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
 eps = 1e-14
 
 def lmbda_search(s,lmbda,speckle_weight):
-    print("Calculating gCNR for labmda = %f" % lmbda)
+    # print("Calculating gCNR for labmda = %f" % lmbda)
     x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
 
     s_intensity = abs(s)**2
@@ -264,11 +264,11 @@ if __name__ == '__main__':
             verticalalignment='top', fontname='Arial', color='white')
 
     plt.tight_layout()
-    #plt.show()
+    plt.show()
 
     # table formant original then sparse
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
-             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
+             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ba_s), quality.Contrast(ho_x_2, ba_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
              ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)],
              ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)],
