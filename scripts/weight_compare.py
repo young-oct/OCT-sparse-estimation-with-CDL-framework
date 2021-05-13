@@ -125,7 +125,7 @@ if __name__ == '__main__':
             'mathtext.fontset': 'stix',
         }
     )
-    file_name = ['ear']
+    file_name = ['nail']
     # Load the example dataset
     s, D = processing.load_data(file_name[0], decimation_factor=20)
 

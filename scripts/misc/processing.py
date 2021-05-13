@@ -96,7 +96,7 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={}):
 
     # remove residual noise with the median filter,
     # with a kernel size of 5
-    W = filters.median(W,square(9))
+    W = filters.median(W,square(11))
 
     if Paddging == True:
         pad = 20  #
