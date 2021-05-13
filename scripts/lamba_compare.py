@@ -11,8 +11,7 @@ various values of the regularization parameter lambda'''
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
-from skimage import filters
-from skimage.morphology import disk
+
 from misc import processing,quality,annotation
 
 # Module level constants
