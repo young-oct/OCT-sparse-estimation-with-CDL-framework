@@ -54,8 +54,8 @@ if __name__ == '__main__':
 
         x, line = processing.make_sparse_representation(s, D, lmbda[i], speckle_weight,Line=True,index = index )
         x_log = 20 * np.log10(abs(x))
-        sparse[:,:,i] = filters.median(x_log, disk(1))
-        # sparse[:,:,i] = x_log
+        #sparse[:,:,i] = filters.median(x_log, disk(1))
+        sparse[:,:,i] = x_log
 
         x_line[:, i] = line
 
@@ -69,7 +69,7 @@ if __name__ == '__main__':
 
     aspect = s_log.shape[1] / s_log.shape[0]
     ax = fig.add_subplot(gs[0, 0])
-    ax.imshow(s_log, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+    ax.imshow(s_log, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin, interpolation='none')
     ax.set_axis_off()
     ax.set_title('reference', fontname='Arial')
     ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
@@ -84,7 +84,7 @@ if __name__ == '__main__':
     ho_original = quality.ROI(*homogeneous[0], s_log)
 
     ax = fig.add_subplot(gs[1, 0])
-    ax.imshow(ho_original, 'gray', aspect=ho_original.shape[1] / ho_original.shape[0], vmax=vmax, vmin=rvmin)
+    ax.imshow(ho_original, 'gray', aspect=ho_original.shape[1] / ho_original.shape[0], vmax=vmax, vmin=rvmi, interpolation='none')
     ax.set_axis_off()
     ax.annotate('', xy=(72.5, 10), xycoords='data',
                 xytext=(60, 5), textcoords='data',
@@ -127,7 +127,7 @@ if __name__ == '__main__':
 
         aspect = sparse[:, :, i].shape[1]/sparse[:, :, i].shape[0]
         ax = fig.add_subplot(gs[0, i + 1])
-        ax.imshow(sparse[:, :, i], 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+        ax.imshow(sparse[:, :, i], 'gray', aspect=aspect, vmax=vmax, vmin=rvmin, interpolation='none')
         ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
         ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
         # for k in range(len(background)):
@@ -147,7 +147,7 @@ if __name__ == '__main__':
 
         aspect = width / height
         ax = fig.add_subplot(gs[1, i + 1])
-        ax.imshow(ho_x, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+        ax.imshow(ho_x, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin, interpolation='none')
         ax.annotate('', xy=(72.5, 10), xycoords='data',
                     xytext=(60, 5), textcoords='data',
                     arrowprops=dict(facecolor='white', shrink=0.05),

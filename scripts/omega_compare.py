@@ -44,7 +44,6 @@ if __name__ == '__main__':
     vmax = 115  # dB
 
     s_log = 20 * np.log10(abs(s))
-    s_log = filters.median(s_log, disk(1))
 
     # l2 norm data and save the scaling factor
     _, snorm = processing.to_l2_normed(s)
