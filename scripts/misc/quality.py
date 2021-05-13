@@ -158,7 +158,7 @@ def log_gCNR(region_h, region_b, N):
     ovl = 0
     print(sum(b_hist))
     print(sum(h_hist))
-    for i in range(1,N):
+    for i in range(0,N):
 
         ovl += min(h_hist[i], b_hist[i])
 
