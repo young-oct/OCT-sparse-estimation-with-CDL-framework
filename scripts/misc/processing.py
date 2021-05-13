@@ -33,7 +33,7 @@ def from_l2_normed(s, l2f):
     return (s * l2f)
 
 
-def load_data(dataset_name, decimation_factor,data_only = False):
+def load_data(dataset_name, decimation_factor, data_only=False):
     # check if such file exists
     S_PATH = '../Data/' + dataset_name
 
@@ -122,8 +122,7 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={}):
 
     return W
 
-
-def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=None, Mask = False):
+def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=None, Mask=False):
     ''' s -- 2D array of complex A-lines with dims (width, depth)
     '''
     # l2 norm data and save the scaling factor
@@ -163,9 +162,4 @@ def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=No
         x = from_l2_normed(xnorm, l2f)
         x_line = abs(xnorm[:, index])
         W_mask = np.roll(W, -np.argmax(D), axis=0).squeeze()
-        return x,x_line, W_mask
-
-
-
-
-
+        return x, x_line, W_mask

@@ -79,7 +79,7 @@ def lmbda_search(s,lmbda,speckle_weight):
 def value_plot(lmbda,value):
 
     fig,ax = plt.subplots(1,1, figsize=(16,9))
-    fig.suptitle(r'$gCNR$ curves versus 𝜆')
+    fig.suptitle(r'$gCNR$ versus 𝜆 curves')
     reference = []
 
     for i in range(4):
@@ -137,7 +137,7 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4,-1,100)
+    lmbda = np.logspace(-4,-1,5)
     value = []
     for i in range(len(lmbda)):
 

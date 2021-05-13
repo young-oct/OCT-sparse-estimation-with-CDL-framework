@@ -43,7 +43,7 @@ def plot_images(plot_titles, image,
 
         ax.set_title(title)
 
-        if n != int(nplots-1):
+        if n != 1:
             ax.annotate('', xy=(200, 120), xycoords='data',
                         xytext=(180, 100), textcoords='data', fontsize=30,
                         color='white', fontname='Arial',
@@ -69,7 +69,7 @@ def plot_images(plot_titles, image,
                         horizontalalignment='right', verticalalignment='top')
             ax.set_axis_off()
 
-            if n == 2 and overlays == True:
+            if n == 3 and overlays == True:
                 ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray')
                 ax.contour(mask, [0.99],colors='orange',alpha = 0.75, linestyles = 'dashed')
 
@@ -154,12 +154,12 @@ if __name__ == '__main__':
 
     x1_median = filters.median(x1_log, disk(1)).squeeze()
 
-    title = ['reference(a)','sparse estimation \n 𝜆 = %.2f(b)'% (lmbda),'𝜆 = %.2f(c)'% (lmbda),
-             '𝜆 = %.2f \n $\omega$ = %.1f(d)' % (lmbda,speckle_weight),
-             '𝜆 = %.2f \n $\omega$ = %.1f(median)(e)' % (lmbda, speckle_weight),
-             'learned PSF(f)']
+    title = ['reference(a)','learned PSF(b)',
+             'sparse estimation \n 𝜆 = %.2f(c)'% (lmbda),'𝜆 = %.2f(d)'% (lmbda),
+             '𝜆 = %.2f \n $\omega$ = %.1f(e)' % (lmbda,speckle_weight),
+             '𝜆 = %.2f \n $\omega$ = %.1f(median)(f)' % (lmbda, speckle_weight)]
 
     # mask = filters.sobel(W)
-    plot_images(title,[s_log,r0_log,x0_log,x1_log,x1_median,abs(D),W],rvmin,vmax, overlays=True)
+    plot_images(title,[s_log,abs(D),r0_log,x0_log,x1_log,x1_median,W],rvmin,vmax, overlays=True)
 
 

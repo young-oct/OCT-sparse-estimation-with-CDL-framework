@@ -18,6 +18,8 @@ from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from skimage import filters
 from tabulate import tabulate
+from skimage.segmentation import flood, flood_fill
+
 
 bin_n = 200
 # Define ROIs
@@ -59,9 +61,10 @@ if __name__ == '__main__':
 
     # Generate log intensity arrays
     s_log = 20 * np.log10(abs(s))
-    s_log = filters.median(s_log, disk(1))
+    # s_log = filters.median(s_log, disk(1))
     x_log = 20 * np.log10(abs(x))
-    x_log = filters.median(x_log, disk(1))
+
+    # x_log = filters.median(x_log, disk(1))
 
     s_intensity = abs(s) ** 2
     s_intensity = filters.median(s_intensity, disk(1))
