@@ -78,7 +78,7 @@ def plot_images(plot_titles, image,
             axins.set_ylim(110, 35)
             ax.indicate_inset_zoom(axins, edgecolor='white')
 
-            if n == 2 and overlays == True:
+            if n == 3 and overlays == True:
                 ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray', interpolation='none')
                 ax.contour(mask, [0.99], colors='orange', alpha=0.75, linestyles='dashed')
                 axins.contour(mask, [0.99], colors='orange', alpha=0.75, linestyles='dashed')
