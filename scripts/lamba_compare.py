@@ -41,7 +41,7 @@ if __name__ == '__main__':
     _, snorm = processing.to_l2_normed(s)
 
     speckle_weight = 0.1
-    lmbda = np.logspace(-2, 0, 5)
+    lmbda = np.logspace(-2, -0.5, 5)
 
     index = 400 # index A-line
     s_line = abs(snorm[:,index])
@@ -88,8 +88,8 @@ if __name__ == '__main__':
                 arrowprops=dict(facecolor='white', shrink=0.05),
                 horizontalalignment='right', verticalalignment='top',
                 )
-    ax.annotate('', xy=(87.5, 55), xycoords='data',
-                xytext=(92.5, 70), textcoords='data',
+    ax.annotate('', xy=(30, 70), xycoords='data',
+                xytext=(35, 78), textcoords='data',
                 arrowprops=dict(facecolor='red', shrink=0.05),
                 horizontalalignment='right', verticalalignment='top',
                 )
@@ -124,7 +124,7 @@ if __name__ == '__main__':
 
         aspect = sparse[:, :, i].shape[1]/sparse[:, :, i].shape[0]
         ax = fig.add_subplot(gs[0, i + 1])
-        ax.imshow(sparse[:, :, i], 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+        ax.imshow(sparse[:, :, i], 'gray', aspect=aspect, vmax=vmax, vmin=rvmin,interpolation='none')
         ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
         ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
         # for k in range(len(background)):
@@ -144,14 +144,14 @@ if __name__ == '__main__':
 
         aspect = width / height
         ax = fig.add_subplot(gs[1, i + 1])
-        ax.imshow(ho_x, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+        ax.imshow(ho_x, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin,interpolation='none')
         ax.annotate('', xy=(72.5, 10), xycoords='data',
                     xytext=(60, 5), textcoords='data',
                     arrowprops=dict(facecolor='white', shrink=0.05),
                     horizontalalignment='right', verticalalignment='top',
                     )
-        ax.annotate('', xy=(87.5, 55), xycoords='data',
-                    xytext=(92.5, 70), textcoords='data',
+        ax.annotate('', xy=(30, 70), xycoords='data',
+                    xytext=(35, 78), textcoords='data',
                     arrowprops=dict(facecolor='red', shrink=0.05),
                     horizontalalignment='right', verticalalignment='top',
                     )

@@ -82,7 +82,8 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16, 9))
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
-    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin,interpolation='none')
+    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0],
+              vmax=vmax, vmin=rvmin,interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -133,7 +134,8 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[1])
 
-    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin,interpolation='none')
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
+              vmax=vmax, vmin=rvmin,interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',

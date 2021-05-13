@@ -4,16 +4,10 @@
 # @FileName: image_compare.py
 # @Software: PyCharm
 
-'''this script generates images for the figure 2 as seen in
-the paper. From left to right: OCT images of a middle ear,
-index finger (palmar view), index finger (side view),
- and onion slice. The top row images are obtained from
- conventional OCT image processing produced from DFT
- of the histogram mean subtraction. Both sets of
- images are mapped onto 256-greyscale intensities.
- The reference images are displayed from 0-255 in
-  grayscale values, the sparse images are displayed in the range of 0-255.
-  Same display scheme is used for other figures in this paper'''
+'''From left to right: OCT images of a middle ear,
+ index finger (palmar view), index finger (side view),
+  and onion slice. The white arrow indicates the sidelobe
+  artifacts caused by the PSF convolution'''
 
 
 import numpy as np
@@ -45,7 +39,7 @@ if __name__ == '__main__':
     original = []
     sparse = []
 
-    lmbda = 0.04
+    lmbda = 0.02
     speckle_weight = 0.1
     rvmin = 65  # dB
     vmax = 115  # dB
@@ -65,7 +59,6 @@ if __name__ == '__main__':
 
         x_log = 20 * np.log10(abs(x))
         s_log = 20 * np.log10(abs(s))
-
 
         original.append(s_log)
         sparse.append(x_log)
@@ -90,7 +83,7 @@ if __name__ == '__main__':
                           horizontalalignment='right', verticalalignment='top',
                           )
 
-        ax[1, i].imshow(sparse[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin)
+        ax[1, i].imshow(sparse[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')
         ax[0, i].set_axis_off()
         ax[1, i].set_axis_off()
 

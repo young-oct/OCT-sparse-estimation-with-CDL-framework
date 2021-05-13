@@ -49,14 +49,6 @@ def lmbda_search(s,lmbda,speckle_weight):
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
     # calcuate image quality metrics
-    #'SNR', 'H_2/B'
-    # snrh2b = quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)
-
-    #'Contrast', 'H_2/B',
-    # conh2b = quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)
-
-    #'Contrast', 'H_1/H_2',
-    # conh1h2= quality.Contrast(ho_s_1, ba_s), quality.Contrast(ho_x_1, ba_x)
 
     #'gCNR ', 'H_1/A',
     gcnrh1a = quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)
@@ -75,7 +67,7 @@ def lmbda_search(s,lmbda,speckle_weight):
 def value_plot(lmbda,value):
 
     fig,ax = plt.subplots(1,1, figsize=(16,9))
-    fig.suptitle(r'$gCNR$ versus 𝜆 curves')
+    ax.set_title(r'$gCNR$ versus 𝜆 curves')
     reference = []
 
     for i in range(4):
@@ -106,6 +98,7 @@ def value_plot(lmbda,value):
     ax.set_ylabel(r'${gCNR}$')
     ax.set_xlabel('𝜆 ')
     ax.set_xscale('log')
+    ax.set_ylim(0,1)
 
     ax.legend()
     plt.tight_layout()
@@ -124,7 +117,7 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 20,
+            'font.size': 25,
             'text.usetex': False,
             'font.family': 'stixgeneral',
             'mathtext.fontset': 'stix',
@@ -165,7 +158,8 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16, 9))
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
-    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin, interpolation='none')
+    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax,
+              vmin=rvmin, interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -216,7 +210,8 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[1])
 
-    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin, interpolation='none')
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
+              vmax=vmax, vmin=rvmin, interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',

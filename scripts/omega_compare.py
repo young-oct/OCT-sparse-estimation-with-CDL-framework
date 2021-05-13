@@ -55,7 +55,7 @@ if __name__ == '__main__':
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
     speckle_weight = np.linspace(0.1,1,5)
-    lmbda = 0.1
+    lmbda = 0.05
 
     index = 400 # index A-line
     s_line = abs(snorm[:,index])
@@ -95,15 +95,16 @@ if __name__ == '__main__':
     ho_original = quality.ROI(*homogeneous[0], s_log)
 
     ax = fig.add_subplot(gs[1, 0])
-    ax.imshow(ho_original, 'gray', aspect=ho_original.shape[1] / ho_original.shape[0], vmax=vmax, vmin=rvmin)
+    ax.imshow(ho_original, 'gray', aspect=ho_original.shape[1] / ho_original.shape[0],
+              vmax=vmax, vmin=rvmin,interpolation='none')
     ax.set_axis_off()
     ax.annotate('', xy=(72.5, 10), xycoords='data',
                 xytext=(60, 5), textcoords='data',
                 arrowprops=dict(facecolor='white', shrink=0.05),
                 horizontalalignment='right', verticalalignment='top',
                 )
-    ax.annotate('', xy=(87.5, 55), xycoords='data',
-                xytext=(92.5, 70), textcoords='data',
+    ax.annotate('', xy=(30, 70), xycoords='data',
+                xytext=(35, 78), textcoords='data',
                 arrowprops=dict(facecolor='red', shrink=0.05),
                 horizontalalignment='right', verticalalignment='top',
                 )
@@ -145,14 +146,15 @@ if __name__ == '__main__':
 
         aspect = width / height
         ax = fig.add_subplot(gs[1, i + 1])
-        ax.imshow(ho_x, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+        ax.imshow(ho_x, 'gray', aspect=aspect, vmax=vmax,
+                  vmin=rvmin,interpolation='none')
         ax.annotate('', xy=(72.5, 10), xycoords='data',
                     xytext=(60, 5), textcoords='data',
                     arrowprops=dict(facecolor='white', shrink=0.05),
                     horizontalalignment='right', verticalalignment='top',
                     )
-        ax.annotate('', xy=(87.5, 55), xycoords='data',
-                    xytext=(92.5, 70), textcoords='data',
+        ax.annotate('', xy=(30, 70), xycoords='data',
+                    xytext=(35, 78), textcoords='data',
                     arrowprops=dict(facecolor='red', shrink=0.05),
                     horizontalalignment='right', verticalalignment='top',
                     )

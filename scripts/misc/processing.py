@@ -135,7 +135,8 @@ def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=No
 
     # Weight factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    W = np.roll(getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par=opt_par), np.argmax(D), axis=0)
+
+    W = np.roll(getWeight(s, D, 0.02, speckle_weight, Paddging=True, opt_par=opt_par), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                       'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})

@@ -4,11 +4,8 @@
 # @FileName: weight_compare.py
 # @Software: PyCharm
 
-"""this script generates images for the figure 2 as seen in
-the paper. Sparse reconstructions of the same OCT
-middle ear image using the same learned dictionary for
-optimal values of the weighting parameter and lambda"""
-
+"""Figure 2. Example of applying CBPDN-DL to an
+OCT image of a middle ear with a mask"""
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
