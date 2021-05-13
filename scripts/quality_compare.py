@@ -126,13 +126,13 @@ if __name__ == '__main__':
         r'${C_{{H_1}/{H_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
         r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_s_1, ar_s, N=bin_n)),
+        r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s, N=bin_n)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_s_2, ar_s, N=bin_n)),
+        r'%.2f ' % (quality.log_gCNR(ho_s_2, ar_s, N=bin_n)),
         r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_s_2, ba_s, N=bin_n)),
+        r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s, N=bin_n)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_s_1, ho_s_2, N=bin_n))))
+        r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2, N=bin_n))))
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
             verticalalignment='top', fontname='Arial', color='white')
 
@@ -175,13 +175,13 @@ if __name__ == '__main__':
         r'${C_{{H_1}/{H_2}}}$''\n'
         r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
         r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_x_1, ar_x, N=bin_n)),
+        r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x, N=bin_n)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_x_2, ar_x, N=bin_n)),
+        r'%.2f ' % (quality.log_gCNR(ho_x_2, ar_x, N=bin_n)),
         r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_x_2, ba_x, N=bin_n)),
+        r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x, N=bin_n)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.gCNR(ho_x_1, ho_x_2, N=bin_n))))
+        r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2, N=bin_n))))
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
             verticalalignment='top', fontname='Arial', color='white')
 
@@ -193,10 +193,10 @@ if __name__ == '__main__':
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
              ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
-             ['gCNR ', 'H_1/A', quality.gCNR(ho_s_1, ar_s, N=bin_n), quality.gCNR(ho_x_1, ar_x, N=bin_n)],
-             ['gCNR', 'H_2/B', quality.gCNR(ho_s_2, ba_s, N=bin_n), quality.gCNR(ho_x_2, ba_x, N=bin_n)],
-             ['gCNR', 'H_1/H_2', quality.gCNR(ho_s_1, ho_s_2, N=bin_n), quality.gCNR(ho_x_1, ho_x_2, N=bin_n)],
-             ['gCNR', 'H_2/A', quality.gCNR(ho_s_2, ar_s, N=bin_n), quality.gCNR(ho_x_2, ar_x, N=bin_n)]]
+             ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s, N=bin_n), quality.log_gCNR(ho_x_1, ar_x, N=bin_n)],
+             ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s, N=bin_n), quality.log_gCNR(ho_x_2, ba_x, N=bin_n)],
+             ['gCNR', 'H_1/H_2', quality.log_gCNR(ho_s_1, ho_s_2, N=bin_n), quality.log_gCNR(ho_x_1, ho_x_2, N=bin_n)],
+             ['gCNR', 'H_2/A', quality.log_gCNR(ho_s_2, ar_s, N=bin_n), quality.log_gCNR(ho_x_2, ar_x, N=bin_n)]]
 
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))

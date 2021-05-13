@@ -7,7 +7,8 @@
 import numpy as np
 from skimage.filters import gaussian
 from scipy import stats
-
+import matplotlib.pyplot as plt
+from misc.processing import imag2uint
 def gaussian_blur(noisy, sigma=0.5):
     out = gaussian(noisy, sigma=sigma, output=None, mode='nearest', cval=0,
                    multichannel=None, preserve_range=False, truncate=4.0)
@@ -117,33 +118,51 @@ def Contrast(region_h, region_b):
     return 10*np.log10(contrast)
     # return contrast
 
-def gCNR(region_h, region_b, N):
+def log_gCNR(region_h, region_b, N):
     assert np.size(region_h) == np.size(region_b), \
         'size of image patch'
-
+    
     region_h = np.ravel(region_h)
     region_b = np.ravel(region_b)
 
-    min_val = min(np.min(region_h), np.min(region_b))
-    max_val = max(np.max(region_h), np.max(region_b))
+    
+
+    #min_val = np.min([np.min(region_h), np.min(region_b)])
+    #max_val = np.max([np.max(region_h), np.max(region_b)])
+    
+    rvmin = 65  # dB
+    vmax = 115  # dB
 
     # in histogram when density flag is set to be true, the integral is
     # 1 instead of the cumulative PDF, to address this, bin width needs to
     # be the same
 
-    h_hist, edge = np.histogram(region_h, bins=N, range=(min_val, max_val), density=True)
+    log_h1=imag2uint(10*np.log10(region_h), rvmin, vmax)
+    log_h2=imag2uint(10*np.log10(region_b), rvmin, vmax)
+    N=256
+    min_val=0
+    max_val=255
+    
+    #plt.figure()
+    h_hist, edge = np.histogram(log_h1, bins=N, range=(min_val, max_val), density=True)
+    #plt.hist(log_h1, bins=N, range=(min_val, max_val), density=True, histtype='step',label='h1')
     h_hist = h_hist * np.diff(edge)
 
-    b_hist, edge = np.histogram(region_b, bins=N, range=(min_val, max_val), density=True)
+    
+
+    b_hist, edge = np.histogram(log_h2, bins=N, range=(min_val, max_val), density=True)
+    #plt.hist(log_h2, bins=N, range=(min_val, max_val), density=True, histtype='step',label='h2')
     b_hist = b_hist * np.diff(edge)
-
+    #plt.ylim([0, 1.3e-8])
+    plt.legend()
     ovl = 0
-
-    for i in range(N - 1):
+    print(sum(b_hist))
+    print(sum(h_hist))
+    for i in range(1,N):
 
         ovl += min(h_hist[i], b_hist[i])
 
     return 1 - ovl
 
-
+    
 
