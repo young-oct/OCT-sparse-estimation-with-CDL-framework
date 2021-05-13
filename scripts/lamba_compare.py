@@ -37,7 +37,6 @@ if __name__ == '__main__':
     vmax = 115  # dB
 
     s_log = 20 * np.log10(abs(s))
-    s_log = filters.median(s_log, disk(1))
 
     # l2 norm data and save the scaling factor
     _, snorm = processing.to_l2_normed(s)
@@ -54,8 +53,7 @@ if __name__ == '__main__':
 
         x, line = processing.make_sparse_representation(s, D, lmbda[i], speckle_weight,Line=True,index = index )
         x_log = 20 * np.log10(abs(x))
-        sparse[:,:,i] = filters.median(x_log, disk(1))
-        # sparse[:,:,i] = x_log
+        sparse[:,:,i] = x_log
 
         x_line[:, i] = line
 
@@ -69,7 +67,7 @@ if __name__ == '__main__':
 
     aspect = s_log.shape[1] / s_log.shape[0]
     ax = fig.add_subplot(gs[0, 0])
-    ax.imshow(s_log, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin)
+    ax.imshow(s_log, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin,interpolation='none')
     ax.set_axis_off()
     ax.set_title('reference', fontname='Arial')
     ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
@@ -84,7 +82,7 @@ if __name__ == '__main__':
     ho_original = quality.ROI(*homogeneous[0], s_log)
 
     ax = fig.add_subplot(gs[1, 0])
-    ax.imshow(ho_original, 'gray', aspect=ho_original.shape[1] / ho_original.shape[0], vmax=vmax, vmin=rvmin)
+    ax.imshow(ho_original, 'gray', aspect=ho_original.shape[1] / ho_original.shape[0], vmax=vmax, vmin=rvmin,interpolation='none')
     ax.set_axis_off()
     ax.annotate('', xy=(72.5, 10), xycoords='data',
                 xytext=(60, 5), textcoords='data',
