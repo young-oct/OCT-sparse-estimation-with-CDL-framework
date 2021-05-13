@@ -144,7 +144,12 @@ def log_gCNR(region_h, region_b):
     b_hist = b_hist * np.diff(edge)
 
     ovl = 0
+<<<<<<< HEAD
 
+=======
+    print(sum(b_hist))
+    print(sum(h_hist))
+>>>>>>> parent of ec8cb14 (Include 0 intensity point in gCNR calculations)
     for i in range(1,N):
 
         ovl += min(h_hist[i], b_hist[i])
