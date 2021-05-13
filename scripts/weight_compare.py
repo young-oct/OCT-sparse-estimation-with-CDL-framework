@@ -83,9 +83,11 @@ def plot_images(plot_titles, image,
 
 
             if n == 2 and overlays == True:
+                ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray', interpolation='none')
                 ax.contour(mask, [0.99],colors='orange',alpha = 0.75, linestyles = 'dashed')
 
             else:
+                ax.imshow(im,aspect= im.shape[1]/im.shape[0], vmax=vmax, vmin=vmin, cmap='gray', interpolation='none')
 
         else:
             ax.plot(im)
