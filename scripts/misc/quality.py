@@ -145,7 +145,7 @@ def log_gCNR(region_h, region_b):
 
     ovl = 0
 
-    for i in range(1,N):
+    for i in range(0,N):
 
         ovl += min(h_hist[i], b_hist[i])
 
