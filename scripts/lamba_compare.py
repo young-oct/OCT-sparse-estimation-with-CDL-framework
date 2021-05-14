@@ -41,7 +41,9 @@ if __name__ == '__main__':
     _, snorm = processing.to_l2_normed(s)
 
     speckle_weight = 0.1
-    lmbda = [0.01,0.06,0.12,0.24,0.48]
+
+    lmbda = np.linspace(0, 0.2,5)
+    lmbda[0]=0.01
     w_lmbda = 0.02
 
     index = 400 # index A-line

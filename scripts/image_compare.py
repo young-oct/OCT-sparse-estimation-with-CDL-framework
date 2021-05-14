@@ -38,7 +38,7 @@ if __name__ == '__main__':
     original = []
     sparse = []
 
-    lmbda = [0.06,0.06,0.02,0.05]
+    lmbda = [0.05,0.06,0.02,0.04]
     w_lmbda = 0.02
     speckle_weight = 0.1
     rvmin = 65  # dB

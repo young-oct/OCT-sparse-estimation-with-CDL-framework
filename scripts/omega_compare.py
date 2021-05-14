@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
     speckle_weight = np.linspace(0.1,1,5)
-    lmbda = 0.06
+    lmbda = 0.05
     w_lmbda = 0.02
 
     index = 400 # index A-line

@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2021-05-07 2:54 p.m.
+# @Time    : 2021-05-14 4:00 p.m.
 # @Author  : young wang
-# @FileName: lambda_gCNR.py
+# @FileName: lamba_gCNR(nail).py
 # @Software: PyCharm
+
 
 """this script generates images for the figure 5 as seen in
 the paper. Sparse reconstructions of the same OCT
@@ -16,14 +17,13 @@ from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from tabulate import tabulate
 
-bin_n = 200
 # Define ROIs
 roi = {}
 width, height = (20, 10)
-roi['artifact'] = [[212, 142, int(width * 1.2), int(height * 1.2)]]
-roi['background'] = [[390, 247, int(width * 1.2), int(height * 1.2)]]
-roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
-                      [390, 225, int(width * 1.2), int(height * 1.2)]]
+roi['artifact'] = [[212, 190, int(width * 1.2), int(height * 1.2)]]
+roi['background'] = [[390, 310, int(width * 1.2), int(height * 1.2)]]
+roi['homogeneous'] = [[212, 205, int(width * 1.2), int(height * 1.2)],
+                      [390, 235, int(width * 1.2), int(height * 1.2)]]
 
 
 # Module level constants
@@ -66,14 +66,6 @@ def lmbda_search(s,lmbda,speckle_weight):
 
 def value_plot(lmbda,value):
 
-    fig,ax = plt.subplots(1,1, figsize=(16,9))
-    ax.set_title(r'$gCNR$ versus 𝜆 curves')
-    reference = []
-
-    for i in range(4):
-        temp = value[0]
-        reference.append(temp[i][0])
-
     gcnrh1a,gcnrh2b,gcnrh12,gcnrh2a = [],[],[],[]
     for i in range(len(value)):
 
@@ -82,27 +74,6 @@ def value_plot(lmbda,value):
         gcnrh2b.append(temp[1][1])
         gcnrh12.append(temp[2][1])
         gcnrh2a.append(temp[3][1])
-
-    ax.plot(lmbda, gcnrh1a,color='green', label = r'${gCNR_{{H_1}/{A}}}$')
-    ax.axhline(reference[0],color='green',linestyle = '--')
-
-    ax.plot(lmbda, gcnrh2b,color='red',label = r'${gCNR_{{H_2}/{B}}}$')
-    ax.axhline(reference[1],color='red',linestyle = '--')
-
-    ax.plot(lmbda, gcnrh12, color='orange',label = r'${gCNR_{{H_1}/{H_2}}}$')
-    ax.axhline(reference[2],color='orange',linestyle = '--')
-
-    ax.plot(lmbda, gcnrh2a, color='purple',label = r'${gCNR_{{H_2}/{A}}}$')
-    ax.axhline(reference[3],color='purple',linestyle = '--')
-
-    ax.set_ylabel(r'${gCNR}$')
-    ax.set_xlabel('𝜆 ')
-    ax.set_xscale('log')
-    ax.set_ylim(0,1)
-
-    ax.legend()
-    plt.tight_layout()
-    plt.show()
 
     return lmbda[np.argmax(gcnrh2a)]
 
@@ -123,7 +94,7 @@ if __name__ == '__main__':
             'mathtext.fontset': 'stix',
         }
     )
-    file_name = 'finger'
+    file_name = 'nail'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
     lmbda = np.logspace(-4,-0.5,20)
@@ -134,6 +105,7 @@ if __name__ == '__main__':
 
     best = value_plot(lmbda,value)
 
+    best = 0.01
     x = processing.make_sparse_representation(s,D, best,w_lmbda,speckle_weight)
 
     # Generate log intensity arrays
@@ -185,7 +157,7 @@ if __name__ == '__main__':
 
     text = r'${B}$'
     ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
-                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
+                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] - 30), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='left', verticalalignment='top')
@@ -248,7 +220,7 @@ if __name__ == '__main__':
 
     text = r'${B}$'
     ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
-                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
+                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] - 30), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='left', verticalalignment='top')
