@@ -96,11 +96,11 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
     height = 0
     if Ear == True:
 
-        W = dilation(x_log, star(1))
-        W = erosion(W, square(2))
+        W = dilation(x_log, disk(2))
+        W = erosion(W, disk(2))
         W = np.where(W > 0, speckle_weight, 1)
-        W = filters.median(W, disk(6))
-        height = 0.8
+        W = filters.median(W, square(7))
+        height = 0.1
 
     else:
         W = dilation(x_log, square(3))

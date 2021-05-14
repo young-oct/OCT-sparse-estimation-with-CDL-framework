@@ -41,7 +41,8 @@ if __name__ == '__main__':
     _, snorm = processing.to_l2_normed(s)
 
     speckle_weight = 0.1
-    lmbda = np.logspace(-2, -0.5, 5)
+    lmbda = [0.01,0.04,0.8,1]
+    w_lmbda = 0.02
 
     index = 400 # index A-line
     s_line = abs(snorm[:,index])
@@ -50,7 +51,7 @@ if __name__ == '__main__':
     sparse = np.zeros((snorm.shape[0], snorm.shape[1], len(lmbda)))
     for i in range(len(lmbda)):
 
-        x, line = processing.make_sparse_representation(s, D, lmbda[i], speckle_weight,Line=True,index = index, Ear=True )
+        x, line = processing.make_sparse_representation(s, D, lmbda[i],w_lmbda, speckle_weight,Line=True,index = index, Ear=True )
         x_log = 20 * np.log10(abs(x))
         sparse[:,:,i] = x_log
 

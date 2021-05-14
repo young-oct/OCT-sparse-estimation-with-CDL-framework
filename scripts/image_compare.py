@@ -39,11 +39,13 @@ if __name__ == '__main__':
     sparse = []
 
     lmbda = 0.04
+    w_lmbda = 0.02
     speckle_weight = 0.1
     rvmin = 65  # dB
     vmax = 115  # dB
 
     for i in range(len(file_name)):
+        Ear = False
         # Load the example dataset
         s, D = processing.load_data(file_name[i], decimation_factor=20)
         # l2 norm data and save the scaling factor
@@ -54,7 +56,11 @@ if __name__ == '__main__':
                                           'RelaxParam': 1.515, 'AutoRho': {'Enabled': True}})
 
         # obtain weighting mask
-        x = processing.make_sparse_representation(s, D, lmbda, speckle_weight)
+        if file_name[i] == 'ear':
+            Ear = True
+        else:
+            pass
+        x = processing.make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight,Ear= Ear)
 
         x_log = 20 * np.log10(abs(x))
         s_log = 20 * np.log10(abs(s))

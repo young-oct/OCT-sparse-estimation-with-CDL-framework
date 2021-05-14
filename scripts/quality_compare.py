@@ -52,7 +52,7 @@ if __name__ == '__main__':
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
 
-    lmbda = 0.0448
+    lmbda = 0.04
     w_lmbda = 0.02
 
     x = processing.make_sparse_representation(s,D, lmbda,w_lmbda, speckle_weight)

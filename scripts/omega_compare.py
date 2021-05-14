@@ -55,7 +55,9 @@ if __name__ == '__main__':
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
     speckle_weight = np.linspace(0.1,1,5)
-    lmbda = 0.05
+    lmbda = 0.04
+    w_lmbda = 0.02
+
 
     index = 400 # index A-line
     s_line = abs(snorm[:,index])
@@ -68,7 +70,8 @@ if __name__ == '__main__':
 
     for i in range(len(speckle_weight)):
 
-        x, line = processing.make_sparse_representation(s, D, lmbda, speckle_weight[i],Line=True,index = index , Ear=True)
+        x, line = processing.make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight[i],Line=True,
+                                                        index = index , Ear=True)
         x_log = 20 * np.log10(abs(x))
         sparse[:,:,i] = x_log
         x_line[:, i] = line
