@@ -52,9 +52,10 @@ if __name__ == '__main__':
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
 
-    lmbda = 0.02
+    lmbda = 0.0448
+    w_lmbda = 0.02
 
-    x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
+    x = processing.make_sparse_representation(s,D, lmbda,w_lmbda, speckle_weight)
 
     # Generate log intensity arrays
     s_log = 20 * np.log10(abs(s))
@@ -76,7 +77,8 @@ if __name__ == '__main__':
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
-    fig = plt.figure(figsize=(16, 9))
+    fig = plt.figure(figsize=(18, 13), constrained_layout = True)
+
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0],
@@ -129,15 +131,15 @@ if __name__ == '__main__':
         r'${SNR_{{H_2}/B}}$: %.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
         r'${C_{{H_2}/B}}$: %.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
         r'${C_{{H_1}/{H_2}}}$: %.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=26,
             verticalalignment='top', fontname='Arial', color='white')
 
     textstr = '\n'.join((
-        '\t'*5+r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ar_s)),
-        '\t'*5+r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_2, ar_s)),
-        '\t'*5+r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(ho_s_2, ba_s)),
-        '\t'*5+r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ho_s_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
+        r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ar_s)),
+        r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_2, ar_s)),
+        r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(ho_s_2, ba_s)),
+        r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ho_s_2))))
+    ax.text(0.675, 0.98, textstr, transform=ax.transAxes, fontsize=26,
             verticalalignment='top', fontname='Arial', color='white')
 
     ax = fig.add_subplot(gs[1])
@@ -186,30 +188,21 @@ if __name__ == '__main__':
         for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
             ax.add_patch(j)
 
-    from scipy.ndimage import median_filter
-    
-    #ho_x_1=median_filter(ho_x_1,size=(3,3) )
-    #ho_x_2=median_filter(ho_x_2,size=(3,3) )
-    #ho_s_1=median_filter(ho_s_1,size=(3,3) )
-    #ho_s_2=median_filter(ho_s_2,size=(3,3) )
-    
-
     textstr = '\n'.join((
-        '\t'*5+r'${SNR_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.SNR(ho_x_2, ba_x)),
-        '\t'*5+r'${C_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_2, ba_x)),
-        '\t'*5+r'${C_{{H_1}/{H_2}}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_1, ho_x_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
+        r'${SNR_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.SNR(ho_x_2, ba_x)),
+        r'${C_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_2, ba_x)),
+        r'${C_{{H_1}/{H_2}}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_1, ho_x_2))))
+    ax.text(0.675, 0.98, textstr, transform=ax.transAxes, fontsize=26,
             verticalalignment='top', fontname='Arial', color='white')
 
     textstr = '\n'.join((
-        r'${gCNR_{{H_1}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_1, ar_x)),
-        r'${gCNR_{{H_2}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ar_x)),
-        r'${gCNR_{{H_2}/B}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ba_x)),
-        r'${gCNR_{{H_1}/{H_2}}}: $%.2f' % (quality.log_gCNR(ho_x_1, ho_x_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
+        r'${gCNR_{{H_1}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_1, ar_x,improvement=True)),
+        r'${gCNR_{{H_2}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ar_x,improvement=True)),
+        r'${gCNR_{{H_2}/B}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ba_x,improvement=True)),
+        r'${gCNR_{{H_1}/{H_2}}}: $%.2f' % (quality.log_gCNR(ho_x_1, ho_x_2,improvement=True))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=26,
             verticalalignment='top', fontname='Arial', color='white')
 
-    plt.tight_layout()
     plt.show()
 
     # table formant original then sparse

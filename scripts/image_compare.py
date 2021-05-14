@@ -19,7 +19,6 @@ from misc import processing
 # Module level constants
 eps = 1e-14
 
-
 if __name__ == '__main__':
 
     plt.close('all')

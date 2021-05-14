@@ -145,6 +145,7 @@ if __name__ == '__main__':
     # in regions segmented as containing speckle
     speckle_weight = 0.1
     lmbda = 0.04
+    w_lmbda = 0.02
 
     b0 = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
     x0norm = b0.solve().squeeze() + eps
@@ -158,11 +159,11 @@ if __name__ == '__main__':
     r0_log = 20 * np.log10(abs(r0))
 
     # update opt to include W
-    x1, W = processing.make_sparse_representation(s, D, lmbda, speckle_weight, Mask=True, Ear=True)
+    x1, W = processing.make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Mask=True, Ear=True)
     x1_log = 20 * np.log10(abs(x1))
 
     title = ['(a) reference',
-             '(b) learned PSF',
+             '(b) Magnitude of the learned PSF $d(z)$',
              '(c) sparse estimation image\n 𝜆 = %.2f' % (lmbda),
              '(d) sparse vector image \nwo/weighting (𝜆 = %.2f)' % (lmbda),
              '(e) sparse vector image \nw/weighting (𝜆 = %.2f,$\omega$ = %.1f)' % (lmbda, speckle_weight)]

@@ -40,7 +40,6 @@ def plot_images(plot_titles, image,
 
         if n != 1:
 
-
             if n == 3 and overlays == True:
                 ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray', interpolation='none')
                 ax.contour(mask, [0.99], colors='orange', alpha=0.75, linestyles='dashed')
@@ -99,6 +98,7 @@ if __name__ == '__main__':
     W = []
 
     lmbda = 0.04
+    w_lmbda = 0.02
     speckle_weight = 0.1
     rvmin = 65  # dB
     vmax = 115  # dB
@@ -120,7 +120,7 @@ if __name__ == '__main__':
             Ear = True
         else:
             Ear = False
-        x,mask = processing.make_sparse_representation(s, D, lmbda, speckle_weight, Mask = True, Ear = Ear)
+        x,mask = processing.make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Mask = True, Ear = Ear)
 
         x_log = 20 * np.log10(abs(x))
         s_log = 20 * np.log10(abs(s))

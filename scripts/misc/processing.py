@@ -75,10 +75,10 @@ def load_data(dataset_name, decimation_factor, data_only=False):
             raise Exception("Dataset %s not found" % dataset_name)
 
 
-def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False):
+def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False):
     l2f, snorm = to_l2_normed(s)
 
-    b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
+    b = cbpdn.ConvBPDN(D, snorm, w_lmbda, opt=opt_par, dimK=1, dimN=1)
     # Calculate the sparse vector and an an epsilon to keep the log finite
     xnorm = b.solve().squeeze() + eps
     # Caclulate sparse reconstruction
@@ -92,16 +92,20 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False
 
     # set thresdhold
     x_log = np.where(x_log <= rvmin, 0, x_log)
-    W = dilation(x_log, square(3))
-    W = erosion(W, square(3))
-    W = np.where(W > 0, speckle_weight, 1)
 
+    height = 0
     if Ear == True:
 
-        W = filters.median(W,square(8))
+        W = dilation(x_log, star(1))
+        W = erosion(W, square(2))
+        W = np.where(W > 0, speckle_weight, 1)
+        W = filters.median(W, disk(6))
+        height = 0.8
 
     else:
-
+        W = dilation(x_log, square(3))
+        W = erosion(W, square(3))
+        W = np.where(W > 0, speckle_weight, 1)
         W = filters.median(W, square(17))
 
     if Paddging == True:
@@ -113,7 +117,7 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False
         pad_value = np.linspace(speckle_weight, 1, pad)
 
         for i in range(temp.shape[1]):
-            peak, _ = find_peaks(temp[:, i], height=0)
+            peak, _ = find_peaks(temp[:, i], height=height)
             if len(peak) != 0:
                 loc = peak[-1]
                 if temp.shape[0] - loc >= pad:
@@ -127,7 +131,7 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False
 
     return W
 
-def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=None, Mask=False, Ear =False):
+def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Line=False, index=None, Mask=False, Ear =False):
     ''' s -- 2D array of complex A-lines with dims (width, depth)
     '''
     # l2 norm data and save the scaling factor
@@ -145,7 +149,7 @@ def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=No
     # else:
     #     pass
 
-    W = np.roll(getWeight(s, D, w_lambda, speckle_weight, Paddging=True, opt_par=opt_par,Ear = Ear), np.argmax(D), axis=0)
+    W = np.roll(getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par=opt_par,Ear = Ear), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                       'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})

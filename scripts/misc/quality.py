@@ -6,9 +6,10 @@
 
 import numpy as np
 from skimage.filters import gaussian
-from scipy import stats
-import matplotlib.pyplot as plt
+from scipy.ndimage import median_filter
 from misc.processing import imag2uint
+
+
 def gaussian_blur(noisy, sigma=0.5):
     out = gaussian(noisy, sigma=sigma, output=None, mode='nearest', cval=0,
                    multichannel=None, preserve_range=False, truncate=4.0)
@@ -118,12 +119,19 @@ def Contrast(region_h, region_b):
     return 10*np.log10(contrast)
     # return contrast
 
-def log_gCNR(region_h, region_b):
+def log_gCNR(region_h, region_b, improvement = False):
     assert np.size(region_h) == np.size(region_b), \
         'size of image patch'
-    
+
+    if improvement == True:
+        region_h = median_filter(region_h,size=(3,3))
+        region_b = median_filter(region_b,size=(3,3))
+    else:
+        pass
+
     region_h = np.ravel(region_h)
     region_b = np.ravel(region_b)
+
 
     N = 256
 

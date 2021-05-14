@@ -28,10 +28,10 @@ roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
 
 # Module level constants
 eps = 1e-14
+w_lmbda = 0.02
 
 def lmbda_search(s,lmbda,speckle_weight):
-    # print("Calculating gCNR for labmda = %f" % lmbda)
-    x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
+    x = processing.make_sparse_representation(s,D, lmbda,w_lmbda,speckle_weight)
 
     s_intensity = abs(s)**2
     x_intensity = abs(x)**2
@@ -134,7 +134,7 @@ if __name__ == '__main__':
 
     best = value_plot(lmbda,value)
 
-    x = processing.make_sparse_representation(s,D, best, speckle_weight)
+    x = processing.make_sparse_representation(s,D, best,w_lmbda,speckle_weight)
 
     # Generate log intensity arrays
     s_intensity = abs(s) ** 2
@@ -156,6 +156,7 @@ if __name__ == '__main__':
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
     fig = plt.figure(figsize=(18, 13), constrained_layout=True)
+
     gs = gridspec.GridSpec(ncols=3, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax,
@@ -205,25 +206,18 @@ if __name__ == '__main__':
             ax.add_patch(j)
 
     textstr = '\n'.join((
-        r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
-        r'${C_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
-        r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        r'${SNR_{{H_2}/B}}$: %.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
+        r'${C_{{H_2}/B}}$: %.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
+        r'${C_{{H_1}/{H_2}}}$: %.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
+    ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=22,
             verticalalignment='top', fontname='Arial', color='white')
 
     textstr = '\n'.join((
-        r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s)),
-        r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ar_s)),
-        r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s)),
-        r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2))))
-    ax.text(0.75, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ar_s)),
+        r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_2, ar_s)),
+        r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(ho_s_2, ba_s)),
+        r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ho_s_2))))
+    ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=22,
             verticalalignment='top', fontname='Arial', color='white')
 
     ax = fig.add_subplot(gs[1])
@@ -273,25 +267,18 @@ if __name__ == '__main__':
             ax.add_patch(j)
 
     textstr = '\n'.join((
-        r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.SNR(ho_x_2, ba_x)),
-        r'${C_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_x_2, ba_x)),
-        r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_x_1, ho_x_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        r'${SNR_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.SNR(ho_x_2, ba_x)),
+        r'${C_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_2, ba_x)),
+        r'${C_{{H_1}/{H_2}}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_1, ho_x_2))))
+    ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=22,
             verticalalignment='top', fontname='Arial', color='white')
 
     textstr = '\n'.join((
-        r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x)),
-        r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ar_x)),
-        r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x)),
-        r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2))))
-    ax.text(0.75, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        r'${gCNR_{{H_1}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_1, ar_x)),
+        r'${gCNR_{{H_2}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ar_x)),
+        r'${gCNR_{{H_2}/B}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ba_x)),
+        r'${gCNR_{{H_1}/{H_2}}}: $%.2f' % (quality.log_gCNR(ho_x_1, ho_x_2))))
+    ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=22,
             verticalalignment='top', fontname='Arial', color='white')
 
     ax = fig.add_subplot(gs[2])
@@ -326,13 +313,14 @@ if __name__ == '__main__':
     ax.plot(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
     ax.axhline(reference[3], color='purple', linestyle='--')
 
-    ax.set_ylabel(r'${gCNR}$')
+    ax.set_ylabel(r'${gCNR}$',fontsize=20)
+
     ax.set_xlabel('𝜆 ')
     ax.set_xscale('log')
-    ax.set_ylim(0, 1)
+    ax.set_ylim(0.35, 1)
+    ax.set_aspect(4.5)
     ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
        ncol=2, mode="expand", borderaxespad=0., fontsize = 18)
-    ax.set_aspect(2.75)
 
     plt.show()
 
