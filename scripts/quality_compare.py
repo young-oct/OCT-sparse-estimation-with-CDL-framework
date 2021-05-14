@@ -126,25 +126,18 @@ if __name__ == '__main__':
             ax.add_patch(j)
 
     textstr = '\n'.join((
-        r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
-        r'${C_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
-        r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        r'${SNR_{{H_2}/B}}$: %.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
+        r'${C_{{H_2}/B}}$: %.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
+        r'${C_{{H_1}/{H_2}}}$: %.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
             verticalalignment='top', fontname='Arial', color='white')
 
     textstr = '\n'.join((
-        r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s)),
-        r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ar_s)),
-        r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s)),
-        r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2))))
-    ax.text(0.16, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        '\t'*5+r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ar_s)),
+        '\t'*5+r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_2, ar_s)),
+        '\t'*5+r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(ho_s_2, ba_s)),
+        '\t'*5+r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ho_s_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
             verticalalignment='top', fontname='Arial', color='white')
 
     ax = fig.add_subplot(gs[1])
@@ -202,25 +195,18 @@ if __name__ == '__main__':
     
 
     textstr = '\n'.join((
-        r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.SNR(ho_x_2, ba_x)),
-        r'${C_{{H_2}/B}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_x_2, ba_x)),
-        r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f $dB$' % (quality.Contrast(ho_x_1, ho_x_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        '\t'*5+r'${SNR_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.SNR(ho_x_2, ba_x)),
+        '\t'*5+r'${C_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_2, ba_x)),
+        '\t'*5+r'${C_{{H_1}/{H_2}}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_1, ho_x_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
             verticalalignment='top', fontname='Arial', color='white')
 
     textstr = '\n'.join((
-        r'${gCNR_{{H_1}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x)),
-        r'${gCNR_{{H_2}/{A}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ar_x)),
-        r'${gCNR_{{H_2}/B}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x)),
-        r'${gCNR_{{H_1}/{H_2}}}$''\n'
-        r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2))))
-    ax.text(0.16, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+        r'${gCNR_{{H_1}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_1, ar_x)),
+        r'${gCNR_{{H_2}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ar_x)),
+        r'${gCNR_{{H_2}/B}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ba_x)),
+        r'${gCNR_{{H_1}/{H_2}}}: $%.2f' % (quality.log_gCNR(ho_x_1, ho_x_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=24,
             verticalalignment='top', fontname='Arial', color='white')
 
     plt.tight_layout()
