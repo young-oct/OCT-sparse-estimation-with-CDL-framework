@@ -33,12 +33,12 @@ if __name__ == '__main__':
     )
 
     file_name = ['ear', 'finger', 'nail', 'onion']
-    title_name = ['(a) middle ear', '(b) index finger (palmar view)', '(c) index finger (side view)', '(d)onion slice']
+    title_name = ['(a) middle ear', '(b) index finger (palmar view)', '(c) index finger (side view)', '(d) onion slice']
 
     original = []
     sparse = []
 
-    lmbda = 0.04
+    lmbda = [0.06,0.06,0.02,0.05]
     w_lmbda = 0.02
     speckle_weight = 0.1
     rvmin = 65  # dB
@@ -60,7 +60,7 @@ if __name__ == '__main__':
             Ear = True
         else:
             pass
-        x = processing.make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight,Ear= Ear)
+        x = processing.make_sparse_representation(s, D, lmbda[i],w_lmbda, speckle_weight,Ear= Ear)
 
         x_log = 20 * np.log10(abs(x))
         s_log = 20 * np.log10(abs(s))
@@ -78,7 +78,7 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(nrows=2, ncols=4, sharey=True, sharex=True, figsize=(16, 9),constrained_layout=True )
 
     for i in range(len(file_name)):
-        title = '\n'.join((title_name[i],'𝜆 = %.2f $\omega$ = %.1f' % (lmbda, speckle_weight)))
+        title = '\n'.join((title_name[i],'𝜆 = %.2f $\omega$ = %.1f' % (lmbda[i], speckle_weight)))
 
         ax[0, i].set_title(title,fontsize=20)
         ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')

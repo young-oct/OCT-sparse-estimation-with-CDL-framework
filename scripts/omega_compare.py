@@ -14,12 +14,9 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
-from skimage.morphology import disk
-from skimage.morphology import dilation, erosion
+import matplotlib.patches as patches
 from misc import processing,quality,annotation
-from skimage import filters
 
-from functools import partial
 
 # Module level constants
 eps = 1e-14
@@ -55,9 +52,8 @@ if __name__ == '__main__':
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
     speckle_weight = np.linspace(0.1,1,5)
-    lmbda = 0.04
+    lmbda = 0.06
     w_lmbda = 0.02
-
 
     index = 400 # index A-line
     s_line = abs(snorm[:,index])
@@ -78,8 +74,6 @@ if __name__ == '__main__':
 
     width, height = (100, 80)
     homogeneous = [[125, 120, width, height]]
-    # artifact = [[75, 5, 10, 8]]
-    # background = [[425, 250, width - 25, height - 20]]
 
     fig = plt.figure(constrained_layout=True, figsize=(16, 9))
     gs = fig.add_gridspec(ncols=len(speckle_weight) + 1, nrows=3)
@@ -106,14 +100,9 @@ if __name__ == '__main__':
                 arrowprops=dict(facecolor='white', shrink=0.05),
                 horizontalalignment='right', verticalalignment='top',
                 )
-    ax.annotate('', xy=(30, 70), xycoords='data',
-                xytext=(35, 78), textcoords='data',
-                arrowprops=dict(facecolor='red', shrink=0.05),
-                horizontalalignment='right', verticalalignment='top',
-                )
-    # for k in range(len(artifact)):
-    #     for j in annotation.get_artifact(*artifact[k]):
-    #         ax.add_patch(j)
+    circ = patches.Circle((80, 55), 15, alpha=1, fill=False,edgecolor = 'red',
+                          linestyle='--',transform=ax.transData)
+    ax.add_patch(circ)
 
     ax = fig.add_subplot(gs[2, 0])
     ax.plot(s_line)
@@ -132,9 +121,7 @@ if __name__ == '__main__':
         ax.imshow(sparse[:, :, i], 'gray', aspect=aspect, vmax=vmax, vmin=rvmin,interpolation='none')
         ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
         ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
-        # for k in range(len(background)):
-        #     for j in annotation.get_background(*background[k]):
-        #         ax.add_patch(j)
+
 
         ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda, speckle_weight[i]))
         ax.set_axis_off()
@@ -143,9 +130,7 @@ if __name__ == '__main__':
                 ax.add_patch(j)
 
         ho_x = quality.ROI(*homogeneous[0], sparse[:, :, i])
-        # temp = np.where(sparse[:, :, i] <= rvmin,0,sparse[:, :, i])
-        # ba_x = quality.ROI(*background[0], temp)
-        # ar_x = quality.ROI(*artifact[0], temp)
+
 
         aspect = width / height
         ax = fig.add_subplot(gs[1, i + 1])
@@ -156,14 +141,9 @@ if __name__ == '__main__':
                     arrowprops=dict(facecolor='white', shrink=0.05),
                     horizontalalignment='right', verticalalignment='top',
                     )
-        ax.annotate('', xy=(30, 70), xycoords='data',
-                    xytext=(35, 78), textcoords='data',
-                    arrowprops=dict(facecolor='red', shrink=0.05),
-                    horizontalalignment='right', verticalalignment='top',
-                    )
-        # for k in range(len(artifact)):
-        #     for j in annotation.get_artifact(*artifact[k]):
-        #         ax.add_patch(j)
+        circ = patches.Circle((80, 55), 15, alpha=1, fill=False, edgecolor='red',
+                              linestyle='--', transform=ax.transData)
+        ax.add_patch(circ)
 
         ax.set_axis_off()
 
