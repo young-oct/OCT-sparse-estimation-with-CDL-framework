@@ -64,10 +64,10 @@ if __name__ == '__main__':
     x_log = 20 * np.log10(abs(x))
 
     s_intensity = abs(s) ** 2
-    s_intensity = filters.median(s_intensity, disk(1))
+    #s_intensity = filters.median(s_intensity, disk(1))
 
     x_intensity = abs(x) ** 2
-    x_intensity = filters.median(x_intensity, disk(1))
+    #x_intensity = filters.median(x_intensity, disk(1))
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
