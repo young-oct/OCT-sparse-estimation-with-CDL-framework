@@ -30,7 +30,7 @@ roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
 eps = 1e-14
 
 def lmbda_search(s,lmbda,speckle_weight):
-    print("Calculating gCNR for labmda = %f" % lmbda)
+    # print("Calculating gCNR for labmda = %f" % lmbda)
     x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
 
     s_intensity = abs(s)**2
@@ -49,14 +49,6 @@ def lmbda_search(s,lmbda,speckle_weight):
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
     # calcuate image quality metrics
-    #'SNR', 'H_2/B'
-    # snrh2b = quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)
-
-    #'Contrast', 'H_2/B',
-    # conh2b = quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)
-
-    #'Contrast', 'H_1/H_2',
-    # conh1h2= quality.Contrast(ho_s_1, ba_s), quality.Contrast(ho_x_1, ba_x)
 
     #'gCNR ', 'H_1/A',
     gcnrh1a = quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)
@@ -75,7 +67,7 @@ def lmbda_search(s,lmbda,speckle_weight):
 def value_plot(lmbda,value):
 
     fig,ax = plt.subplots(1,1, figsize=(16,9))
-    fig.suptitle(r'$gCNR$ versus 𝜆 curves')
+    ax.set_title(r'$gCNR$ versus 𝜆 curves')
     reference = []
 
     for i in range(4):
@@ -106,6 +98,7 @@ def value_plot(lmbda,value):
     ax.set_ylabel(r'${gCNR}$')
     ax.set_xlabel('𝜆 ')
     ax.set_xscale('log')
+    ax.set_ylim(0,1)
 
     ax.legend()
     plt.tight_layout()
@@ -124,7 +117,7 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 20,
+            'font.size': 25,
             'text.usetex': False,
             'font.family': 'stixgeneral',
             'mathtext.fontset': 'stix',
@@ -162,10 +155,11 @@ if __name__ == '__main__':
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
-    fig = plt.figure(figsize=(16, 9))
-    gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
+    fig = plt.figure(figsize=(18, 13), constrained_layout=True)
+    gs = gridspec.GridSpec(ncols=3, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
-    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin, interpolation='none')
+    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax,
+              vmin=rvmin, interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -176,13 +170,27 @@ if __name__ == '__main__':
 
     text = r'${H_{2}}$'
     ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] + 50), textcoords='data', fontsize=30,
+                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] ), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
+    text = r'${A}$'
+    ax.annotate(text, xy=(roi['artifact'][0][0]+width , roi['artifact'][0][1] ), xycoords='data',
+                xytext=(roi['artifact'][0][0] + 2*width, roi['artifact'][0][1] - 40 ), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    text = r'${B}$'
+    ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
+                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
     ax.set_axis_off()
-    ax.set_title('reference')
+    ax.set_title('(a) reference', fontsize= 28)
 
     ax.set_aspect(s_log.shape[1] / s_log.shape[0])
 
@@ -198,11 +206,15 @@ if __name__ == '__main__':
 
     textstr = '\n'.join((
         r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.SNR(ho_s_2, ba_s)),
+        r'%.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
         r'${C_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_s_2, ba_s)),
+        r'%.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
         r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
+        r'%.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+            verticalalignment='top', fontname='Arial', color='white')
+
+    textstr = '\n'.join((
         r'${gCNR_{{H_1}/{A}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
@@ -211,12 +223,13 @@ if __name__ == '__main__':
         r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
+    ax.text(0.75, 0.98, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='white')
 
     ax = fig.add_subplot(gs[1])
 
-    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin, interpolation='none')
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
+              vmax=vmax, vmin=rvmin, interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -227,12 +240,26 @@ if __name__ == '__main__':
 
     text = r'${H_{2}}$'
     ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] + 50), textcoords='data', fontsize=30,
+                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] ), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
-    ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (best, speckle_weight))
+    text = r'${A}$'
+    ax.annotate(text, xy=(roi['artifact'][0][0]+width , roi['artifact'][0][1] ), xycoords='data',
+                xytext=(roi['artifact'][0][0] + 2*width, roi['artifact'][0][1] - 40 ), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    text = r'${B}$'
+    ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
+                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    ax.set_title('(b) 𝜆 = %.2f \n $\omega$ = %.1f' % (best, speckle_weight),fontsize = 28)
 
     ax.set_axis_off()
     for i in range(len(roi['artifact'])):
@@ -247,11 +274,15 @@ if __name__ == '__main__':
 
     textstr = '\n'.join((
         r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.SNR(ho_x_2, ba_x)),
+        r'%.1f $dB$' % (quality.SNR(ho_x_2, ba_x)),
         r'${C_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_x_2, ba_x)),
+        r'%.1f $dB$' % (quality.Contrast(ho_x_2, ba_x)),
         r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
+        r'%.1f $dB$' % (quality.Contrast(ho_x_1, ho_x_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+            verticalalignment='top', fontname='Arial', color='white')
+
+    textstr = '\n'.join((
         r'${gCNR_{{H_1}/{A}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
@@ -260,15 +291,54 @@ if __name__ == '__main__':
         r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
+    ax.text(0.75, 0.98, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='white')
 
-    plt.tight_layout()
-    #plt.show()
+    ax = fig.add_subplot(gs[2])
+
+    ax.text(0.5, 1.25, r'(c) $gCNR$ versus 𝜆 curves',
+             horizontalalignment='center',
+             fontsize=28,
+             transform=ax.transAxes)
+    reference = []
+
+    for i in range(4):
+        temp = value[0]
+        reference.append(temp[i][0])
+
+    gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a = [], [], [], []
+    for i in range(len(value)):
+        temp = value[i]
+        gcnrh1a.append(temp[0][1])
+        gcnrh2b.append(temp[1][1])
+        gcnrh12.append(temp[2][1])
+        gcnrh2a.append(temp[3][1])
+
+    ax.plot(lmbda, gcnrh1a, color='green', label=r'${gCNR_{{H_1}/{A}}}$')
+    ax.axhline(reference[0], color='green', linestyle='--')
+
+    ax.plot(lmbda, gcnrh2b, color='red', label=r'${gCNR_{{H_2}/{B}}}$')
+    ax.axhline(reference[1], color='red', linestyle='--')
+
+    ax.plot(lmbda, gcnrh12, color='orange', label=r'${gCNR_{{H_1}/{H_2}}}$')
+    ax.axhline(reference[2], color='orange', linestyle='--')
+
+    ax.plot(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
+    ax.axhline(reference[3], color='purple', linestyle='--')
+
+    ax.set_ylabel(r'${gCNR}$')
+    ax.set_xlabel('𝜆 ')
+    ax.set_xscale('log')
+    ax.set_ylim(0, 1)
+    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
+       ncol=2, mode="expand", borderaxespad=0., fontsize = 18)
+    ax.set_aspect(2.75)
+
+    plt.show()
 
     # table formant original then sparse
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
-             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
+             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ba_s), quality.Contrast(ho_x_2, ba_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
              ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)],
              ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)],

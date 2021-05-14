@@ -13,12 +13,9 @@ optimal values of the weighting parameter and lambda"""
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
-from skimage.morphology import disk
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
-from skimage import filters
 from tabulate import tabulate
-from skimage.segmentation import flood, flood_fill
 
 
 bin_n = 200
@@ -55,7 +52,7 @@ if __name__ == '__main__':
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
 
-    lmbda = 0.04
+    lmbda = 0.02
 
     x = processing.make_sparse_representation(s,D, lmbda, speckle_weight)
 
@@ -64,10 +61,8 @@ if __name__ == '__main__':
     x_log = 20 * np.log10(abs(x))
 
     s_intensity = abs(s) ** 2
-    #s_intensity = filters.median(s_intensity, disk(1))
 
     x_intensity = abs(x) ** 2
-    #x_intensity = filters.median(x_intensity, disk(1))
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
@@ -84,7 +79,8 @@ if __name__ == '__main__':
     fig = plt.figure(figsize=(16, 9))
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
-    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax, vmin=rvmin)
+    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0],
+              vmax=vmax, vmin=rvmin,interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -95,13 +91,27 @@ if __name__ == '__main__':
 
     text = r'${H_{2}}$'
     ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] + 50), textcoords='data', fontsize=30,
+                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] ), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
+    text = r'${A}$'
+    ax.annotate(text, xy=(roi['artifact'][0][0]+width , roi['artifact'][0][1] ), xycoords='data',
+                xytext=(roi['artifact'][0][0] + 2*width, roi['artifact'][0][1] - 40 ), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    text = r'${B}$'
+    ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
+                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
     ax.set_axis_off()
-    ax.set_title('reference')
+    ax.set_title('(a) reference', fontsize= 28)
 
     ax.set_aspect(s_log.shape[1] / s_log.shape[0])
 
@@ -117,11 +127,15 @@ if __name__ == '__main__':
 
     textstr = '\n'.join((
         r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.SNR(ho_s_2, ba_s)),
+        r'%.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
         r'${C_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_s_2, ba_s)),
+        r'%.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
         r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_s_1, ho_s_2)),
+        r'%.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+            verticalalignment='top', fontname='Arial', color='white')
+
+    textstr = '\n'.join((
         r'${gCNR_{{H_1}/{A}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_s_1, ar_s)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
@@ -130,12 +144,13 @@ if __name__ == '__main__':
         r'%.2f ' % (quality.log_gCNR(ho_s_2, ba_s)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_s_1, ho_s_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
+    ax.text(0.16, 0.98, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='white')
 
     ax = fig.add_subplot(gs[1])
 
-    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0], vmax=vmax, vmin=rvmin)
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
+              vmax=vmax, vmin=rvmin,interpolation='none')
 
     text = r'${H_{1}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
@@ -146,12 +161,26 @@ if __name__ == '__main__':
 
     text = r'${H_{2}}$'
     ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] + 50), textcoords='data', fontsize=30,
+                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] ), textcoords='data', fontsize=30,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
 
-    ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda, speckle_weight))
+    text = r'${A}$'
+    ax.annotate(text, xy=(roi['artifact'][0][0]+width , roi['artifact'][0][1] ), xycoords='data',
+                xytext=(roi['artifact'][0][0] + 2*width, roi['artifact'][0][1] - 40 ), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    text = r'${B}$'
+    ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
+                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    ax.set_title('(b) 𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda, speckle_weight),fontsize = 28)
 
     ax.set_axis_off()
     for i in range(len(roi['artifact'])):
@@ -174,11 +203,15 @@ if __name__ == '__main__':
 
     textstr = '\n'.join((
         r'${SNR_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.SNR(ho_x_2, ba_x)),
+        r'%.1f $dB$' % (quality.SNR(ho_x_2, ba_x)),
         r'${C_{{H_2}/B}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_x_2, ba_x)),
+        r'%.1f $dB$' % (quality.Contrast(ho_x_2, ba_x)),
         r'${C_{{H_1}/{H_2}}}$''\n'
-        r'%.1f dB' % (quality.Contrast(ho_x_1, ho_x_2)),
+        r'%.1f $dB$' % (quality.Contrast(ho_x_1, ho_x_2))))
+    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=20,
+            verticalalignment='top', fontname='Arial', color='white')
+
+    textstr = '\n'.join((
         r'${gCNR_{{H_1}/{A}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_x_1, ar_x)),
         r'${gCNR_{{H_2}/{A}}}$''\n'
@@ -187,16 +220,15 @@ if __name__ == '__main__':
         r'%.2f ' % (quality.log_gCNR(ho_x_2, ba_x)),
         r'${gCNR_{{H_1}/{H_2}}}$''\n'
         r'%.2f ' % (quality.log_gCNR(ho_x_1, ho_x_2))))
-    ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=18,
+    ax.text(0.16, 0.98, textstr, transform=ax.transAxes, fontsize=20,
             verticalalignment='top', fontname='Arial', color='white')
-
 
     plt.tight_layout()
     plt.show()
 
     # table formant original then sparse
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
-             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
+             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ba_s), quality.Contrast(ho_x_2, ba_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
              ['Contrast', 'H_1/A', quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)],
              ['Contrast', 'H_2/A', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
@@ -207,5 +239,6 @@ if __name__ == '__main__':
 
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
+
 
 

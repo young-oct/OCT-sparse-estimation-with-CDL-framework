@@ -4,11 +4,8 @@
 # @FileName: weight_compare.py
 # @Software: PyCharm
 
-"""this script generates images for the figure 2 as seen in
-the paper. Sparse reconstructions of the same OCT
-middle ear image using the same learned dictionary for
-optimal values of the weighting parameter and lambda"""
-
+"""Figure 2. Example of applying CBPDN-DL to an
+OCT image of a middle ear with a mask"""
 import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
@@ -81,7 +78,7 @@ def plot_images(plot_titles, image,
             axins.set_ylim(110, 35)
             ax.indicate_inset_zoom(axins, edgecolor='white')
 
-            if n == 2 and overlays == True:
+            if n == 3 and overlays == True:
                 ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray', interpolation='none')
                 ax.contour(mask, [0.99], colors='orange', alpha=0.75, linestyles='dashed')
                 axins.contour(mask, [0.99], colors='orange', alpha=0.75, linestyles='dashed')
@@ -161,7 +158,7 @@ if __name__ == '__main__':
     r0_log = 20 * np.log10(abs(r0))
 
     # update opt to include W
-    x1, W = processing.make_sparse_representation(s, D, lmbda, speckle_weight, Mask=True)
+    x1, W = processing.make_sparse_representation(s, D, lmbda, speckle_weight, Mask=True, Ear=True)
     x1_log = 20 * np.log10(abs(x1))
 
     title = ['(a) reference',
