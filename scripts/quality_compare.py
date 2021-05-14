@@ -164,6 +164,14 @@ if __name__ == '__main__':
         for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
             ax.add_patch(j)
 
+    from scipy.ndimage import median_filter
+    
+    #ho_x_1=median_filter(ho_x_1,size=(3,3) )
+    #ho_x_2=median_filter(ho_x_2,size=(3,3) )
+    #ho_s_1=median_filter(ho_s_1,size=(3,3) )
+    #ho_s_2=median_filter(ho_s_2,size=(3,3) )
+    
+
     textstr = '\n'.join((
         r'${SNR_{{H_2}/B}}$''\n'
         r'%.1f dB' % (quality.SNR(ho_x_2, ba_x)),
