@@ -198,6 +198,8 @@ if __name__ == '__main__':
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
              ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
              ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
+             ['Contrast', 'H_1/A', quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)],
+             ['Contrast', 'H_2/A', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
              ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)],
              ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)],
              ['gCNR', 'H_1/H_2', quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)],
