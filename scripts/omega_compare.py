@@ -68,7 +68,7 @@ if __name__ == '__main__':
 
     for i in range(len(speckle_weight)):
 
-        x, line = processing.make_sparse_representation(s, D, lmbda, speckle_weight[i],Line=True,index = index )
+        x, line = processing.make_sparse_representation(s, D, lmbda, speckle_weight[i],Line=True,index = index , Ear=True)
         x_log = 20 * np.log10(abs(x))
         sparse[:,:,i] = x_log
         x_line[:, i] = line

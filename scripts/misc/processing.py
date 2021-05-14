@@ -92,17 +92,16 @@ def getWeight(s, D, lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False
 
     # set thresdhold
     x_log = np.where(x_log <= rvmin, 0, x_log)
+    W = dilation(x_log, square(3))
+    W = erosion(W, square(3))
+    W = np.where(W > 0, speckle_weight, 1)
 
     if Ear == True:
-        W = dilation(x_log, disk(1))
-        W = erosion(W, disk(1))
-        W = np.where(W > 0, speckle_weight, 1)
-        W = filters.median(W,disk(5))
+
+        W = filters.median(W,square(8))
 
     else:
-        W = dilation(x_log, square(3))
-        W = erosion(W, square(3))
-        W = np.where(W > 0, speckle_weight, 1)
+
         W = filters.median(W, square(17))
 
     if Paddging == True:
@@ -141,10 +140,10 @@ def make_sparse_representation(s, D, lmbda, speckle_weight, Line=False, index=No
 
     # Weight factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    if Ear == True:
-        w_lambda = 0.005
-    else:
-        pass
+    # if Ear == True:
+    #     w_lambda = 0.0
+    # else:
+    #     pass
 
     W = np.roll(getWeight(s, D, w_lambda, speckle_weight, Paddging=True, opt_par=opt_par,Ear = Ear), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,

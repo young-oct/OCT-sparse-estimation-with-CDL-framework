@@ -158,7 +158,7 @@ if __name__ == '__main__':
     r0_log = 20 * np.log10(abs(r0))
 
     # update opt to include W
-    x1, W = processing.make_sparse_representation(s, D, lmbda, speckle_weight, Mask=True)
+    x1, W = processing.make_sparse_representation(s, D, lmbda, speckle_weight, Mask=True, Ear=True)
     x1_log = 20 * np.log10(abs(x1))
 
     title = ['(a) reference',

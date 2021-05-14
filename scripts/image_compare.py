@@ -34,7 +34,7 @@ if __name__ == '__main__':
     )
 
     file_name = ['ear', 'finger', 'nail', 'onion']
-    title_name = ['middle ear', 'index finger (palmar view)', 'index finger (side view)', 'onion slice']
+    title_name = ['(a) middle ear', '(b) index finger (palmar view)', '(c) index finger (side view)', '(d)onion slice']
 
     original = []
     sparse = []

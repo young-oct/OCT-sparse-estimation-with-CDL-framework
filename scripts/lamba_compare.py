@@ -50,7 +50,7 @@ if __name__ == '__main__':
     sparse = np.zeros((snorm.shape[0], snorm.shape[1], len(lmbda)))
     for i in range(len(lmbda)):
 
-        x, line = processing.make_sparse_representation(s, D, lmbda[i], speckle_weight,Line=True,index = index )
+        x, line = processing.make_sparse_representation(s, D, lmbda[i], speckle_weight,Line=True,index = index, Ear=True )
         x_log = 20 * np.log10(abs(x))
         sparse[:,:,i] = x_log
 
