@@ -107,17 +107,20 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True):
     # set thresdhold
     x_log = np.where(x_log <= rvmin, 0, x_log)
 
-    W = dilation(x_log, disk(2))
-    W = erosion(W, disk(2))
+    # W = dilation(x_log, disk(2))
+    # W = erosion(W, disk(2))
+    W = dilation(x_log, square(3))
+    W = erosion(W, square(3))
     W = np.where(W > 0, speckle_weight, 1)
     W = filters.median(W, square(7))
-    height = 0.1
+    height = 0
 
     if Paddging == True:
         pad = 15  #
         # find the bottom edge of the mask with Sobel edge filter
 
         temp = filters.sobel(W)
+        # temp = filters.median(temp, square(5))
 
         pad_value = np.linspace(speckle_weight, 1, pad)
 
@@ -130,8 +133,10 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True):
             else:
                 W[:, i] = W[:, i]
     else:
-        W = W
-
+        pass
+    # return gaussian_filter(W, sigma=1.1)
+    W = filters.median(W, square(8))
+    W = gaussian_filter(W, sigma=0.5)
     return W
 
 if __name__ == '__main__':

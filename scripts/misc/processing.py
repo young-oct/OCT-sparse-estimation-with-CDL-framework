@@ -92,20 +92,16 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
 
     # set thresdhold
     x_log = np.where(x_log <= rvmin, 0, x_log)
+    W = dilation(x_log, square(3))
+    W = erosion(W, square(3))
+    W = np.where(W > 0, speckle_weight, 1)
 
-    height = 0
     if Ear == True:
 
-        W = dilation(x_log, disk(2))
-        W = erosion(W, disk(2))
-        W = np.where(W > 0, speckle_weight, 1)
         W = filters.median(W, square(7))
-        height = 0.1
 
     else:
-        W = dilation(x_log, square(3))
-        W = erosion(W, square(3))
-        W = np.where(W > 0, speckle_weight, 1)
+
         W = filters.median(W, square(17))
 
     if Paddging == True:
@@ -113,11 +109,12 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
         # find the bottom edge of the mask with Sobel edge filter
 
         temp = filters.sobel(W)
+        # temp = gaussian_filter(temp, 3)
 
         pad_value = np.linspace(speckle_weight, 1, pad)
 
         for i in range(temp.shape[1]):
-            peak, _ = find_peaks(temp[:, i], height=height)
+            peak, _ = find_peaks(temp[:, i], height=0)
             if len(peak) != 0:
                 loc = peak[-1]
                 if temp.shape[0] - loc >= pad:
@@ -125,8 +122,9 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
             else:
                 W[:, i] = W[:, i]
     else:
-        W = W
-
+        pass
+    W = filters.median(W, square(8))
+    W = gaussian_filter(W, sigma=0.5)
     W = np.reshape(W, (W.shape[0], 1, -1, 1))
 
     return W
@@ -135,7 +133,6 @@ def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Line=False, 
     ''' s -- 2D array of complex A-lines with dims (width, depth)
     '''
     # l2 norm data and save the scaling factor
-    w_lambda = 0.02
     l2f, snorm = to_l2_normed(s)
 
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
