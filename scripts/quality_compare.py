@@ -18,7 +18,6 @@ import matplotlib.gridspec as gridspec
 from tabulate import tabulate
 
 
-bin_n = 200
 # Define ROIs
 roi = {}
 width, height = (20, 10)
@@ -78,6 +77,7 @@ if __name__ == '__main__':
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
     fig = plt.figure(figsize=(18, 13), constrained_layout = True)
+    # fig = plt.figure(figsize=(18, 13))
 
     gs = gridspec.GridSpec(ncols=2, nrows=1, figure=fig)
     ax = fig.add_subplot(gs[0])
@@ -203,21 +203,22 @@ if __name__ == '__main__':
     ax.text(0.02, 0.98, textstr, transform=ax.transAxes, fontsize=26,
             verticalalignment='top', fontname='Arial', color='white')
 
+    # plt.tight_layout()
     plt.show()
 
-    # table formant original then sparse
-    table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
-             ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ba_s), quality.Contrast(ho_x_2, ba_x)],
-             ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
-             ['Contrast', 'H_1/A', quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)],
-             ['Contrast', 'H_2/A', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
-             ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)],
-             ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)],
-             ['gCNR', 'H_1/H_2', quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)],
-             ['gCNR', 'H_2/A', quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)]]
-
-    print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
-                   tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
+    # # table formant original then sparse
+    # table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
+    #          ['Contrast', 'H_2/B', quality.Contrast(ho_s_2, ba_s), quality.Contrast(ho_x_2, ba_x)],
+    #          ['Contrast', 'H_1/H_2', quality.Contrast(ho_s_1, ho_s_2), quality.Contrast(ho_x_1, ho_x_2)],
+    #          ['Contrast', 'H_1/A', quality.Contrast(ho_s_1, ar_s), quality.Contrast(ho_x_1, ar_x)],
+    #          ['Contrast', 'H_2/A', quality.Contrast(ho_s_2, ar_s), quality.Contrast(ho_x_2, ar_x)],
+    #          ['gCNR ', 'H_1/A', quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)],
+    #          ['gCNR', 'H_2/B', quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)],
+    #          ['gCNR', 'H_1/H_2', quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)],
+    #          ['gCNR', 'H_2/A', quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)]]
+    #
+    # print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
+    #                tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
 
 
 

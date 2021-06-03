@@ -7,26 +7,87 @@ import numpy as np
 from sporco import prox
 import pickle
 from pathlib import Path
+import copy
+from scipy.signal.signaltools import wiener
+from math import ceil
+
 from scipy import ndimage
 from skimage.morphology import disk,square,star,diamond,octagon
 from sporco.admm import cbpdn
+from numpy.fft import fft, fftshift, ifft
+
 from skimage.morphology import dilation, erosion
 from skimage import filters
 from scipy.signal import find_peaks
 from skimage import feature
 from scipy.ndimage import gaussian_filter
+from scipy import signal
 
-
+from OssiviewBufferReader import OssiviewBufferReader
 
 # Module level constants
 eps = 1e-14
 
+def getAline(file,std,start,window_flag = None):
+
+    reader = OssiviewBufferReader(file)
+    data = np.array(reader.data["DAQ Buffer"], dtype='float64')
+    #
+    div = reader.header.metaData['Header']['Meta Data']['DIV']
+    div = np.array(div)
+    div = div[div < data.shape[3]]
+
+    clean = np.zeros([data.shape[0], data.shape[2], data.shape[3] - len(div)], dtype=data.dtype)
+
+    for g in range(data.shape[0]):
+        for i in range(0, data.shape[2]):
+            k = 0
+            for j in range(data.shape[3]):
+                if j not in div:
+                    clean[g, i, k] = data[g, :, i, j]
+                    k = k + 1
+
+    L = data.shape[3] - len(div)
+    clean = clean.reshape(-1, 1460)
+    ref = copy.deepcopy(clean)
+
+    if window_flag == 'gaussain':
+        window = signal.windows.gaussian(L, std=std)
+        ref_window = clean * window
+    elif window_flag == 'square':
+        window = np.zeros(L)
+        ref_window = clean
+        for i in range(1,4):
+            window[int((L/2)-150*i):int((L/2)+150*i)] = 1
+            ref_window *= window
+    elif window_flag == 'wiener':
+        ref_window = np.zeros(clean.shape)
+        for i in range(clean.shape[0]):
+            ref_window[i,:] = wiener(ref[i,:],(101,),5)
+    elif window_flag == 'hanning':
+        window = np.hanning(L)
+        ref_window = clean * window
+    else:
+        pass
+
+    data_ref = ifft(ref, axis=1)
+    data_window = ifft(ref_window, axis=1)
+
+    # modify this line
+    aline_ref = data_ref[20 * start:20 * (start + 512), -350:-20]
+    aline_window = data_window[20 * start:20 * (start + 512), -350:-20]
+
+    with open('/Users/youngwang/Desktop/Master/seminar/test_data/ref','wb') as f:
+        pickle.dump(aline_ref,f)
+        f.close()
+    with open( '/Users/youngwang/Desktop/Master/seminar/test_data/window','wb') as f:
+        pickle.dump(aline_window,f)
+        f.close()
 
 def imag2uint(data, vmin, vmax):
     data = np.clip(data, vmin, vmax)
     pixel_vals = np.uint8(np.around(255 * (data - vmin) / (vmax - vmin), 0))
     return pixel_vals
-
 
 def to_l2_normed(s):
     l2f = prox.norm_l2(s, axis=0).squeeze()

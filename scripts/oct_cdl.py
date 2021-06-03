@@ -35,7 +35,7 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 12
+            'font.size': 20
         }
     )
 
@@ -47,19 +47,18 @@ if __name__ == '__main__':
         l2f, snorm = processing.to_l2_normed(s)
 
         K = snorm.shape[1]  # number of A-line signal
-        N = snorm.shape[0]  # length of A-line signgal
+        N = snorm.shape[0]  # length of A-line signal
         M = 1  # state of dictionary
 
         # randomly select one A-line as the dictionary
         # dic_index = np.random.choice(s.shape[1],1)
-        dic_index = int(6500/decimation_factor)  # fixed here for repeatability and reproducibility
+        dic_index = int(4500/decimation_factor)  # fixed here for repeatability and reproducibility
         # l2 normalize the dictionary
         D = snorm[:, dic_index]
 
         # convert to sporco standard layabout
         D = np.reshape(D, (-1, 1, M))
 
-        #
         # uniform random sample the training set from input test, 10%
         train_index = np.random.choice(snorm.shape[1], int(0.25 * K), replace=False)
         s_train = snorm[:, train_index]
@@ -125,22 +124,23 @@ if __name__ == '__main__':
         s_log = processing.imag2uint(s_log, rvmin, vmax)
 
         vmin, vmax = 0,255
-        ax.set_title(file_name[i]+' %d dB-%d dB' % (vmax, vmin))
+        # ax.set_title(file_name[i]+' %d dB-%d dB' % (vmax, vmin))
+        ax.set_title(file_name[i])
         ax.imshow(s_log, cmap='gray', vmax=vmax, vmin=vmin)
         ax.set_aspect(s_log.shape[1] / s_log.shape[0])
-        ax.axvline(x=dic_index, linewidth=2, color='r')
+        ax.axvline(x=dic_index, linewidth=2, color='orange', linestyle='--')
         ax.set_axis_off()
         #
         ax = fig.add_subplot(gs[1, 1])
-        ax.set_title('selected A-line')
+        ax.set_title('selected A-line: initial dictionary')
         ax.plot(abs(D))
-        ax.set_ylabel('magnitude(a.u.)')
+        ax.set_ylabel('normalised magnitude(a.u.)')
         ax.set_xlabel('axial depth(pixels)')
 
         ax = fig.add_subplot(gs[1, 2])
         ax.set_title('estimated PSF')
         ax.plot(abs(D1))
-        ax.set_ylabel('magnitude(a.u.)')
+        ax.set_ylabel('normalised magnitude(a.u.)')
         ax.set_xlabel('axial depth(pixels)')
 
         plt.show()

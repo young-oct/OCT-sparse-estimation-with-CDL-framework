@@ -135,7 +135,9 @@ def log_gCNR(region_h, region_b, improvement = False):
 
     N = 256
 
-    rvmin,vmax = 65,115   # dB
+    # rvmin,vmax = 65,115   # dB
+    rvmin,vmax = 0,65   # dB
+
 
     # in histogram when density flag is set to be true, the integral is
     # 1 instead of the cumulative PDF, to address this, bin width needs to

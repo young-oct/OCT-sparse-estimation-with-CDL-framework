@@ -16,6 +16,7 @@ import copy
 import matplotlib.gridspec as gridspec
 from pytictoc import TicToc
 
+
 def intensity_norm(data):
     pixels = 255 * (data - data.min()) / (data.max() - data.min())
     return pixels
