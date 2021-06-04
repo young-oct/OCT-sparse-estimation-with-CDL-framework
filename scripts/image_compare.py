@@ -38,8 +38,8 @@ if __name__ == '__main__':
     original = []
     sparse = []
 
-    lmbda = [0.05,0.06,0.02,0.04]
-    w_lmbda = 0.02
+    lmbda = [0.05,0.03,0.02,0.04]
+    w_lmbda = 0.05
     speckle_weight = 0.1
     rvmin, vmax = 5, 55 #dB
 
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(nrows=2, ncols=4, sharey=True, sharex=True, figsize=(16, 9),constrained_layout=True )
 
     for i in range(len(file_name)):
-        title = '\n'.join((title_name[i],'𝜆 = %.2f $\omega$ = %.1f' % (lmbda[i], speckle_weight)))
+        title = '\n'.join((title_name[i],'𝜆 = %.2f, $W$ = %.1f' % (lmbda[i], speckle_weight)))
 
         ax[0, i].set_title(title,fontsize=20)
         ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')

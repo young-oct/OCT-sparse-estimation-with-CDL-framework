@@ -16,19 +16,18 @@ from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from tabulate import tabulate
 
-bin_n = 200
 # Define ROIs
 roi = {}
 width, height = (20, 10)
 roi['artifact'] = [[212, 142, int(width * 1.2), int(height * 1.2)]]
-roi['background'] = [[390, 247, int(width * 1.2), int(height * 1.2)]]
+roi['background'] = [[390, 260, int(width * 1.2), int(height * 1.2)]]
 roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
-                      [390, 225, int(width * 1.2), int(height * 1.2)]]
+                      [390, 230, int(width * 1.2), int(height * 1.2)]]
 
 
 # Module level constants
 eps = 1e-14
-w_lmbda = 0.02
+w_lmbda = 0.05
 
 def lmbda_search(s,lmbda,speckle_weight):
     x = processing.make_sparse_representation(s,D, lmbda,w_lmbda,speckle_weight)
@@ -112,7 +111,6 @@ if __name__ == '__main__':
     speckle_weight = 0.1
     rvmin, vmax = 5, 55 #dB
 
-
     plt.close('all')
     # Customize matplotlib params
     matplotlib.rcParams.update(
@@ -126,7 +124,7 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4,-0.5,20)
+    lmbda = np.logspace(-4,0,50)
     value = []
     for i in range(len(lmbda)):
 
@@ -253,7 +251,7 @@ if __name__ == '__main__':
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='left', verticalalignment='top')
 
-    ax.set_title('(b) 𝜆 = %.2f \n $\omega$ = %.1f' % (best, speckle_weight),fontsize = 28)
+    ax.set_title('(b) 𝜆 = %.2f \n $W$ = %.1f' % (best, speckle_weight),fontsize = 28)
 
     ax.set_axis_off()
     for i in range(len(roi['artifact'])):
@@ -283,7 +281,7 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[2])
 
-    ax.text(0.5, 1.25, r'(c) $gCNR$ versus 𝜆 curves',
+    ax.text(0.5, 1.3, r'(c) $gCNR$ versus 𝜆 curves',
              horizontalalignment='center',
              fontsize=28,
              transform=ax.transAxes)

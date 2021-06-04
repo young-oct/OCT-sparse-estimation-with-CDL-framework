@@ -54,14 +54,14 @@ def plot_images(plot_titles, image,
                         arrowprops=dict(facecolor='red', shrink=0.025),
                         horizontalalignment='left', verticalalignment='top')
 
-            ax.annotate('', xy=(50, 95), xycoords='data',
-                        xytext=(70, 110), textcoords='data', fontsize=30,
+            ax.annotate('', xy=(60, 105), xycoords='data',
+                        xytext=(80, 125), textcoords='data', fontsize=30,
                         color='red', fontname='Arial',
                         arrowprops=dict(facecolor='white', shrink=0.025),
                         horizontalalignment='right', verticalalignment='top')
 
-            ax.annotate('', xy=(140, 270), xycoords='data',
-                        xytext=(170, 290), textcoords='data', fontsize=30,
+            ax.annotate('', xy=(155, 270), xycoords='data',
+                        xytext=(180, 290), textcoords='data', fontsize=30,
                         color='red', fontname='Arial',
                         arrowprops=dict(facecolor='white', shrink=0.025),
                         horizontalalignment='right', verticalalignment='top')
@@ -145,7 +145,7 @@ if __name__ == '__main__':
     # in regions segmented as containing speckle
     speckle_weight = 0.1
     lmbda = 0.05
-    w_lmbda = 0.02
+    w_lmbda = 0.05
 
     b0 = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
     x0norm = b0.solve().squeeze() + eps
@@ -166,6 +166,6 @@ if __name__ == '__main__':
              '(b) Magnitude of the learned PSF $d(z)$',
              '(c) sparse estimation image\n 𝜆 = %.2f' % (lmbda),
              '(d) sparse vector image \nwo/weighting (𝜆 = %.2f)' % (lmbda),
-             '(e) sparse vector image \nw/weighting (𝜆 = %.2f,$\omega$ = %.1f)' % (lmbda, speckle_weight)]
+             '(e) sparse vector image \nw/weighting (𝜆 = %.2f,$W$ = %.1f)' % (lmbda, speckle_weight)]
 
     plot_images(title, [s_log, abs(D), r0_log, x0_log, x1_log, W], rvmin, vmax, overlays=True)

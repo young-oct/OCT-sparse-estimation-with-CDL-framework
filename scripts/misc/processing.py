@@ -123,8 +123,11 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
                 W[:, i] = W[:, i]
     else:
         pass
-    W = filters.median(W, square(8))
+
+    W = filters.median(W, square(7))
     W = gaussian_filter(W, sigma=0.5)
+    W = filters.median(W, square(12))
+
     W = np.reshape(W, (W.shape[0], 1, -1, 1))
 
     return W

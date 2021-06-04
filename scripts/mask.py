@@ -98,7 +98,7 @@ if __name__ == '__main__':
     W = []
 
     lmbda = 0.04
-    w_lmbda = 0.02
+    w_lmbda = 0.05
     speckle_weight = 0.1
     rvmin, vmax = 5, 55 #dB
 

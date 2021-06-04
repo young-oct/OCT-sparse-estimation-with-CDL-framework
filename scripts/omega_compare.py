@@ -53,7 +53,7 @@ if __name__ == '__main__':
     # in regions segmented as containing speckle
     speckle_weight = np.linspace(0.1,1,5)
     lmbda = 0.05
-    w_lmbda = 0.02
+    w_lmbda = 0.05
 
     index = 400 # index A-line
     s_line = abs(snorm[:,index])
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         sparse[:,:,i] = x_log
         x_line[:, i] = line
 
-    width, height = (100, 80)
+    width, height = (115, 95)
     homogeneous = [[125, 120, width, height]]
 
     fig = plt.figure(constrained_layout=True, figsize=(16, 9))
@@ -123,7 +123,7 @@ if __name__ == '__main__':
         ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
 
 
-        ax.set_title('𝜆 = %.2f \n $\omega$ = %.1f' % (lmbda, speckle_weight[i]))
+        ax.set_title('𝜆 = %.2f \n $W$ = %.1f' % (lmbda, speckle_weight[i]))
         ax.set_axis_off()
         for k in range(len(homogeneous)):
             for j in annotation.get_homogeneous(*homogeneous[k]):
