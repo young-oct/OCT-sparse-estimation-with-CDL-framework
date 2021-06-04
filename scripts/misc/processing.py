@@ -85,7 +85,7 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 
     # Convert back from normalized
-    rvmin, vmax = 65, 115
+    rvmin, vmax = 5, 55
     x = from_l2_normed(xnorm, l2f)
     x_log = 10 * np.log10(abs(x) ** 2)
     x_log = imag2uint(x_log, rvmin, vmax)

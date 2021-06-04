@@ -120,7 +120,8 @@ if __name__ == '__main__':
         ax.set_title('dictionary learning curve')
         #
         ax = fig.add_subplot(gs[1, 0])
-        rvmin, vmax = 65, 115
+        rvmin, vmax = 5, 55  # dB
+
         s_log = 20 * np.log10(abs(s))
         s_log = processing.imag2uint(s_log, rvmin, vmax)
 

@@ -41,8 +41,7 @@ if __name__ == '__main__':
     lmbda = [0.05,0.06,0.02,0.04]
     w_lmbda = 0.02
     speckle_weight = 0.1
-    rvmin = 65  # dB
-    vmax = 115  # dB
+    rvmin, vmax = 5, 55 #dB
 
     for i in range(len(file_name)):
         Ear = False

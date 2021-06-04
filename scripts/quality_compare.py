@@ -35,8 +35,8 @@ if __name__ == '__main__':
 
     #Image processing and display paramaters
     speckle_weight = 0.1
-    rvmin = 65  # dB
-    vmax = 115  # dB
+    rvmin, vmax = 5, 55 #dB
+
 
     plt.close('all')
     # Customize matplotlib params

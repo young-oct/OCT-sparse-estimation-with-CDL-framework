@@ -37,8 +37,8 @@ if __name__ == '__main__':
     # Load the example dataset
     s, D = processing.load_data(file_name[0], decimation_factor=20)
 
-    rvmin = 65  # dB
-    vmax = 115  # dB
+    rvmin, vmax = 5, 55 #dB
+
 
     s_log = 20 * np.log10(abs(s))
 
