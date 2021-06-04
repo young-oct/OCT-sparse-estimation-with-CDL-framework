@@ -40,7 +40,7 @@ if __name__ == '__main__':
     )
 
     # s, D,path = load_data('finger', decimation_factor=20)
-    file_name = ['finger']
+    file_name = ['onion']
     for i in range(len(file_name)):
         decimation_factor = 20
         s = processing.load_data(file_name[i], decimation_factor=decimation_factor, data_only= True)
@@ -148,12 +148,12 @@ if __name__ == '__main__':
 
         D1 = D1.reshape(-1, 1)
 
-        # D_PATH = '../Data/PSF/' + file_name[i]
-        #
-        # with open(D_PATH,'wb') as f:
-        #     pickle.dump(D1,f)
-        #     f.close()
-        #
+        D_PATH = '../Data/PSF/' + file_name[i]
+
+        with open(D_PATH,'wb') as f:
+            pickle.dump(D1,f)
+            f.close()
+
 
 
 
