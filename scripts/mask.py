@@ -116,10 +116,7 @@ if __name__ == '__main__':
                                           'RelaxParam': 1.515, 'AutoRho': {'Enabled': True}})
 
         # obtain weighting mask
-        if file_name[i] == 'ear':
-            Ear = True
-        else:
-            Ear = False
+
         x,mask = processing.make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Mask = True, Ear = Ear)
 
         x_log = 20 * np.log10(abs(x))

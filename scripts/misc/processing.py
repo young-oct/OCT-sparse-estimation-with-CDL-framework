@@ -15,12 +15,12 @@ from skimage import filters
 from scipy.signal import find_peaks
 from skimage import feature
 from scipy.ndimage import gaussian_filter
-
+from sporco.dictlrn import dictlrn
+from sporco.admm import cbpdn,ccmod
 
 
 # Module level constants
 eps = 1e-14
-
 
 def imag2uint(data, vmin, vmax):
     data = np.clip(data, vmin, vmax)
@@ -36,13 +36,25 @@ def to_l2_normed(s):
 def from_l2_normed(s, l2f):
     return (s * l2f)
 
+def npz_laod(file_path, key, decimation_factor):
+    if Path(file_path).is_file():
+        file = np.load(file_path)
+        s = file[key]
+        s = s.T
+        # (2) remove background noise: minus the frame mean
+        s = s - np.mean(s, axis=1)[:, np.newaxis]
+        # (3) sample every decimation_factor line,
+        s = s[:, ::decimation_factor]
+        return s
+    else:
+        raise Exception("Dataset %s not found" % file_path)
 
 def load_data(dataset_name, decimation_factor, data_only=False):
     # check if such file exists
-    S_PATH = '../Data/' + dataset_name
+    S_PATH = '../data/' + dataset_name
 
     if data_only == False:
-        D_PATH = '../Data/PSF/' + dataset_name
+        D_PATH = '../data/PSF/' + dataset_name
         if Path(S_PATH).is_file() and Path(D_PATH).is_file():
             # load data & dictionary
             with open(S_PATH, 'rb') as f:
@@ -141,13 +153,6 @@ def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Line=False, 
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 20, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                       'RelaxParam': 1.515, 'AutoRho': {'Enabled': True}})
-
-    # Weight factor to apply to the fidelity (l2) term in the cost function
-    # in regions segmented as containing speckle
-    # if Ear == True:
-    #     w_lambda = 0.0
-    # else:
-    #     pass
 
     W = np.roll(getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par=opt_par,Ear = Ear), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
