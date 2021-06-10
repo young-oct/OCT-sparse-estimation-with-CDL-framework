@@ -7,35 +7,70 @@ import numpy as np
 from sporco import prox
 import pickle
 from pathlib import Path
-from scipy import ndimage
 from skimage.morphology import disk,square,star,diamond,octagon
-from sporco.admm import cbpdn
 from skimage.morphology import dilation, erosion
 from skimage import filters
 from scipy.signal import find_peaks
-from skimage import feature
 from scipy.ndimage import gaussian_filter
+from numpy.fft import fft, fftshift, ifft
+from scipy import signal
+import numpy as np
+import pickle
+from sporco.admm import cbpdn
+
 
 
 
 # Module level constants
 eps = 1e-14
+dwell = 20
+lmbda = 1e-1
 
+def Aline_R(data,start):
+    A_line = ifft(data, axis=1)
+    return A_line[dwell * start:dwell * (start + 512), -350:-20].T
+
+def Aline_G(data,start,std):
+    window = signal.windows.gaussian(data.shape[1], std=std)
+    temp = data*window
+    A_line = ifft(temp, axis=1)
+    return A_line[dwell * start:dwell * (start + 512), -350:-20].T
+
+def Aline_H(data,start):
+    window = np.hanning(data.shape[1])
+    temp = data*window
+    A_line = ifft(temp, axis=1)
+    return A_line[dwell * start:dwell * (start + 512), -350:-20].T
+
+def mean_remove(s,decimation_factor):
+    s = s - np.mean(s, axis=1)[:, np.newaxis]
+    # (3) sample every decimation_factor line,
+    s = s[:, ::decimation_factor]
+    return s
+
+def load_raw(file_path):
+    if Path(file_path).is_file():
+        # with open(file_path, 'rb') as f:
+            # raw = pickle.load(f)
+            # f.close()
+        temp = np.load(file_path)
+        raw = temp['arr_1']
+        return raw
+
+    else:
+        raise Exception("Dataset %s not found" % file_path)
 
 def imag2uint(data, vmin, vmax):
     data = np.clip(data, vmin, vmax)
     pixel_vals = np.uint8(np.around(255 * (data - vmin) / (vmax - vmin), 0))
     return pixel_vals
 
-
 def to_l2_normed(s):
     l2f = prox.norm_l2(s, axis=0).squeeze()
     return (l2f, s / l2f)
 
-
 def from_l2_normed(s, l2f):
     return (s * l2f)
-
 
 def load_data(dataset_name, decimation_factor, data_only=False):
     # check if such file exists
