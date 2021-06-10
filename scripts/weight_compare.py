@@ -164,7 +164,7 @@ if __name__ == '__main__':
 
     title = ['(a) reference',
              '(b) Magnitude of the learned PSF $d(z)$',
-             '(c) sparse estimation image\n 𝜆 = %.2f' % (lmbda),
+             '(c) sparse estimate image\n 𝜆 = %.2f' % (lmbda),
              '(d) sparse vector image \nwo/weighting (𝜆 = %.2f)' % (lmbda),
              '(e) sparse vector image \nw/weighting (𝜆 = %.2f,$W$ = %.1f)' % (lmbda, speckle_weight)]
 

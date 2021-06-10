@@ -66,7 +66,7 @@ def lmbda_search(s,lmbda,speckle_weight):
 def value_plot(lmbda,value):
 
     fig,ax = plt.subplots(1,1, figsize=(16,9))
-    ax.set_title(r'$gCNR$ versus 𝜆 curves')
+    ax.set_title(r'Generalized $CNR$ versus 𝜆')
     reference = []
 
     for i in range(4):
@@ -281,7 +281,7 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[2])
 
-    ax.text(0.5, 1.3, r'(c) $gCNR$ versus 𝜆 curves',
+    ax.text(0.5, 1.3, r'(c) Generalized $CNR$ versus 𝜆',
              horizontalalignment='center',
              fontsize=28,
              transform=ax.transAxes)
