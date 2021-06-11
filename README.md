@@ -1,4 +1,4 @@
-# Convolutional basis pursuit denoising with dictionary learning for deconvolution optical coherence tomography images
+# Convolutional dictionary learning for deconvolution of optical coherence tomography images
 
 We show that a novel image processing technique, convolutional dictionary learning (CDL), offers an effective method of removing sidelobe artefacts and stochastic noise from optical coherence tomography (OCT) images. Our method estimates the scattering amplitude of tissue on a line-by-line basis by estimating and deconvolving the 1-dimensional point spread function from OCT A-line data. We also present a method for employing a sparsity weighting mask to mitigate loss of speckle brightness within tissue-containing regions. With qualitative and quantitative analysis, we show that this approach is effective in suppressing sidelobe artefacts and background noise while preserving the intensity of tissue structures. It is particularly useful for emerging OCT applications where OCT images contain strong specular reflections at air-tissue boundaries.The implementation is modified from [SPORCO.](https://github.com/bwohlberg/sporco)
 
