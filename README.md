@@ -16,7 +16,7 @@ Each B-mode image is formed by sampling everything 20th line from its respective
 
 -  `ear` : OCT middle ear A-line data, stored as Numpy array with a dimension of 10,240 x 330. 
 -  `finger` : OCT index finger(palmar view) A-line data, stored as Numpy array with a dimension of 10,240 x 330. 
--  `finger(raw)` : Raw interferogram of  OCT index finger(palmar view), stored as  `.npz`  file format and accessed with key  `arr_1` . The raw interferogram is saved as Numpy array with a dimension of 25,000 x 1460. That is 25,000 interferogram with a length of 1460(data valid points) pixels. 
+-  `finger(raw)` : Raw interferogram of  OCT index finger(palmar view), stored in  `.npz`  file format and accessed with key  `arr_1` . The raw interferogram is saved as Numpy array with a dimension of 25,000 x 1460. That is 25,000 interferogram with a length of 1460(data valid points) pixels. 
 -  `nail` : OCT index finger(side view) A-line data, stored as Numpy array with a dimension of 10,240 x 330. 
 -  `onion` : OCT onion slice A-line data, stored as Numpy array with a dimension of 10,240 x 330. 
 
