@@ -284,8 +284,8 @@ if __name__ == '__main__':
     gCNRPlot(ho_s_1, ar_s, rvmin, vmax,ax,y_flag=True)
 
     ax = fig.add_subplot(gs[0,1])
-    textstr = '\n'.join((r'(b)$𝜆$ = %.2f ' % (best),
-                         r'$W$ = %.1f' % (speckle_weight)))
+    textstr = r'(b) $𝜆$ = %.2f,$W$ = %.1f' % (best,speckle_weight)
+
     ax.set_title(textstr)
     ax.set_axis_off()
     ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
@@ -343,7 +343,7 @@ if __name__ == '__main__':
     ax.set_ylabel(r'${gCNR}$',fontsize=20)
     ax.set_xlabel(r'$𝜆$')
 
-    ax.set_ylim(0.2, 1)
+    ax.set_ylim(0.25, 1)
     locmaj = matplotlib.ticker.LogLocator(base=10, numticks=12)
     ax.xaxis.set_major_locator(locmaj)
     locmin = matplotlib.ticker.LogLocator(base=10.0, subs=(0.2, 0.4, 0.6, 0.8), numticks=12)

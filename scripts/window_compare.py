@@ -116,7 +116,7 @@ def anote(ax,s,median_flag =False):
 
     text = r'${H_{2}}$'
     ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][0][0] - 60, roi['homogeneous'][0][1]+10), textcoords='data', fontsize=legend_font,
+                xytext=(roi['homogeneous'][0][0] - 55, roi['homogeneous'][0][1]+height+8), textcoords='data', fontsize=legend_font,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='right', verticalalignment='top')
@@ -160,8 +160,8 @@ def anote(ax,s,median_flag =False):
     return ax
 
 def zoomshow(ax,image):
-    zoom_factor = 8
-    axins = ax.inset_axes([330, 75, width*zoom_factor, height*zoom_factor], transform=ax.transData)
+    zoom_factor = 10
+    axins = ax.inset_axes([300, 40, width*zoom_factor, height*zoom_factor], transform=ax.transData)
     axins.imshow(image, cmap='gray', vmax=vmax, vmin=rvmin, interpolation='none')
     axins.set_xticklabels('')
     axins.set_yticklabels('')
@@ -178,7 +178,7 @@ def zoomshow(ax,image):
     axins.set_ylim(y1, y2)
     ax.indicate_inset_zoom(axins, edgecolor='green')
 
-    axins = ax.inset_axes([10, 250, width*zoom_factor, height*zoom_factor], transform=ax.transData)
+    axins = ax.inset_axes([10, 235, width*zoom_factor, height*zoom_factor], transform=ax.transData)
     axins.imshow(image, cmap='gray', vmax=vmax, vmin=rvmin, interpolation='none')
     axins.set_xticklabels('')
     axins.set_yticklabels('')
@@ -307,11 +307,9 @@ if __name__ == '__main__':
     anote(ax,s_intensity)
     
     ax = fig.add_subplot(gs[3])
-    textstr = '\n'.join((
-        r'(d) $𝜆$ = %.2f ' % (lmbda),
-        r'$W$ = %.1f' % (speckle_weight)))
-
+    textstr = r'(d) $𝜆$ = %.2f,$W$ = %.1f' % (lmbda,speckle_weight)
     ax.set_title(textstr)
+
     ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
 
