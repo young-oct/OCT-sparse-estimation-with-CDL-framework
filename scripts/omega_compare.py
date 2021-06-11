@@ -84,8 +84,7 @@ if __name__ == '__main__':
     ax.set_axis_off()
     ax.set_title('reference')
 
-    ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
-    ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
+    ax.axvline(x=index,linewidth=1, color='orange', linestyle='--')
     for k in range(len(homogeneous)):
         for j in annotation.get_homogeneous(*homogeneous[k]):
             ax.add_patch(j)
@@ -120,9 +119,7 @@ if __name__ == '__main__':
         aspect = sparse[:, :, i].shape[1]/sparse[:, :, i].shape[0]
         ax = fig.add_subplot(gs[0, i + 1])
         ax.imshow(sparse[:, :, i], 'gray', aspect=aspect, vmax=vmax, vmin=rvmin,interpolation='none')
-        ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
-        ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
-
+        ax.axvline(x=index, linewidth=1, color='orange', linestyle='--')
 
         textstr = '\n'.join((
             r'$𝜆$ = %.2f ' % (lmbda),

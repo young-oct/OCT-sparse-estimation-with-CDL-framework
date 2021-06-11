@@ -14,6 +14,8 @@ import matplotlib
 from matplotlib import pyplot as plt
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
+from scipy.ndimage import median_filter
+
 from tabulate import tabulate
 from matplotlib.ticker import (MultipleLocator)
 import matplotlib.ticker
@@ -29,7 +31,88 @@ roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
 
 # Module level constants
 eps = 1e-14
+bins = 32
 w_lmbda = 0.05
+def anote(ax,s,median_flag =False):
+    legend_font = 15
+
+    text = r'${A}$'
+    ax.annotate(text, xy=(roi['artifact'][0][0], roi['artifact'][0][1]), xycoords='data',
+                xytext=(roi['artifact'][0][0] - 100, roi['artifact'][0][1] - 45), textcoords='data',
+                fontsize=legend_font,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    text = r'${H_{1}}$'
+    ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
+                xytext=(roi['homogeneous'][0][0] - 50, roi['homogeneous'][0][1] + 50), textcoords='data',
+                fontsize=legend_font,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='right', verticalalignment='top')
+
+    text = r'${H_{2}}$'
+    ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
+                xytext=(roi['homogeneous'][1][0] - 60, roi['homogeneous'][1][1]+10), textcoords='data',
+                fontsize=legend_font,
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='right', verticalalignment='top')
+
+    text = r'${B}$'
+    ax.annotate(text, xy=(roi['background'][0][0] + width, roi['background'][0][1] + height), xycoords='data',
+                xytext=(roi['background'][0][0] + 2 * width, roi['background'][0][1] + 40), textcoords='data',
+                color='white', fontname='Arial',
+                arrowprops=dict(facecolor='white', shrink=0.025),
+                horizontalalignment='left', verticalalignment='top')
+
+    ax.set_axis_off()
+
+    for i in range(len(roi['artifact'])):
+        for j in annotation.get_artifact(*roi['artifact'][i]):
+            ax.add_patch(j)
+
+    for i in range(len(roi['homogeneous'])):
+        for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
+            ax.add_patch(j)
+
+    for i in range(len(roi['background'])):
+        for j in annotation.get_background(*roi['background'][i]):
+            ax.add_patch(j)
+
+    h1 = quality.ROI(*roi['homogeneous'][0], s)
+    h2 = quality.ROI(*roi['homogeneous'][1], s)
+    ba = quality.ROI(*roi['background'][0], s)
+    ar = quality.ROI(*roi['artifact'][0], s)
+
+    if median_flag == True:
+
+        textstr = '\n'.join((
+            r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar,improvement=True)),
+            r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar,improvement=True)),
+            r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba,improvement=True)),
+            r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2,improvement=True))))
+        ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
+                verticalalignment='top', fontname='Arial', color='white')
+
+    else:
+
+        textstr = '\n'.join((
+            r'${SNR_{{H_2}/B}}$: %.1f $dB$' % (quality.SNR(h2, ba)),
+            r'${C_{{H_2}/B}}$: %.1f $dB$' % (quality.Contrast(h2, ba)),
+            r'${C_{{H_1}/{H_2}}}$: %.1f $dB$' % (quality.Contrast(h1, h2))))
+        ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
+                verticalalignment='top', fontname='Arial', color='white')
+
+        textstr = '\n'.join((
+            r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar)),
+            r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar)),
+            r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba)),
+            r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2))))
+        ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
+                verticalalignment='top', fontname='Arial', color='white')
+    return ax
 
 def lmbda_search(s,lmbda,speckle_weight):
     x = processing.make_sparse_representation(s,D, lmbda,w_lmbda,speckle_weight)
@@ -107,6 +190,39 @@ def value_plot(lmbda,value):
 
     return lmbda[np.argmax(gcnrh2a)]
 
+def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
+
+    region_r1 = np.ravel(r1)
+    region_r2 = np.ravel(r2)
+
+    if median_flag == True:
+        log_r1 = processing.imag2uint(region_r1, min, max)
+        log_r2 = processing.imag2uint(region_r2, min, max)
+    else:
+        log_r1 = processing.imag2uint(10 * np.log10(region_r1), min, max)
+        log_r2 = processing.imag2uint(10 * np.log10(region_r2), min, max)
+
+    weights = np.ones_like(log_r1) / float(len(log_r1))
+
+    ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${H_1}$')
+
+    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${A}$')
+
+    ax.legend()
+    ax.set_ylim(0,1.05)
+
+    if y_flag == True:
+        ax.set_ylabel('pixel percentage',fontsize=20)
+        y_vals = ax.get_yticks()
+        ax.set_yticklabels(['{:d}%'.format(int(x*100)) for x in y_vals])
+        pass
+    else:
+        ax.set_yticks([])
+        ax.set_ylabel('')
+
+    return ax
+
+
 if __name__ == '__main__':
 
     #Image processing and display paramaters
@@ -117,7 +233,7 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 18,
+            'font.size': 16,
             'text.usetex': False,
             'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
@@ -155,138 +271,49 @@ if __name__ == '__main__':
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
-    fig = plt.figure(figsize=(18, 13), constrained_layout=True)
+    fig = plt.figure(figsize=(16, 9),constrained_layout=True)
+    gs = gridspec.GridSpec(ncols=4, nrows=2, figure=fig)
 
-    gs = gridspec.GridSpec(ncols=3, nrows=1, figure=fig)
-    ax = fig.add_subplot(gs[0])
-    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax,
-              vmin=rvmin, interpolation='none')
-
-    text = r'${H_{1}}$'
-    ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][0][0] - 50, roi['homogeneous'][0][1] + 50), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='right', verticalalignment='top')
-
-    text = r'${H_{2}}$'
-    ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] ), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='right', verticalalignment='top')
-
-    text = r'${A}$'
-    ax.annotate(text, xy=(roi['artifact'][0][0]+width , roi['artifact'][0][1] ), xycoords='data',
-                xytext=(roi['artifact'][0][0] + 2*width, roi['artifact'][0][1] - 40 ), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='left', verticalalignment='top')
-
-    text = r'${B}$'
-    ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
-                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='left', verticalalignment='top')
-
+    ax = fig.add_subplot(gs[0,0])
     ax.set_axis_off()
     ax.set_title('(a) reference')
+    ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax,
+              vmin=rvmin, interpolation='none')
+    anote(ax,s_intensity)
+    ax = fig.add_subplot(gs[1, 0])
+    gCNRPlot(ho_s_1, ar_s, rvmin, vmax,ax,y_flag=True)
 
-    ax.set_aspect(s_log.shape[1] / s_log.shape[0])
-
-    for i in range(len(roi['artifact'])):
-        for j in annotation.get_artifact(*roi['artifact'][i]):
-            ax.add_patch(j)
-    for i in range(len(roi['background'])):
-        for j in annotation.get_background(*roi['background'][i]):
-            ax.add_patch(j)
-    for i in range(len(roi['homogeneous'])):
-        for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
-            ax.add_patch(j)
-
-    textstr = '\n'.join((
-        r'${SNR_{{H_2}/B}}$: %.1f $dB$' % (quality.SNR(ho_s_2, ba_s)),
-        r'${C_{{H_2}/B}}$: %.1f $dB$' % (quality.Contrast(ho_s_2, ba_s)),
-        r'${C_{{H_1}/{H_2}}}$: %.1f $dB$' % (quality.Contrast(ho_s_1, ho_s_2))))
-    ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=22,
-            verticalalignment='top', fontname='Arial', color='white')
-
-    textstr = '\n'.join((
-        r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ar_s)),
-        r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(ho_s_2, ar_s)),
-        r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(ho_s_2, ba_s)),
-        r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(ho_s_1, ho_s_2))))
-    ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=22,
-            verticalalignment='top', fontname='Arial', color='white')
-
-    ax = fig.add_subplot(gs[1])
-
-    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
-              vmax=vmax, vmin=rvmin, interpolation='none')
-
-    text = r'${H_{1}}$'
-    ax.annotate(text, xy=(roi['homogeneous'][0][0], roi['homogeneous'][0][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][0][0] - 50, roi['homogeneous'][0][1] + 50), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='right', verticalalignment='top')
-
-    text = r'${H_{2}}$'
-    ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][1][0] - 50, roi['homogeneous'][1][1] ), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='right', verticalalignment='top')
-
-    text = r'${A}$'
-    ax.annotate(text, xy=(roi['artifact'][0][0]+width , roi['artifact'][0][1] ), xycoords='data',
-                xytext=(roi['artifact'][0][0] + 2*width, roi['artifact'][0][1] - 40 ), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='left', verticalalignment='top')
-
-    text = r'${B}$'
-    ax.annotate(text, xy=(roi['background'][0][0]+width, roi['background'][0][1] + height), xycoords='data',
-                xytext=(roi['background'][0][0] + 2*width, roi['background'][0][1] + 40), textcoords='data', fontsize=30,
-                color='white', fontname='Arial',
-                arrowprops=dict(facecolor='white', shrink=0.025),
-                horizontalalignment='left', verticalalignment='top')
-
+    ax = fig.add_subplot(gs[0,1])
     textstr = '\n'.join((r'(b)$𝜆$ = %.2f ' % (best),
                          r'$W$ = %.1f' % (speckle_weight)))
     ax.set_title(textstr)
-
     ax.set_axis_off()
-    for i in range(len(roi['artifact'])):
-        for j in annotation.get_artifact(*roi['artifact'][i]):
-            ax.add_patch(j)
-    for i in range(len(roi['background'])):
-        for j in annotation.get_background(*roi['background'][i]):
-            ax.add_patch(j)
-    for i in range(len(roi['homogeneous'])):
-        for j in annotation.get_homogeneous(*roi['homogeneous'][i]):
-            ax.add_patch(j)
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
+              vmax=vmax, vmin=rvmin, interpolation='none')
+    anote(ax,x_intensity)
+    ax = fig.add_subplot(gs[1, 1])
+    gCNRPlot(ho_x_1, ar_x, rvmin, vmax,ax)
+
+    b_log = median_filter(x_log, size=(3, 3))
+    ax = fig.add_subplot(gs[0, 2])
 
     textstr = '\n'.join((
-        r'${SNR_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.SNR(ho_x_2, ba_x)),
-        r'${C_{{H_2}/B}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_2, ba_x)),
-        r'${C_{{H_1}/{H_2}}}: $%.1f $dB$''\t\t' % (quality.Contrast(ho_x_1, ho_x_2))))
-    ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=22,
-            verticalalignment='top', fontname='Arial', color='white')
+        r'(c) $𝜆$ = %.2f ' % (best),
+        r'$W$ = %.1f,3x3 median' % (speckle_weight)))
 
-    textstr = '\n'.join((
-        r'${gCNR_{{H_1}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_1, ar_x)),
-        r'${gCNR_{{H_2}/{A}}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ar_x)),
-        r'${gCNR_{{H_2}/B}}: $%.2f''\t\t' % (quality.log_gCNR(ho_x_2, ba_x)),
-        r'${gCNR_{{H_1}/{H_2}}}: $%.2f' % (quality.log_gCNR(ho_x_1, ho_x_2))))
-    ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=22,
-            verticalalignment='top', fontname='Arial', color='white')
+    ax.set_title(textstr)
+    ax.imshow(b_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
+              vmax=vmax, vmin=rvmin, interpolation='none')
+    anote(ax,x_intensity,median_flag = True)
 
-    ax = fig.add_subplot(gs[2])
+    ho_b_1 = quality.ROI(*roi['homogeneous'][0], b_log)
+    ar_b = quality.ROI(*roi['background'][0], b_log)
 
-    ax.text(0.5, 1.25, r'(c) generalized $CNR$ versus $𝜆$',fontsize=20,
-             horizontalalignment='center',transform=ax.transAxes)
+    ax = fig.add_subplot(gs[1, 2])
+    gCNRPlot(ho_b_1, ar_b, rvmin, vmax,ax, median_flag = True)
+
+    ax = fig.add_subplot(gs[:,3])
+    ax.set_title(r'(d) generalized $CNR$ $vs.$ $𝜆$')
     reference = []
 
     for i in range(4):
@@ -323,11 +350,7 @@ if __name__ == '__main__':
     ax.xaxis.set_minor_locator(locmin)
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
-    ax.set_aspect(4.5)
-
-    ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
-       ncol=2, mode="expand", borderaxespad=0., fontsize = 18)
-
+    ax.legend(loc = 'best',fontsize = 13)
     plt.show()
 
     # table formant original then sparse

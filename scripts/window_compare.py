@@ -94,8 +94,6 @@ def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
     ax.legend()
     ax.set_ylim(0,1.05)
 
-
-
     if y_flag == True:
         ax.set_ylabel('pixel percentage',fontsize=20)
         y_vals = ax.get_yticks()
@@ -277,12 +275,11 @@ if __name__ == '__main__':
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
-    # fig = plt.figure(figsize=(16, 9),constrained_layout=True)
     fig = plt.figure(figsize=(16, 9),constrained_layout=True)
 
-    gs = fig.add_gridspec(ncols=5, nrows=2)
+    gs = fig.add_gridspec(ncols=4, nrows=1)
 
-    ax = fig.add_subplot(gs[0, 0])
+    ax = fig.add_subplot(gs[0])
     ax.set_title('(a) no window')
 
     ax.imshow(sr_log, 'gray', aspect=sr_log.shape[1] / sr_log.shape[0],
@@ -291,11 +288,7 @@ if __name__ == '__main__':
 
     anote(ax,sr_intensity)
 
-    ax = fig.add_subplot(gs[1, 0])
-    gCNRPlot(ho_r_2, ar_r, rvmin, vmax,ax,y_flag=True)
-
-    ax = fig.add_subplot(gs[0, 1])
-    # ax.set_title('(b) gaussian window\n std =%d' % std, fontsize=28)
+    ax = fig.add_subplot(gs[1])
     ax.set_title('(b) Gaussian window')
 
     ax.imshow(sg_log, 'gray', aspect=sg_log.shape[1] / sg_log.shape[0],
@@ -304,10 +297,7 @@ if __name__ == '__main__':
     zoomshow(ax, sg_log)
     anote(ax,sg_intensity)
 
-    ax = fig.add_subplot(gs[1, 1])
-    gCNRPlot(ho_g_2, ar_g, rvmin, vmax,ax)
-
-    ax = fig.add_subplot(gs[0, 2])
+    ax = fig.add_subplot(gs[2])
     ax.set_title('(c) Hann window')
 
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0],
@@ -315,14 +305,8 @@ if __name__ == '__main__':
 
     zoomshow(ax, s_log)
     anote(ax,s_intensity)
-
-    ax = fig.add_subplot(gs[1, 2])
-    gCNRPlot(ho_s_2, ar_s, rvmin, vmax,ax)
-
-    ax = fig.add_subplot(gs[0, 3])
-    # ax.set_title(r'(d) $𝜆$ = %.2f \n $W$ = %.1f'
-    #              % (lmbda, speckle_weight))
-
+    
+    ax = fig.add_subplot(gs[3])
     textstr = '\n'.join((
         r'(d) $𝜆$ = %.2f ' % (lmbda),
         r'$W$ = %.1f' % (speckle_weight)))
@@ -333,29 +317,6 @@ if __name__ == '__main__':
 
     zoomshow(ax, x_log)
     anote(ax,x_intensity)
-
-    ax = fig.add_subplot(gs[1, 3])
-    gCNRPlot(ho_x_2, ar_x, rvmin, vmax,ax)
-
-    b_log = median_filter(x_log, size=(3, 3))
-    ax = fig.add_subplot(gs[0, 4])
-
-    textstr = '\n'.join((
-        r'(e) $𝜆$ = %.2f ' % (lmbda),
-        r'$W$ = %.1f,3x3 median' % (speckle_weight)))
-
-    ax.set_title(textstr)
-    ax.imshow(b_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
-              vmax=vmax, vmin=rvmin, interpolation='none')
-    zoomshow(ax, b_log)
-    anote(ax,x_intensity,median_flag = True)
-
-    ho_b_2 = quality.ROI(*roi['homogeneous'][0], b_log)
-    ar_b_1 = quality.ROI(*roi['artifact'][0], b_log)
-
-    ax = fig.add_subplot(gs[1, 4])
-    gCNRPlot(ho_b_2, ar_b_1, rvmin, vmax,ax, median_flag = True)
-
     plt.show()
 
     # fig,ax = plt.subplots(figsize=(16,9))
