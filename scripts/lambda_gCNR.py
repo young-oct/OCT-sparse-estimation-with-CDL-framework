@@ -15,11 +15,8 @@ from matplotlib import pyplot as plt
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from tabulate import tabulate
-from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
-from matplotlib.ticker import ScalarFormatter
+from matplotlib.ticker import (MultipleLocator)
 import matplotlib.ticker
-
-
 
 # Define ROIs
 roi = {}
@@ -120,7 +117,7 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 20,
+            'font.size': 18,
             'text.usetex': False,
             'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
@@ -288,7 +285,7 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[2])
 
-    ax.text(0.5, 1.25, r'(c) generalized $CNR$ versus $𝜆$',
+    ax.text(0.5, 1.25, r'(c) generalized $CNR$ versus $𝜆$',fontsize=20,
              horizontalalignment='center',transform=ax.transAxes)
     reference = []
 
@@ -317,9 +314,9 @@ if __name__ == '__main__':
     ax.axhline(reference[3], color='purple', linestyle='--')
 
     ax.set_ylabel(r'${gCNR}$',fontsize=20)
-
     ax.set_xlabel(r'$𝜆$')
-    ax.set_ylim(0.15, 1)
+
+    ax.set_ylim(0.2, 1)
     locmaj = matplotlib.ticker.LogLocator(base=10, numticks=12)
     ax.xaxis.set_major_locator(locmaj)
     locmin = matplotlib.ticker.LogLocator(base=10.0, subs=(0.2, 0.4, 0.6, 0.8), numticks=12)
