@@ -120,7 +120,7 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 25,
+            'font.size': 20,
             'text.usetex': False,
             'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
@@ -288,10 +288,8 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[2])
 
-    ax.text(0.5, 1.3, r'(c) Generalized $CNR$ versus $𝜆$',
-             horizontalalignment='center',
-             fontsize=28,
-             transform=ax.transAxes)
+    ax.text(0.5, 1.25, r'(c) generalized $CNR$ versus $𝜆$',
+             horizontalalignment='center',transform=ax.transAxes)
     reference = []
 
     for i in range(4):
