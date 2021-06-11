@@ -15,6 +15,11 @@ from matplotlib import pyplot as plt
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from tabulate import tabulate
+from matplotlib.ticker import (MultipleLocator, AutoMinorLocator)
+from matplotlib.ticker import ScalarFormatter
+import matplotlib.ticker
+
+
 
 # Define ROIs
 roi = {}
@@ -66,7 +71,7 @@ def lmbda_search(s,lmbda,speckle_weight):
 def value_plot(lmbda,value):
 
     fig,ax = plt.subplots(1,1, figsize=(16,9))
-    ax.set_title(r'Generalized $CNR$ versus 𝜆')
+    ax.set_title(r'Generalized $CNR$ versus $𝜆$')
     reference = []
 
     for i in range(4):
@@ -95,7 +100,7 @@ def value_plot(lmbda,value):
     ax.axhline(reference[3],color='purple',linestyle = '--')
 
     ax.set_ylabel(r'${gCNR}$')
-    ax.set_xlabel('𝜆 ')
+    ax.set_xlabel(r'$𝜆$')
     ax.set_xscale('log')
     ax.set_ylim(0,1)
 
@@ -117,7 +122,7 @@ if __name__ == '__main__':
         {
             'font.size': 25,
             'text.usetex': False,
-            'font.family': 'stixgeneral',
+            'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
         }
     )
@@ -189,7 +194,7 @@ if __name__ == '__main__':
                 horizontalalignment='left', verticalalignment='top')
 
     ax.set_axis_off()
-    ax.set_title('(a) reference', fontsize= 28)
+    ax.set_title('(a) reference')
 
     ax.set_aspect(s_log.shape[1] / s_log.shape[0])
 
@@ -251,7 +256,9 @@ if __name__ == '__main__':
                 arrowprops=dict(facecolor='white', shrink=0.025),
                 horizontalalignment='left', verticalalignment='top')
 
-    ax.set_title('(b) 𝜆 = %.2f \n $W$ = %.1f' % (best, speckle_weight),fontsize = 28)
+    textstr = '\n'.join((r'(b)$𝜆$ = %.2f ' % (best),
+                         r'$W$ = %.1f' % (speckle_weight)))
+    ax.set_title(textstr)
 
     ax.set_axis_off()
     for i in range(len(roi['artifact'])):
@@ -281,7 +288,7 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[2])
 
-    ax.text(0.5, 1.3, r'(c) Generalized $CNR$ versus 𝜆',
+    ax.text(0.5, 1.3, r'(c) Generalized $CNR$ versus $𝜆$',
              horizontalalignment='center',
              fontsize=28,
              transform=ax.transAxes)
@@ -299,24 +306,30 @@ if __name__ == '__main__':
         gcnrh12.append(temp[2][1])
         gcnrh2a.append(temp[3][1])
 
-    ax.plot(lmbda, gcnrh1a, color='green', label=r'${gCNR_{{H_1}/{A}}}$')
+    ax.semilogx(lmbda, gcnrh1a, color='green', label=r'${gCNR_{{H_1}/{A}}}$')
     ax.axhline(reference[0], color='green', linestyle='--')
 
-    ax.plot(lmbda, gcnrh2b, color='red', label=r'${gCNR_{{H_2}/{B}}}$')
+    ax.semilogx(lmbda, gcnrh2b, color='red', label=r'${gCNR_{{H_2}/{B}}}$')
     ax.axhline(reference[1], color='red', linestyle='--')
 
-    ax.plot(lmbda, gcnrh12, color='orange', label=r'${gCNR_{{H_1}/{H_2}}}$')
+    ax.semilogx(lmbda, gcnrh12, color='orange', label=r'${gCNR_{{H_1}/{H_2}}}$')
     ax.axhline(reference[2], color='orange', linestyle='--')
 
-    ax.plot(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
+    ax.semilogx(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
     ax.axhline(reference[3], color='purple', linestyle='--')
 
     ax.set_ylabel(r'${gCNR}$',fontsize=20)
 
-    ax.set_xlabel('𝜆 ')
-    ax.set_xscale('log')
-    ax.set_ylim(0.35, 1)
+    ax.set_xlabel(r'$𝜆$')
+    ax.set_ylim(0.15, 1)
+    locmaj = matplotlib.ticker.LogLocator(base=10, numticks=12)
+    ax.xaxis.set_major_locator(locmaj)
+    locmin = matplotlib.ticker.LogLocator(base=10.0, subs=(0.2, 0.4, 0.6, 0.8), numticks=12)
+    ax.xaxis.set_minor_locator(locmin)
+    ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
+
     ax.set_aspect(4.5)
+
     ax.legend(bbox_to_anchor=(0., 1.02, 1., .102), loc=3,
        ncol=2, mode="expand", borderaxespad=0., fontsize = 18)
 

@@ -23,9 +23,9 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 18,
+            'font.size': 16,
             'text.usetex': False,
-            'font.family': 'stixgeneral',
+            'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
         }
     )
@@ -68,7 +68,8 @@ if __name__ == '__main__':
     ax = fig.add_subplot(gs[0, 0])
     ax.imshow(s_log, 'gray', aspect=aspect, vmax=vmax, vmin=rvmin,interpolation='none')
     ax.set_axis_off()
-    ax.set_title('reference', fontname='Arial')
+    ax.set_title('reference')
+
     ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
     ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
     for k in range(len(homogeneous)):
@@ -92,8 +93,9 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[2, 0])
     ax.plot(s_line)
-    ax.set_xlabel('axial depth [pixels]', fontname='Arial')
-    ax.set_ylabel('normalized \nmagnitude [a.u.]', fontname='Arial', fontsize=20)
+
+    ax.set_xlabel('axial depth [pixels]')
+    ax.set_ylabel('normalized \nmagnitude [a.u.]',fontsize=14)
     ax.set_ylim(0, np.max(s_line)*1.1)
 
     for i in range(len(lmbda)):
@@ -104,7 +106,11 @@ if __name__ == '__main__':
         ax.axvline(x=index, ymin=0.6, ymax=1, linewidth=1, color='orange', linestyle='--')
         ax.axvline(x=index, ymin=0, ymax=0.6, linewidth=1, color='orange')
 
-        ax.set_title('𝜆 = %.2f \n $W$ = %.1f' % (lmbda[i], speckle_weight))
+        textstr = '\n'.join((
+            r'$𝜆$ = %.2f ' % (lmbda[i]),
+            r'$W$ = %.1f' % (speckle_weight)))
+        ax.set_title(textstr)
+
         ax.set_axis_off()
         for k in range(len(homogeneous)):
             for j in annotation.get_homogeneous(*homogeneous[k]):
@@ -130,6 +136,6 @@ if __name__ == '__main__':
         ax.set_yticks([])
         ax.set_ylim(0, np.max(s_line)*1.1)
 
-        ax.set_xlabel('axial depth [pixels]', fontname='Arial')
+        ax.set_xlabel('axial depth [pixels]')
     plt.show()
 

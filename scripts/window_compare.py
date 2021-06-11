@@ -93,11 +93,13 @@ def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
 
     ax.legend()
     ax.set_ylim(0,1.05)
-    # ax.set_yticks([])
+
+
 
     if y_flag == True:
-        ax.set_ylabel('pixel percentage',fontsize=25)
-
+        ax.set_ylabel('pixel percentage',fontsize=20)
+        y_vals = ax.get_yticks()
+        ax.set_yticklabels(['{:d}%'.format(int(x*100)) for x in y_vals])
         pass
     else:
         ax.set_yticks([])
@@ -216,16 +218,16 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 20,
+            'font.size': 16,
             'text.usetex': False,
-            'font.family': 'stixgeneral',
+            'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
         }
     )
 
     start, decimation_factor = 420, 20
     # gaussian std
-    std = 146
+    std = 292
     d_lmbda = 0.1
 
     raw = processing.load_raw('/Users/youngwang/Desktop/github/data/finger(raw).npz')
@@ -281,7 +283,7 @@ if __name__ == '__main__':
     gs = fig.add_gridspec(ncols=5, nrows=2)
 
     ax = fig.add_subplot(gs[0, 0])
-    ax.set_title('(a) no window', fontsize=25)
+    ax.set_title('(a) no window')
 
     ax.imshow(sr_log, 'gray', aspect=sr_log.shape[1] / sr_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
@@ -294,7 +296,7 @@ if __name__ == '__main__':
 
     ax = fig.add_subplot(gs[0, 1])
     # ax.set_title('(b) gaussian window\n std =%d' % std, fontsize=28)
-    ax.set_title('(b) Gaussian window', fontsize=25)
+    ax.set_title('(b) Gaussian window')
 
     ax.imshow(sg_log, 'gray', aspect=sg_log.shape[1] / sg_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
@@ -306,7 +308,7 @@ if __name__ == '__main__':
     gCNRPlot(ho_g_2, ar_g, rvmin, vmax,ax)
 
     ax = fig.add_subplot(gs[0, 2])
-    ax.set_title('(c) Hann window', fontsize=25)
+    ax.set_title('(c) Hann window')
 
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
@@ -318,9 +320,14 @@ if __name__ == '__main__':
     gCNRPlot(ho_s_2, ar_s, rvmin, vmax,ax)
 
     ax = fig.add_subplot(gs[0, 3])
-    ax.set_title('(d) 𝜆 = %.2f \n $W$ = %.1f'
-                 % (lmbda, speckle_weight), fontsize=25)
+    # ax.set_title(r'(d) $𝜆$ = %.2f \n $W$ = %.1f'
+    #              % (lmbda, speckle_weight))
 
+    textstr = '\n'.join((
+        r'(d) $𝜆$ = %.2f ' % (lmbda),
+        r'$W$ = %.1f' % (speckle_weight)))
+
+    ax.set_title(textstr)
     ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
 
@@ -332,8 +339,12 @@ if __name__ == '__main__':
 
     b_log = median_filter(x_log, size=(3, 3))
     ax = fig.add_subplot(gs[0, 4])
-    ax.set_title('(e) 𝜆 = %.2f \n $W$ = %.1f,3x3 median'
-                 % (lmbda, speckle_weight), fontsize=25)
+
+    textstr = '\n'.join((
+        r'(e) $𝜆$ = %.2f ' % (lmbda),
+        r'$W$ = %.1f,3x3 median' % (speckle_weight)))
+
+    ax.set_title(textstr)
     ax.imshow(b_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
     zoomshow(ax, b_log)

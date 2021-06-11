@@ -25,15 +25,15 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 18,
+            'font.size': 15,
             'text.usetex': False,
-            'font.family': 'stixgeneral',
+            'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
         }
     )
 
     file_name = ['ear', 'finger', 'nail', 'onion']
-    title_name = ['(a) middle ear', '(b) index finger (palmar view)', '(c) index finger (side view)', '(d) onion slice']
+    title_name = [r'(a) middle ear', r'(b) index finger (palmar view)', r'(c) index finger (side view)', r'(d) onion slice']
 
     original = []
     sparse = []
@@ -77,7 +77,7 @@ if __name__ == '__main__':
     fig, ax = plt.subplots(nrows=2, ncols=4, sharey=True, sharex=True, figsize=(16, 9),constrained_layout=True )
 
     for i in range(len(file_name)):
-        title = '\n'.join((title_name[i],'𝜆 = %.2f, $W$ = %.1f' % (lmbda[i], speckle_weight)))
+        title = '\n'.join((title_name[i],r'$𝜆$ = %.2f,$W$ = %.1f' % (lmbda[i], speckle_weight)))
 
         ax[0, i].set_title(title,fontsize=20)
         ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')

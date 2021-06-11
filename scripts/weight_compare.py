@@ -88,8 +88,8 @@ def plot_images(plot_titles, image,
 
         else:
             ax.plot(im)
-            ax.set_xlabel('Axial depth [pixels]', fontname='Arial')
-            ax.set_ylabel('Normalized \nmagnitude [a.u.]', fontname='Arial', fontsize=20)
+            ax.set_xlabel('axial depth [pixels]')
+            ax.set_ylabel('normalized \nmagnitude [a.u.]', fontsize=20)
 
             axins = ax.inset_axes([0.58, 0.2, 0.41, 0.6])
             axins.set_xticks([])
@@ -121,7 +121,7 @@ if __name__ == '__main__':
         {
             'font.size': 20,
             'text.usetex': False,
-            'font.family': 'stixgeneral',
+            'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
         }
     )
@@ -162,10 +162,10 @@ if __name__ == '__main__':
     x1, W = processing.make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Mask=True, Ear=True)
     x1_log = 20 * np.log10(abs(x1))
 
-    title = ['(a) reference',
-             '(b) Magnitude of the learned PSF $d(z)$',
-             '(c) sparse estimate image\n 𝜆 = %.2f' % (lmbda),
-             '(d) sparse vector image \nwo/weighting (𝜆 = %.2f)' % (lmbda),
-             '(e) sparse vector image \nw/weighting (𝜆 = %.2f,$W$ = %.1f)' % (lmbda, speckle_weight)]
+    title = [r'(a) reference',
+             r'(b) magnitude of learned PSF $d(z)$',
+             '\n'.join((r'(c) sparse estimate image', r'$𝜆$ = %.2f' % (lmbda))),
+             '\n'.join((r'(d) sparse vector image', r'wo/weighting ($𝜆$ = %.2f)' % (lmbda))),
+             '\n'.join((r'(e) sparse vector image', r'w/weighting ($𝜆$ = %.2f,$W$ = %.1f)' %  (lmbda, speckle_weight)))]
 
     plot_images(title, [s_log, abs(D), r0_log, x0_log, x1_log, W], rvmin, vmax, overlays=True)
