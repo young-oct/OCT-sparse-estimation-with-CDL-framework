@@ -206,7 +206,7 @@ def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
 
     ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${H_1}$')
 
-    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${A}$')
+    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${H_2}$')
 
     ax.legend()
     ax.set_ylim(0,1.05)
@@ -281,7 +281,7 @@ if __name__ == '__main__':
               vmin=rvmin, interpolation='none')
     anote(ax,s_intensity)
     ax = fig.add_subplot(gs[1, 0])
-    gCNRPlot(ho_s_1, ar_s, rvmin, vmax,ax,y_flag=True)
+    gCNRPlot(ho_s_1, ho_s_2, rvmin, vmax,ax,y_flag=True)
 
     ax = fig.add_subplot(gs[0,1])
     textstr = r'(b) $𝜆$ = %.2f,$W$ = %.1f' % (best,speckle_weight)
@@ -292,7 +292,7 @@ if __name__ == '__main__':
               vmax=vmax, vmin=rvmin, interpolation='none')
     anote(ax,x_intensity)
     ax = fig.add_subplot(gs[1, 1])
-    gCNRPlot(ho_x_1, ar_x, rvmin, vmax,ax)
+    gCNRPlot(ho_x_1, ho_x_2, rvmin, vmax,ax)
 
     b_log = median_filter(x_log, size=(3, 3))
     ax = fig.add_subplot(gs[0, 2])
@@ -307,10 +307,12 @@ if __name__ == '__main__':
     anote(ax,x_intensity,median_flag = True)
 
     ho_b_1 = quality.ROI(*roi['homogeneous'][0], b_log)
+    ho_b_2 = quality.ROI(*roi['homogeneous'][1], b_log)
+
     ar_b = quality.ROI(*roi['background'][0], b_log)
 
     ax = fig.add_subplot(gs[1, 2])
-    gCNRPlot(ho_b_1, ar_b, rvmin, vmax,ax, median_flag = True)
+    gCNRPlot(ho_b_1, ho_b_2, rvmin, vmax,ax, median_flag = True)
 
     ax = fig.add_subplot(gs[:,3])
     ax.set_title(r'(d) generalized $CNR$ $vs.$ $𝜆$')
