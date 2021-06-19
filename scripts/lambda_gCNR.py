@@ -209,7 +209,7 @@ def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
     ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${H_2}$')
 
     ax.legend()
-    ax.set_ylim(0,1.05)
+    ax.set_ylim(0,0.5)
 
     if y_flag == True:
         ax.set_ylabel('pixel percentage',fontsize=20)
