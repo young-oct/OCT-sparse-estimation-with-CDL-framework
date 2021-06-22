@@ -74,10 +74,10 @@ def from_l2_normed(s, l2f):
 
 def load_data(dataset_name, decimation_factor, data_only=False):
     # check if such file exists
-    S_PATH = '../Data/' + dataset_name
+    S_PATH = '../data/' + dataset_name
 
     if data_only == False:
-        D_PATH = '../Data/PSF/' + dataset_name
+        D_PATH = '../data/PSF/' + dataset_name
         if Path(S_PATH).is_file() and Path(D_PATH).is_file():
             # load data & dictionary
             with open(S_PATH, 'rb') as f:
