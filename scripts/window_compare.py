@@ -228,7 +228,7 @@ if __name__ == '__main__':
     std = 292
     d_lmbda = 0.1
 
-    raw = processing.load_raw('/Users/youngwang/Desktop/github/data/finger(raw).npz')
+    raw = processing.load_raw('../data/finger(raw).npz')
 
     s_r = processing.mean_remove(processing.Aline_R(raw, start), decimation_factor)
     s_g = processing.mean_remove(processing.Aline_G(raw, start, std), decimation_factor)
