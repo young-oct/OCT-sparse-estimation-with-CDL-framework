@@ -110,9 +110,13 @@ def plot_images(plot_titles, image,
             axins.set_ylim(0, 0.15)
             ax.indicate_inset_zoom(axins)
 
+
     plt.tight_layout(pad=0.5)
     plt.show()
 
+    fig.savefig('../Images/weighted.svg',
+                dpi = 1200,
+                transparent=True,format = 'svg')
 
 if __name__ == '__main__':
     plt.close('all')
@@ -169,3 +173,5 @@ if __name__ == '__main__':
              '\n'.join((r'(e) sparse vector image', r'w/weighting ($𝜆$ = %.2f,$W$ = %.1f)' %  (lmbda, speckle_weight)))]
 
     plot_images(title, [s_log, abs(D), r0_log, x0_log, x1_log, W], rvmin, vmax, overlays=True)
+
+

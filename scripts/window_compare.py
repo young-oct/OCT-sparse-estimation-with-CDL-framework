@@ -325,3 +325,7 @@ if __name__ == '__main__':
     #           vmax=vmax, vmin=rvmin, interpolation='none')
     # ax.set_axis_off()
     # plt.show()
+
+    fig.savefig('../Images/window_compare.svg',
+                dpi = 1200,
+                transparent=True,format = 'svg')

@@ -34,7 +34,7 @@ eps = 1e-14
 bins = 32
 w_lmbda = 0.05
 def anote(ax,s,median_flag =False):
-    legend_font = 15
+    legend_font = 16
 
     text = r'${A}$'
     ax.annotate(text, xy=(roi['artifact'][0][0], roi['artifact'][0][1]), xycoords='data',
@@ -89,12 +89,12 @@ def anote(ax,s,median_flag =False):
     if median_flag == True:
 
         textstr = '\n'.join((
-            r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar,improvement=True)),
-            r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar,improvement=True)),
-            r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba,improvement=True)),
-            r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2,improvement=True))))
+            '${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar,improvement=True)),
+            '${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar,improvement=True)),
+            '${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba,improvement=True)),
+            '${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2,improvement=True))))
         ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
-                verticalalignment='top', fontname='Arial', color='white')
+                weight='bold',verticalalignment='top', fontname='Arial', color='white')
 
     else:
 
@@ -102,7 +102,7 @@ def anote(ax,s,median_flag =False):
             r'${SNR_{{H_2}/B}}$: %.1f $dB$' % (quality.SNR(h2, ba)),
             r'${C_{{H_2}/B}}$: %.1f $dB$' % (quality.Contrast(h2, ba)),
             r'${C_{{H_1}/{H_2}}}$: %.1f $dB$' % (quality.Contrast(h1, h2))))
-        ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
+        ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,weight='bold',
                 verticalalignment='top', fontname='Arial', color='white')
 
         textstr = '\n'.join((
@@ -110,7 +110,7 @@ def anote(ax,s,median_flag =False):
             r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar)),
             r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba)),
             r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2))))
-        ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
+        ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,weight='bold',
                 verticalalignment='top', fontname='Arial', color='white')
     return ax
 
@@ -354,6 +354,10 @@ if __name__ == '__main__':
 
     ax.legend(loc = 'best',fontsize = 13)
     plt.show()
+
+    fig.savefig('../Images/lambda_gCNR.svg',
+                dpi = 1200,
+                transparent=True,format = 'svg')
 
     # table formant original then sparse
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],

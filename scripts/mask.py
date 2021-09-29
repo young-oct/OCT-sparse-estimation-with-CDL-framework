@@ -144,3 +144,7 @@ if __name__ == '__main__':
         ax[1, i].set_axis_off()
 
     plt.show()
+
+    fig.savefig('../Images/mask.svg',
+                dpi = 1200,
+                transparent=True,format = 'svg')
