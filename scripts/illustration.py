@@ -12,24 +12,27 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 23,
+            'font.size': 30,
             'text.usetex': False,
             'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
         }
     )
 
-    fig,ax = plt.subplots(1,2, figsize=(16,9))
+    fig,ax = plt.subplots(1,2, figsize=(16,9), constrained_layout = True)
     before = plt.imread('../Images/unprocessed_3d.png')
     after = plt.imread('../Images/processed_3d.png')
     ax[0].imshow(before)
     ax[0].set_axis_off()
-    ax[0].set_title('middle ear 3D image(unprocessed)' ,weight='bold')
+    ax[0].text(x = 5, y = 435, s = 'standard\nprocessing', color = 'white',
+               weight='bold',
+               transform = ax[0].transData)
     ax[1].imshow(after)
-    ax[1].set_title('middle ear 3D image(processed)', weight='bold')
+    ax[1].text(x = 5, y = 435, s = 'enhanced', color = 'white',
+               weight='bold',
+               transform = ax[1].transData)
     ax[1].set_axis_off()
 
-    plt.tight_layout()
     plt.show()
 
     fig.savefig('../Images/illustration.svg',
