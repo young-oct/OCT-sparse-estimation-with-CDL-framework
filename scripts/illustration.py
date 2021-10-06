@@ -23,14 +23,18 @@ if __name__ == '__main__':
     before = plt.imread('../Images/unprocessed_3d.png')
     after = plt.imread('../Images/processed_3d.png')
     ax[0].imshow(before)
+    ax[0].annotate('', xy=(380, 180), xycoords='data',
+                   xytext=(410, 140), textcoords='data', fontsize=30,
+                   color='red', fontname='Arial',
+                   arrowprops=dict(facecolor='red', shrink=0.025))
     ax[0].set_axis_off()
-    ax[0].text(x = 5, y = 435, s = 'standard\nprocessing', color = 'white',
-               weight='bold',
-               transform = ax[0].transData)
+    # ax[0].text(x = 5, y = 435, s = 'standard\nprocessing', color = 'white',
+    #            weight='bold',
+    #            transform = ax[0].transData)
     ax[1].imshow(after)
-    ax[1].text(x = 5, y = 435, s = 'enhanced', color = 'white',
-               weight='bold',
-               transform = ax[1].transData)
+    # ax[1].text(x = 5, y = 435, s = 'enhanced', color = 'white',
+    #            weight='bold',
+    #            transform = ax[1].transData)
     ax[1].set_axis_off()
 
     plt.show()
