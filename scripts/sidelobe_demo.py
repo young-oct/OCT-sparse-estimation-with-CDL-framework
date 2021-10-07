@@ -13,7 +13,7 @@ if __name__ == '__main__':
     # Customize matplotlib params
     matplotlib.rcParams.update(
         {
-            'font.size': 30,
+            'font.size': 25,
             'text.usetex': False,
             'font.family': 'sans-serif',
             'mathtext.fontset': 'stix',
@@ -23,23 +23,27 @@ if __name__ == '__main__':
     fig,ax = plt.subplots(2,2, figsize=(16,9), constrained_layout = True)
     finger = plt.imread('../Images/sidelobe_finger.jpeg')
     onion = plt.imread('../Images/sidelobe_onion.jpeg')
-    ear = plt.imread('../Images/sidelobe_ear.jpeg')
+    pigear = plt.imread('../Images/sidelobe_pigear.jpeg')
     ear2 = plt.imread('../Images/sidelobe_ear2.jpeg')
 
 
     ax[0,0].imshow(finger)
-
+    ax[0, 0].set_title('(a)')
     ax[0,0].set_axis_off()
 
     ax[0,1].imshow(onion)
-
+    ax[0, 1].set_title('(b)')
     ax[0,1].set_axis_off()
-    ax[1,0].imshow(ear)
 
+    ax[1,0].imshow(pigear)
     ax[1,0].set_axis_off()
+    ax[1, 0].set_title('(c)')
+
 
     ax[1,1].set_axis_off()
     ax[1,1].imshow(ear2)
+    ax[1, 1].set_title('(d)')
+
 
     ax[1,1].set_axis_off()
 
