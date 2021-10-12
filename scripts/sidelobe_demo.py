@@ -21,10 +21,10 @@ if __name__ == '__main__':
     )
 
     fig,ax = plt.subplots(2,2, figsize=(16,9), constrained_layout = True)
-    finger = plt.imread('../Images/sidelobe_finger.jpeg')
-    onion = plt.imread('../Images/sidelobe_onion.jpeg')
-    pigear = plt.imread('../Images/sidelobe_pigear.jpeg')
-    ear2 = plt.imread('../Images/sidelobe_ear2.jpeg')
+    finger = plt.imread('../Images/sidelobe_a.jpeg')
+    onion = plt.imread('../Images/sidelobe_b.png')
+    lens = plt.imread('../Images/sidelobe_c.png')
+    skin = plt.imread('../Images/sidelobe_d.png')
 
 
     ax[0,0].imshow(finger)
@@ -35,13 +35,13 @@ if __name__ == '__main__':
     ax[0, 1].set_title('(b)')
     ax[0,1].set_axis_off()
 
-    ax[1,0].imshow(pigear)
+    ax[1,0].imshow(lens)
     ax[1,0].set_axis_off()
     ax[1, 0].set_title('(c)')
 
-
+    #
     ax[1,1].set_axis_off()
-    ax[1,1].imshow(ear2)
+    ax[1,1].imshow(skin)
     ax[1, 1].set_title('(d)')
 
 
