@@ -35,10 +35,10 @@ def plot_images(plot_titles, image,
         plt.suptitle(suptitle)
     for n, (ax, title, im) in enumerate(zip(axes.flatten(), plot_titles, image)):
 
-        if n == 4:
-            ax.set_axis_off()
-            ax = axes.flatten()[5]
-
+        # if n == 4:
+        #     ax.set_axis_off()
+        #     ax = axes.flatten()[5]
+        #
         ax.set_title(title)
 
         if n != 1:
@@ -78,7 +78,7 @@ def plot_images(plot_titles, image,
             axins.set_ylim(110, 35)
             ax.indicate_inset_zoom(axins, edgecolor='white')
 
-            if n == 3 and overlays == True:
+            if n == 4 and overlays == True:
                 ax.imshow(im, aspect=im.shape[1] / im.shape[0], vmax=vmax, vmin=vmin, cmap='gray', interpolation='none')
                 ax.contour(mask, [0.99], colors='orange', alpha=0.75, linestyles='dashed')
                 axins.contour(mask, [0.99], colors='orange', alpha=0.75, linestyles='dashed')
@@ -113,7 +113,7 @@ def plot_images(plot_titles, image,
 
     plt.tight_layout(pad=0.5)
     plt.show()
-
+    #
     fig.savefig('../Images/weighted.svg',
                 dpi = 1200,
                 transparent=True,format = 'svg')
@@ -170,8 +170,8 @@ if __name__ == '__main__':
              r'(b) magnitude of learned PSF $d(z)$',
              '\n'.join((r'(c) sparse estimate image', r'$𝜆$ = %.2f' % (lmbda))),
              '\n'.join((r'(d) sparse vector image', r'wo/weighting ($𝜆$ = %.2f)' % (lmbda))),
-             '\n'.join((r'(e) sparse vector image', r'w/weighting ($𝜆$ = %.2f,$W$ = %.1f)' %  (lmbda, speckle_weight)))]
+             '\n'.join((r'(e) sparse vector weighting overlay image', r'wo/weighting ($𝜆$ = %.2f)' % (lmbda))),
+             '\n'.join((r'(f) sparse vector image', r'w/weighting ($𝜆$ = %.2f,$W$ = %.1f)' %  (lmbda, speckle_weight)))]
 
-    plot_images(title, [s_log, abs(D), r0_log, x0_log, x1_log, W], rvmin, vmax, overlays=True)
-
-
+    plot_images(title, [s_log, abs(D), r0_log,x0_log,
+                        x0_log, x1_log, W], rvmin, vmax, overlays=True)
