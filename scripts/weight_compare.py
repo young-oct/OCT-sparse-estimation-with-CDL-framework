@@ -170,7 +170,8 @@ if __name__ == '__main__':
              r'(b) magnitude of learned PSF $d(z)$',
              '\n'.join((r'(c) sparse estimate image', r'$𝜆$ = %.2f' % (lmbda))),
              '\n'.join((r'(d) sparse vector image', r'wo/weighting ($𝜆$ = %.2f)' % (lmbda))),
-             '\n'.join((r'(e) sparse vector weighting overlay image', r'wo/weighting ($𝜆$ = %.2f)' % (lmbda))),
+             # '\n'.join((r'(e) sparse vector weighting overlay image', r'wo/weighting ($𝜆$ = %.2f)' % (lmbda))),
+             '\n'.join((r'(e) sparse vector image showing segmentation', r'for calculation of weighting $W(z)$')),
              '\n'.join((r'(f) sparse vector image', r'w/weighting ($𝜆$ = %.2f,$W$ = %.1f)' %  (lmbda, speckle_weight)))]
 
     plot_images(title, [s_log, abs(D), r0_log,x0_log,

@@ -199,7 +199,7 @@ def zoomshow(ax,image):
 # Define ROIs
 roi = {}
 width, height = (20, 10)
-roi['artifact'] = [[212, 142, int(width * 1.2), int(height * 1.2)]]
+roi['artifact'] = [[170, 144, int(width * 1.2), int(height * 1.2)]]
 roi['background'] = [[390, 260, int(width * 1.2), int(height * 1.2)]]
 roi['homogeneous'] = [[390, 230, int(width * 1.2), int(height * 1.2)]]
 
@@ -326,6 +326,6 @@ if __name__ == '__main__':
     # ax.set_axis_off()
     # plt.show()
 
-    fig.savefig('../Images/window_compare.jpeg',
-                dpi = 1200,
-                transparent=True,format = 'jpeg')
+    # fig.savefig('../Images/window_compare.jpeg',
+    #             dpi = 1200,
+    #             transparent=True,format = 'jpeg')
