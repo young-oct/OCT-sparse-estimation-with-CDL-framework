@@ -15,6 +15,8 @@ import matplotlib
 from matplotlib import pyplot as plt
 from sporco.admm import cbpdn
 from misc import processing
+from scipy.ndimage import median_filter
+import polarTransform
 
 # Module level constants
 eps = 1e-14
@@ -63,7 +65,6 @@ if __name__ == '__main__':
 
         x_log = 20 * np.log10(abs(x))
         s_log = 20 * np.log10(abs(s))
-
         original.append(s_log)
         sparse.append(x_log)
 
@@ -76,16 +77,20 @@ if __name__ == '__main__':
     aspect = original[0].shape[1]/original[0].shape[0]
     fig, ax = plt.subplots(nrows=2, ncols=4, sharey=True, sharex=True, figsize=(16, 9),constrained_layout=True )
 
+    cartesianImage=x_log
+    
     for i in range(len(file_name)):
         title = '\n'.join((title_name[i],r'$𝜆$ = %.2f,$W$ = %.1f' % (lmbda[i], speckle_weight)))
 
         ax[0, i].set_title(title,fontsize=20)
         ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')
-        ax[0, i].annotate('', xy=(x_head[i], y_head[i]), xycoords='data',
-                          xytext=(x_end[i], y_end[i]), textcoords='data',
-                          arrowprops=dict(facecolor='white', shrink=0.05),
-                          horizontalalignment='right', verticalalignment='top',
-                          )
+        
+        
+        #ax[0, i].annotate('', xy=(x_head[i], y_head[i]), xycoords='data',
+        #                  xytext=(x_end[i], y_end[i]), textcoords='data',
+        #                  arrowprops=dict(facecolor='white', shrink=0.05),
+        #                  horizontalalignment='right', verticalalignment='top',
+        #                  )
 
         ax[1, i].imshow(sparse[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')
         ax[0, i].set_axis_off()
@@ -96,3 +101,28 @@ if __name__ == '__main__':
     fig.savefig('../Images/image_compare.svg',
                 dpi = 1200,
                 transparent=True,format = 'svg')
+
+    
+    from numpy import pi
+    #plt.close('all')
+    ear_image=sparse[0]
+    ear_image[0,:]=vmax
+    ear_image[-1,:]=vmax
+    ear_image[:,0]=vmax
+    ear_image[:,-1]=vmax
+    ear_image = median_filter(ear_image, size=(2, 2))
+    for i in range(ear_image.shape[0]):
+        for j in range(ear_image.shape[1]):
+            if ear_image[i,j]<rvmin:
+                ear_image[i,j]=rvmin
+            if ear_image[i,j]>vmax:
+                ear_image[i,j]=vmax
+                
+        
+    
+    opening_angle=60 #deg
+    polarImage, ptSettings = polarTransform.convertToCartesianImage(ear_image.T, initialRadius=300, finalRadius=812, initialAngle=-opening_angle*pi/360, finalAngle=opening_angle*pi/360)
+    plt.figure()
+    plt.imshow(polarImage.T[::-1,:], 'gray',aspect=aspect,vmax=vmax, interpolation='none', vmin=rvmin, origin='lower')
+    plt.figure()
+    plt.imshow(ear_image, 'gray',aspect=aspect,vmax=vmax, vmin=rvmin, interpolation='none', origin='lower')
