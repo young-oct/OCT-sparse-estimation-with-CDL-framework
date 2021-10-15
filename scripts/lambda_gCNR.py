@@ -24,18 +24,18 @@ import matplotlib.ticker
 roi = {}
 width, height = (20, 10)
 roi['artifact'] = [[170, 144, int(width * 1.2), int(height * 1.2)]]
-# roi['artifact'] = [[212, 144, int(width * 1.2), int(height * 1.2)]]
 
 roi['background'] = [[390, 260, int(width * 1.2), int(height * 1.2)]]
 roi['homogeneous'] = [[212, 165, int(width * 1.2), int(height * 1.2)],
                       [390, 230, int(width * 1.2), int(height * 1.2)]]
 
-
 # Module level constants
 eps = 1e-14
 bins = 32
 w_lmbda = 0.05
-def anote(ax,s,median_flag =False):
+
+
+def anote(ax, s, median_flag=False):
     legend_font = 16
 
     text = r'${A}$'
@@ -56,7 +56,7 @@ def anote(ax,s,median_flag =False):
 
     text = r'${H_{2}}$'
     ax.annotate(text, xy=(roi['homogeneous'][1][0], roi['homogeneous'][1][1] + height), xycoords='data',
-                xytext=(roi['homogeneous'][1][0] - 60, roi['homogeneous'][1][1]+10), textcoords='data',
+                xytext=(roi['homogeneous'][1][0] - 60, roi['homogeneous'][1][1] + 10), textcoords='data',
                 fontsize=legend_font,
                 color='white', fontname='Arial',
                 arrowprops=dict(facecolor='white', shrink=0.025),
@@ -91,12 +91,12 @@ def anote(ax,s,median_flag =False):
     if median_flag == True:
 
         textstr = '\n'.join((
-            '${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar,improvement=True)),
-            '${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar,improvement=True)),
-            '${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba,improvement=True)),
-            '${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2,improvement=True))))
-        ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
-                weight='bold',verticalalignment='top', fontname='Arial', color='white')
+            '${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar, improvement=True)),
+            '${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar, improvement=True)),
+            '${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba, improvement=True)),
+            '${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2, improvement=True))))
+        ax.text(0.60, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
+                weight='bold', verticalalignment='top', fontname='Arial', color='white')
 
     else:
 
@@ -104,7 +104,7 @@ def anote(ax,s,median_flag =False):
             r'${SNR_{{H_2}/B}}$: %.1f $dB$' % (quality.SNR(h2, ba)),
             r'${C_{{H_2}/B}}$: %.1f $dB$' % (quality.Contrast(h2, ba)),
             r'${C_{{H_1}/{H_2}}}$: %.1f $dB$' % (quality.Contrast(h1, h2))))
-        ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,weight='bold',
+        ax.text(0.025, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font, weight='bold',
                 verticalalignment='top', fontname='Arial', color='white')
 
         textstr = '\n'.join((
@@ -112,15 +112,16 @@ def anote(ax,s,median_flag =False):
             r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar)),
             r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba)),
             r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2))))
-        ax.text(0.55, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,weight='bold',
+        ax.text(0.60, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font, weight='bold',
                 verticalalignment='top', fontname='Arial', color='white')
     return ax
 
-def lmbda_search(s,lmbda,speckle_weight):
-    x = processing.make_sparse_representation(s,D, lmbda,w_lmbda,speckle_weight)
 
-    s_intensity = abs(s)**2
-    x_intensity = abs(x)**2
+def lmbda_search(s, lmbda, speckle_weight):
+    x = processing.make_sparse_representation(s, D, lmbda, w_lmbda, speckle_weight)
+
+    s_intensity = abs(s) ** 2
+    x_intensity = abs(x) ** 2
 
     ho_s_1 = quality.ROI(*roi['homogeneous'][0], s_intensity)
     ho_s_2 = quality.ROI(*roi['homogeneous'][1], s_intensity)
@@ -136,23 +137,23 @@ def lmbda_search(s,lmbda,speckle_weight):
 
     # calcuate image quality metrics
 
-    #'gCNR ', 'H_1/A',
+    # 'gCNR ', 'H_1/A',
     gcnrh1a = quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)
 
-    #'gCNR', 'H_2/B',
+    # 'gCNR', 'H_2/B',
     gcnrh2b = quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)
 
-    #'gCNR', 'H_1/H_2',
+    # 'gCNR', 'H_1/H_2',
     gcnrh12 = quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)
 
-    #'gCNR', 'H_2/A',
+    # 'gCNR', 'H_2/A',
     gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
 
-    return (gcnrh1a,gcnrh2b,gcnrh12,gcnrh2a)
+    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a)
 
-def value_plot(lmbda,value):
 
-    fig,ax = plt.subplots(1,1, figsize=(16,9))
+def value_plot(lmbda, value):
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
     ax.set_title(r'Generalized $CNR$ versus $𝜆$')
     reference = []
 
@@ -160,31 +161,30 @@ def value_plot(lmbda,value):
         temp = value[0]
         reference.append(temp[i][0])
 
-    gcnrh1a,gcnrh2b,gcnrh12,gcnrh2a = [],[],[],[]
+    gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a = [], [], [], []
     for i in range(len(value)):
-
         temp = value[i]
         gcnrh1a.append(temp[0][1])
         gcnrh2b.append(temp[1][1])
         gcnrh12.append(temp[2][1])
         gcnrh2a.append(temp[3][1])
 
-    ax.plot(lmbda, gcnrh1a,color='green', label = r'${gCNR_{{H_1}/{A}}}$')
-    ax.axhline(reference[0],color='green',linestyle = '--')
+    ax.plot(lmbda, gcnrh1a, color='green', label=r'${gCNR_{{H_1}/{A}}}$')
+    ax.axhline(reference[0], color='green', linestyle='--')
 
-    ax.plot(lmbda, gcnrh2b,color='red',label = r'${gCNR_{{H_2}/{B}}}$')
-    ax.axhline(reference[1],color='red',linestyle = '--')
+    ax.plot(lmbda, gcnrh2b, color='red', label=r'${gCNR_{{H_2}/{B}}}$')
+    ax.axhline(reference[1], color='red', linestyle='--')
 
-    ax.plot(lmbda, gcnrh12, color='orange',label = r'${gCNR_{{H_1}/{H_2}}}$')
-    ax.axhline(reference[2],color='orange',linestyle = '--')
+    ax.plot(lmbda, gcnrh12, color='orange', label=r'${gCNR_{{H_1}/{H_2}}}$')
+    ax.axhline(reference[2], color='orange', linestyle='--')
 
-    ax.plot(lmbda, gcnrh2a, color='purple',label = r'${gCNR_{{H_2}/{A}}}$')
-    ax.axhline(reference[3],color='purple',linestyle = '--')
+    ax.plot(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
+    ax.axhline(reference[3], color='purple', linestyle='--')
 
     ax.set_ylabel(r'${gCNR}$')
     ax.set_xlabel(r'$𝜆$')
     ax.set_xscale('log')
-    ax.set_ylim(0,1)
+    ax.set_ylim(0, 1)
 
     ax.legend()
     plt.tight_layout()
@@ -192,8 +192,9 @@ def value_plot(lmbda,value):
 
     return lmbda[np.argmax(gcnrh2a)]
 
-def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
 
+def gCNRPlot(r1, r2, min, max, ax, label1: str, label2: str,clr1,clr2,
+             median_flag=False, y_flag=False, yLimFlag = False):
     region_r1 = np.ravel(r1)
     region_r2 = np.ravel(r2)
 
@@ -206,17 +207,20 @@ def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
 
     weights = np.ones_like(log_r1) / float(len(log_r1))
 
-    ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${H_1}$')
+    ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='step', label=label1, color=clr1 )
+    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='step', label=label2, color=clr2)
 
-    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='step', label=r'${H_2}$')
+    ax.legend(fontsize = 22)
 
-    ax.legend()
-    ax.set_ylim(0,0.5)
+    if yLimFlag == True:
+        ax.set_ylim(0, 0.5)
+    else:
+        ax.set_ylim(0, 1.05)
 
     if y_flag == True:
-        ax.set_ylabel('pixel percentage',fontsize=20)
+        ax.set_ylabel('pixel percentage', fontsize=20)
         y_vals = ax.get_yticks()
-        ax.set_yticklabels(['{:d}%'.format(int(x*100)) for x in y_vals])
+        ax.set_yticklabels(['{:d}%'.format(int(x * 100)) for x in y_vals])
         pass
     else:
         ax.set_yticks([])
@@ -224,12 +228,11 @@ def gCNRPlot(r1, r2, min, max,ax,median_flag = False,y_flag = False):
 
     return ax
 
-
 if __name__ == '__main__':
 
-    #Image processing and display paramaters
+    # Image processing and display paramaters
     speckle_weight = 0.1
-    rvmin, vmax = 5, 55 #dB
+    rvmin, vmax = 5, 55  # dB
 
     plt.close('all')
     # Customize matplotlib params
@@ -244,15 +247,16 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4,0,50)
+    lmbda = np.logspace(-4, 0, 50)
     value = []
     for i in range(len(lmbda)):
+        value.append(lmbda_search(s, lmbda=lmbda[i],
+                                  speckle_weight=speckle_weight))
 
-        value.append(lmbda_search(s,lmbda[i],0.05))
+    best = value_plot(lmbda, value)
+    # best = lmbda[0]
 
-    best = value_plot(lmbda,value)
-
-    x = processing.make_sparse_representation(s,D, best,w_lmbda,speckle_weight)
+    x = processing.make_sparse_representation(s, D, best, w_lmbda, speckle_weight)
 
     # Generate log intensity arrays
     s_intensity = abs(s) ** 2
@@ -273,28 +277,40 @@ if __name__ == '__main__':
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
-    fig = plt.figure(figsize=(16, 9),constrained_layout=True)
-    gs = gridspec.GridSpec(ncols=4, nrows=2, figure=fig)
+    fig = plt.figure(figsize=(20, 15), constrained_layout=True)
+    gs = gridspec.GridSpec(ncols=4, nrows=3, figure=fig)
 
-    ax = fig.add_subplot(gs[0,0])
+    ax = fig.add_subplot(gs[0, 0])
     ax.set_axis_off()
     ax.set_title('(a) reference')
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax,
               vmin=rvmin, interpolation='none')
-    anote(ax,s_intensity)
+    anote(ax, s_intensity)
     ax = fig.add_subplot(gs[1, 0])
-    gCNRPlot(ho_s_1, ho_s_2, rvmin, vmax,ax,y_flag=True)
+    gCNRPlot(ho_s_1, ar_s, rvmin, vmax, ax, label1=r'${H_1}$', label2=r'${A}$',
+             clr1 = 'red', clr2 = 'green', y_flag=True)
 
-    ax = fig.add_subplot(gs[0,1])
-    textstr = r'(b) $𝜆$ = %.2f,$W$ = %.1f' % (best,speckle_weight)
+    ax = fig.add_subplot(gs[2, 0])
+    gCNRPlot(ho_s_1, ho_s_2, rvmin, vmax, ax, label1=r'${H_1}$',
+    label2=r'${H_2}$',clr1='red', clr2='orange', y_flag=True,yLimFlag=True)
+
+    ax = fig.add_subplot(gs[0, 1])
+    textstr = r'(b) $𝜆$ = %.2f,$W$ = %.1f' % (best, speckle_weight)
 
     ax.set_title(textstr)
     ax.set_axis_off()
     ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
-    anote(ax,x_intensity)
+    anote(ax, x_intensity)
     ax = fig.add_subplot(gs[1, 1])
-    gCNRPlot(ho_x_1, ho_x_2, rvmin, vmax,ax)
+    gCNRPlot(ho_x_1, ar_x, rvmin, vmax, ax,
+             label1=r'${H_1}$', label2=r'${A}$',
+             clr1 = 'red', clr2 = 'green')
+
+    ax = fig.add_subplot(gs[2, 1])
+    gCNRPlot(ho_x_1, ho_x_2, rvmin, vmax, ax,
+             label1=r'${H_1}$', label2=r'${H_2}$',clr1 = 'red', clr2 = 'orange',
+             yLimFlag=True)
 
     b_log = median_filter(x_log, size=(3, 3))
     ax = fig.add_subplot(gs[0, 2])
@@ -306,7 +322,7 @@ if __name__ == '__main__':
     ax.set_title(textstr)
     ax.imshow(b_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
-    anote(ax,x_intensity,median_flag = True)
+    anote(ax, x_intensity, median_flag=True)
 
     ho_b_1 = quality.ROI(*roi['homogeneous'][0], b_log)
     ho_b_2 = quality.ROI(*roi['homogeneous'][1], b_log)
@@ -314,9 +330,17 @@ if __name__ == '__main__':
     ar_b = quality.ROI(*roi['background'][0], b_log)
 
     ax = fig.add_subplot(gs[1, 2])
-    gCNRPlot(ho_b_1, ho_b_2, rvmin, vmax,ax, median_flag = True)
+    gCNRPlot(ho_b_1, ar_b, rvmin, vmax, ax,
+             label1='${H_1}$', label2='${A}$',
+             clr1='red', clr2='green', median_flag=True)
 
-    ax = fig.add_subplot(gs[:,3])
+    ax = fig.add_subplot(gs[2, 2])
+    gCNRPlot(ho_b_1, ho_b_2, rvmin, vmax, ax,
+             label1='${H_1}$', label2='${H_2}$',
+             clr1='red', clr2='orange',
+             median_flag=True,yLimFlag=True)
+
+    ax = fig.add_subplot(gs[:, 3])
     ax.set_title(r'(d) generalized $CNR$ $vs.$ $𝜆$')
     reference = []
 
@@ -344,8 +368,8 @@ if __name__ == '__main__':
     ax.semilogx(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
     ax.axhline(reference[3], color='purple', linestyle='--')
 
-    ax.set_ylabel(r'${gCNR}$',fontsize=20)
-    ax.set_xlabel(r'$𝜆$')
+    ax.set_ylabel(r'${gCNR}$', fontsize=22)
+    ax.set_xlabel(r'$𝜆$', fontsize=22)
 
     ax.set_ylim(0.25, 1)
     locmaj = matplotlib.ticker.LogLocator(base=10, numticks=12)
@@ -354,7 +378,7 @@ if __name__ == '__main__':
     ax.xaxis.set_minor_locator(locmin)
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
-    ax.legend(loc = 'best',fontsize = 13)
+    ax.legend(loc='best', ncol=2, mode= 'expand', fontsize=20)
     plt.show()
 
     fig.savefig('../Images/lambda_gCNR.svg',
