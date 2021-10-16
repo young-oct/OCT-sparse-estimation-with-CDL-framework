@@ -207,8 +207,8 @@ def gCNRPlot(r1, r2, min, max, ax, label1: str, label2: str,clr1,clr2,
 
     weights = np.ones_like(log_r1) / float(len(log_r1))
 
-    ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='step', label=label1, color=clr1 )
-    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='step', label=label2, color=clr2)
+    ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='stepfilled',alpha = 0.5, label=label1, color=clr1 )
+    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='stepfilled',alpha = 0.5, label=label2, color=clr2)
 
     ax.legend(fontsize = 22)
 
@@ -247,14 +247,14 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4, 0, 50)
+    lmbda = np.logspace(-4, 0, 100)
+
     value = []
     for i in range(len(lmbda)):
         value.append(lmbda_search(s, lmbda=lmbda[i],
                                   speckle_weight=speckle_weight))
 
     best = value_plot(lmbda, value)
-    # best = lmbda[0]
 
     x = processing.make_sparse_representation(s, D, best, w_lmbda, speckle_weight)
 
@@ -286,11 +286,11 @@ if __name__ == '__main__':
     ax.imshow(s_log, 'gray', aspect=s_log.shape[1] / s_log.shape[0], vmax=vmax,
               vmin=rvmin, interpolation='none')
     anote(ax, s_intensity)
-    ax = fig.add_subplot(gs[1, 0])
+    ax = fig.add_subplot(gs[2, 0])
     gCNRPlot(ho_s_1, ar_s, rvmin, vmax, ax, label1=r'${H_1}$', label2=r'${A}$',
              clr1 = 'red', clr2 = 'green', y_flag=True)
 
-    ax = fig.add_subplot(gs[2, 0])
+    ax = fig.add_subplot(gs[1, 0])
     gCNRPlot(ho_s_1, ho_s_2, rvmin, vmax, ax, label1=r'${H_1}$',
     label2=r'${H_2}$',clr1='red', clr2='orange', y_flag=True,yLimFlag=True)
 
@@ -302,12 +302,12 @@ if __name__ == '__main__':
     ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
               vmax=vmax, vmin=rvmin, interpolation='none')
     anote(ax, x_intensity)
-    ax = fig.add_subplot(gs[1, 1])
+    ax = fig.add_subplot(gs[2, 1])
     gCNRPlot(ho_x_1, ar_x, rvmin, vmax, ax,
              label1=r'${H_1}$', label2=r'${A}$',
              clr1 = 'red', clr2 = 'green')
 
-    ax = fig.add_subplot(gs[2, 1])
+    ax = fig.add_subplot(gs[1, 1])
     gCNRPlot(ho_x_1, ho_x_2, rvmin, vmax, ax,
              label1=r'${H_1}$', label2=r'${H_2}$',clr1 = 'red', clr2 = 'orange',
              yLimFlag=True)
@@ -329,12 +329,12 @@ if __name__ == '__main__':
 
     ar_b = quality.ROI(*roi['background'][0], b_log)
 
-    ax = fig.add_subplot(gs[1, 2])
+    ax = fig.add_subplot(gs[2, 2])
     gCNRPlot(ho_b_1, ar_b, rvmin, vmax, ax,
              label1='${H_1}$', label2='${A}$',
              clr1='red', clr2='green', median_flag=True)
 
-    ax = fig.add_subplot(gs[2, 2])
+    ax = fig.add_subplot(gs[1, 2])
     gCNRPlot(ho_b_1, ho_b_2, rvmin, vmax, ax,
              label1='${H_1}$', label2='${H_2}$',
              clr1='red', clr2='orange',
@@ -357,12 +357,14 @@ if __name__ == '__main__':
         gcnrh2a.append(temp[3][1])
 
     ax.semilogx(lmbda, gcnrh1a, color='green', label=r'${gCNR_{{H_1}/{A}}}$')
+
     ax.axhline(reference[0], color='green', linestyle='--')
 
     ax.semilogx(lmbda, gcnrh2b, color='red', label=r'${gCNR_{{H_2}/{B}}}$')
-    ax.axhline(reference[1], color='red', linestyle='--')
 
+    ax.axhline(reference[1], color='red', linestyle='--')
     ax.semilogx(lmbda, gcnrh12, color='orange', label=r'${gCNR_{{H_1}/{H_2}}}$')
+
     ax.axhline(reference[2], color='orange', linestyle='--')
 
     ax.semilogx(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
