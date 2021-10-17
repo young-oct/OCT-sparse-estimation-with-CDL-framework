@@ -167,7 +167,8 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
 
     return W
 
-def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Line=False, index=None, Mask=False, Ear =False):
+def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight,
+                               Line=False, index=None, Mask=False, Ear =False):
     ''' s -- 2D array of complex A-lines with dims (width, depth)
     '''
     # l2 norm data and save the scaling factor
@@ -190,6 +191,7 @@ def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight, Line=False, 
                                       'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
 
     b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
+
     xnorm = b.solve().squeeze() + eps
     # calculate sparsity
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)

@@ -247,14 +247,15 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4, 0, 100)
+    lmbda = np.logspace(-4, 0, 50)
 
     value = []
     for i in range(len(lmbda)):
         value.append(lmbda_search(s, lmbda=lmbda[i],
                                   speckle_weight=speckle_weight))
 
-    best = value_plot(lmbda, value)
+    # best = value_plot(lmbda, value)
+    best = 1e-4
 
     x = processing.make_sparse_representation(s, D, best, w_lmbda, speckle_weight)
 
@@ -383,9 +384,9 @@ if __name__ == '__main__':
     ax.legend(loc='best', ncol=2, mode= 'expand', fontsize=20)
     plt.show()
 
-    fig.savefig('../Images/lambda_gCNR.svg',
-                dpi = 1200,
-                transparent=True,format = 'svg')
+    # fig.savefig('../Images/lambda_gCNR.svg',
+    #             dpi = 1200,
+    #             transparent=True,format = 'svg')
 
     # table formant original then sparse
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],
