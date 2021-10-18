@@ -15,14 +15,16 @@ from matplotlib import pyplot as plt
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from scipy.ndimage import median_filter
-from skimage.metrics import structural_similarity as ssim
 
 from tabulate import tabulate
 from matplotlib.ticker import (MultipleLocator)
 import matplotlib.ticker
 from sporco.admm import cbpdn
+from skimage.metrics import structural_similarity as ssim
+
 
 np.seterr(divide='ignore')
+
 
 # Define ROIs
 roi = {}
@@ -140,8 +142,6 @@ def anote(ax, s, median_flag=False):
 def lmbda_search(s, lmbda, speckle_weight):
     x = processing.make_sparse_representation(s, D, lmbda, w_lmbda, speckle_weight)
 
-    r_log = sparse_recon(s, D, lmbda)
-
     s_intensity = abs(s) ** 2
     x_intensity = abs(x) ** 2
 
@@ -161,7 +161,6 @@ def lmbda_search(s, lmbda, speckle_weight):
     x_log = 10 * np.log10(x_intensity)
 
     ssim_value = ssimPlot(s_log, x_log)
-    ssim_va_r = ssimPlot(s_log, r_log)
 
     # calcuate image quality metrics
 
@@ -177,7 +176,7 @@ def lmbda_search(s, lmbda, speckle_weight):
     # 'gCNR', 'H_2/A',
     gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
 
-    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a, ssim_value, ssim_va_r)
+    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a, ssim_value)
 
 
 def value_plot(lmbda, value):
@@ -282,16 +281,15 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4, -1, 50)
+    lmbda = np.logspace(-4, 0, 50)
 
     value = []
-
     for i in range(len(lmbda)):
         value.append(lmbda_search(s, lmbda=lmbda[i],
                                   speckle_weight=speckle_weight))
 
-    best = value_plot(lmbda, value)
-    # best = 1e-4
+    # best = value_plot(lmbda, value)
+    best = 1e-4
 
     x = processing.make_sparse_representation(s, D, best, w_lmbda, speckle_weight)
 
@@ -440,16 +438,11 @@ if __name__ == '__main__':
     for i in range(len(value)):
         temp = value[i]
         ssim_vx.append(temp[4])
-        ssim_vr.append(temp[5])
 
     fig, ax = plt.subplots(1, 1, figsize=(16, 9))
     ax.semilogx(lmbda, ssim_vx, label='sparse vector image')
-    ax.semilogx(lmbda, ssim_vr, label='sparse estimate image')
-
-    median_ssim = ssimPlot(s_log, b_log)
 
     ax.set_ylabel(r'${SSIM}$', fontsize=22)
     ax.set_xlabel(r'$𝜆$', fontsize=22)
-    ax.axhline(median_ssim, color='red', linestyle='--', label='median filtering at $𝜆$ = %.3f ' % best)
     ax.legend()
     plt.show()
