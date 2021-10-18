@@ -157,10 +157,19 @@ def lmbda_search(s, lmbda, speckle_weight):
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
-    s_log = 10 * np.log10(s_intensity)
-    x_log = 10 * np.log10(x_intensity)
+    ho_s_1_log = 10 * np.log10(ho_s_1)
+    ho_s_2_log = 10 * np.log10(ho_s_2)
 
-    ssim_value = ssimPlot(s_log, x_log)
+    ho_x_1_log = 10 * np.log10(ho_x_1)
+    ho_x_2_log = 10 * np.log10(ho_x_2)
+
+    ar_s_log = 10 * np.log10(ar_s)
+    ar_x_log = 10 * np.log10(ar_x)
+
+    ssim_h1 = ssimPlot(ho_s_1_log, ho_x_1_log)
+    ssim_h2 = ssimPlot(ho_s_2_log, ho_x_2_log)
+    ssim_a = ssimPlot(ar_s_log, ar_x_log)
+
 
     # calcuate image quality metrics
 
@@ -176,7 +185,7 @@ def lmbda_search(s, lmbda, speckle_weight):
     # 'gCNR', 'H_2/A',
     gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
 
-    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a, ssim_value)
+    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a, ssim_h1,ssim_h2, ssim_a)
 
 
 def value_plot(lmbda, value):
@@ -288,8 +297,7 @@ if __name__ == '__main__':
         value.append(lmbda_search(s, lmbda=lmbda[i],
                                   speckle_weight=speckle_weight))
 
-    # best = value_plot(lmbda, value)
-    best = 1e-4
+    best = value_plot(lmbda, value)
 
     x = processing.make_sparse_representation(s, D, best, w_lmbda, speckle_weight)
 
@@ -434,13 +442,17 @@ if __name__ == '__main__':
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
 
-    ssim_vx, ssim_vr = [], []
+    ssim_h1,ssim_h2,ssim_a = [], [], []
     for i in range(len(value)):
         temp = value[i]
-        ssim_vx.append(temp[4])
+        ssim_h1.append(temp[4])
+        ssim_h2.append(temp[5])
+        ssim_a.append(temp[6])
 
     fig, ax = plt.subplots(1, 1, figsize=(16, 9))
-    ax.semilogx(lmbda, ssim_vx, label='sparse vector image')
+    ax.semilogx(lmbda, ssim_h1, label='sparse vector image: ${H_1}$')
+    ax.semilogx(lmbda, ssim_h2, label='sparse vector image: ${H_2}$')
+    ax.semilogx(lmbda, ssim_a, label='sparse vector image: ${A}$')
 
     ax.set_ylabel(r'${SSIM}$', fontsize=22)
     ax.set_xlabel(r'$𝜆$', fontsize=22)
