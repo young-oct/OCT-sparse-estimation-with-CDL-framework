@@ -15,10 +15,14 @@ from matplotlib import pyplot as plt
 from misc import processing, quality, annotation
 import matplotlib.gridspec as gridspec
 from scipy.ndimage import median_filter
+from skimage.metrics import structural_similarity as ssim
 
 from tabulate import tabulate
 from matplotlib.ticker import (MultipleLocator)
 import matplotlib.ticker
+from sporco.admm import cbpdn
+
+np.seterr(divide = 'ignore')
 
 # Define ROIs
 roi = {}
@@ -34,6 +38,22 @@ eps = 1e-14
 bins = 32
 w_lmbda = 0.05
 
+
+def sparse_recon(s, D,lmbda):
+
+    l2f, s_norm = processing.to_l2_normed(s)
+
+    opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
+                                      'MaxMainIter': 20, 'RelStopTol': 5e-5, 'AuxVarObj': True,
+                                      'RelaxParam': 1.515, 'AutoRho': {'Enabled': True}})
+
+    b = cbpdn.ConvBPDN(D, s_norm, lmbda, opt=opt_par, dimK=1, dimN=1)
+    _ = b.solve()
+    r_norm = b.reconstruct().squeeze()
+
+    r = processing.from_l2_normed(r_norm, l2f)
+    r_log = 20 * np.log10(abs(r))
+    return r_log
 
 def anote(ax, s, median_flag=False):
     legend_font = 16
@@ -120,6 +140,8 @@ def anote(ax, s, median_flag=False):
 def lmbda_search(s, lmbda, speckle_weight):
     x = processing.make_sparse_representation(s, D, lmbda, w_lmbda, speckle_weight)
 
+    r_log = sparse_recon(s, D, lmbda)
+
     s_intensity = abs(s) ** 2
     x_intensity = abs(x) ** 2
 
@@ -135,6 +157,13 @@ def lmbda_search(s, lmbda, speckle_weight):
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
+    s_log = 10*np.log10(s_intensity)
+    x_log = 10*np.log10(x_intensity)
+
+    ssim_value = ssimPlot(s_log,x_log)
+    ssim_va_r = ssimPlot(s_log, r_log)
+
+
     # calcuate image quality metrics
 
     # 'gCNR ', 'H_1/A',
@@ -149,7 +178,7 @@ def lmbda_search(s, lmbda, speckle_weight):
     # 'gCNR', 'H_2/A',
     gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
 
-    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a)
+    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a,ssim_value,ssim_va_r)
 
 
 def value_plot(lmbda, value):
@@ -192,6 +221,8 @@ def value_plot(lmbda, value):
 
     return lmbda[np.argmax(gcnrh2a)]
 
+def ssimPlot(ref, compare):
+    return ssim(ref,compare,data_range=225)
 
 def gCNRPlot(r1, r2, min, max, ax, label1: str, label2: str,clr1,clr2,
              median_flag=False, y_flag=False, yLimFlag = False):
@@ -247,15 +278,16 @@ if __name__ == '__main__':
     file_name = 'finger'
     # Load the example dataset
     s, D = processing.load_data(file_name, decimation_factor=20)
-    lmbda = np.logspace(-4, 0, 50)
+    lmbda = np.logspace(-4, -1, 50)
 
     value = []
+
     for i in range(len(lmbda)):
         value.append(lmbda_search(s, lmbda=lmbda[i],
                                   speckle_weight=speckle_weight))
 
-    # best = value_plot(lmbda, value)
-    best = 1e-4
+    best = value_plot(lmbda, value)
+    # best = 1e-4
 
     x = processing.make_sparse_representation(s, D, best, w_lmbda, speckle_weight)
 
@@ -399,3 +431,21 @@ if __name__ == '__main__':
 
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
+
+    ssim_vx,ssim_vr  =  [], []
+    for i in range(len(value)):
+        temp = value[i]
+        ssim_vx.append(temp[4])
+        ssim_vr.append(temp[5])
+
+    fig,ax = plt.subplots(1,1, figsize=(16,9))
+    ax.semilogx(lmbda, ssim_vx, label= 'sparse vector image')
+    ax.semilogx(lmbda, ssim_vr, label= 'sparse estimate image')
+
+    median_ssim = ssimPlot(s_log, b_log)
+
+    ax.set_ylabel(r'${SSIM}$', fontsize=22)
+    ax.set_xlabel(r'$𝜆$', fontsize=22)
+    ax.axhline(median_ssim, color='red', linestyle='--', label = 'median filtering at $𝜆$ = %.3f ' % best)
+    ax.legend()
+    plt.show()
