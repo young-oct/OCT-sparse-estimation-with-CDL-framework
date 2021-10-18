@@ -22,7 +22,7 @@ from matplotlib.ticker import (MultipleLocator)
 import matplotlib.ticker
 from sporco.admm import cbpdn
 
-np.seterr(divide = 'ignore')
+np.seterr(divide='ignore')
 
 # Define ROIs
 roi = {}
@@ -39,8 +39,7 @@ bins = 32
 w_lmbda = 0.05
 
 
-def sparse_recon(s, D,lmbda):
-
+def sparse_recon(s, D, lmbda):
     l2f, s_norm = processing.to_l2_normed(s)
 
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
@@ -54,6 +53,7 @@ def sparse_recon(s, D,lmbda):
     r = processing.from_l2_normed(r_norm, l2f)
     r_log = 20 * np.log10(abs(r))
     return r_log
+
 
 def anote(ax, s, median_flag=False):
     legend_font = 16
@@ -157,12 +157,11 @@ def lmbda_search(s, lmbda, speckle_weight):
     ba_s = quality.ROI(*roi['background'][0], s_intensity)
     ba_x = quality.ROI(*roi['background'][0], x_intensity)
 
-    s_log = 10*np.log10(s_intensity)
-    x_log = 10*np.log10(x_intensity)
+    s_log = 10 * np.log10(s_intensity)
+    x_log = 10 * np.log10(x_intensity)
 
-    ssim_value = ssimPlot(s_log,x_log)
+    ssim_value = ssimPlot(s_log, x_log)
     ssim_va_r = ssimPlot(s_log, r_log)
-
 
     # calcuate image quality metrics
 
@@ -178,7 +177,7 @@ def lmbda_search(s, lmbda, speckle_weight):
     # 'gCNR', 'H_2/A',
     gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
 
-    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a,ssim_value,ssim_va_r)
+    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a, ssim_value, ssim_va_r)
 
 
 def value_plot(lmbda, value):
@@ -221,11 +220,13 @@ def value_plot(lmbda, value):
 
     return lmbda[np.argmax(gcnrh2a)]
 
-def ssimPlot(ref, compare):
-    return ssim(ref,compare,data_range=225)
 
-def gCNRPlot(r1, r2, min, max, ax, label1: str, label2: str,clr1,clr2,
-             median_flag=False, y_flag=False, yLimFlag = False):
+def ssimPlot(ref, compare):
+    return ssim(ref, compare, data_range=225)
+
+
+def gCNRPlot(r1, r2, min, max, ax, label1: str, label2: str, clr1, clr2,
+             median_flag=False, y_flag=False, yLimFlag=False):
     region_r1 = np.ravel(r1)
     region_r2 = np.ravel(r2)
 
@@ -238,10 +239,12 @@ def gCNRPlot(r1, r2, min, max, ax, label1: str, label2: str,clr1,clr2,
 
     weights = np.ones_like(log_r1) / float(len(log_r1))
 
-    ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='stepfilled',alpha = 0.5, label=label1, color=clr1 )
-    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='stepfilled',alpha = 0.5, label=label2, color=clr2)
+    ax.hist(log_r1, bins=bins, range=(0, 255), weights=weights, histtype='stepfilled', alpha=0.5, label=label1,
+            color=clr1)
+    ax.hist(log_r2, bins=bins, range=(0, 255), weights=weights, histtype='stepfilled', alpha=0.5, label=label2,
+            color=clr2)
 
-    ax.legend(fontsize = 22)
+    ax.legend(fontsize=22)
 
     if yLimFlag == True:
         ax.set_ylim(0, 0.5)
@@ -258,6 +261,7 @@ def gCNRPlot(r1, r2, min, max, ax, label1: str, label2: str,clr1,clr2,
         ax.set_ylabel('')
 
     return ax
+
 
 if __name__ == '__main__':
 
@@ -321,11 +325,11 @@ if __name__ == '__main__':
     anote(ax, s_intensity)
     ax = fig.add_subplot(gs[2, 0])
     gCNRPlot(ho_s_1, ar_s, rvmin, vmax, ax, label1=r'${H_1}$', label2=r'${A}$',
-             clr1 = 'red', clr2 = 'green', y_flag=True)
+             clr1='red', clr2='green', y_flag=True)
 
     ax = fig.add_subplot(gs[1, 0])
     gCNRPlot(ho_s_1, ho_s_2, rvmin, vmax, ax, label1=r'${H_1}$',
-    label2=r'${H_2}$',clr1='red', clr2='orange', y_flag=True,yLimFlag=True)
+             label2=r'${H_2}$', clr1='red', clr2='orange', y_flag=True, yLimFlag=True)
 
     ax = fig.add_subplot(gs[0, 1])
     textstr = r'(b) $𝜆$ = %.2f,$W$ = %.1f' % (best, speckle_weight)
@@ -338,11 +342,11 @@ if __name__ == '__main__':
     ax = fig.add_subplot(gs[2, 1])
     gCNRPlot(ho_x_1, ar_x, rvmin, vmax, ax,
              label1=r'${H_1}$', label2=r'${A}$',
-             clr1 = 'red', clr2 = 'green')
+             clr1='red', clr2='green')
 
     ax = fig.add_subplot(gs[1, 1])
     gCNRPlot(ho_x_1, ho_x_2, rvmin, vmax, ax,
-             label1=r'${H_1}$', label2=r'${H_2}$',clr1 = 'red', clr2 = 'orange',
+             label1=r'${H_1}$', label2=r'${H_2}$', clr1='red', clr2='orange',
              yLimFlag=True)
 
     b_log = median_filter(x_log, size=(3, 3))
@@ -371,7 +375,7 @@ if __name__ == '__main__':
     gCNRPlot(ho_b_1, ho_b_2, rvmin, vmax, ax,
              label1='${H_1}$', label2='${H_2}$',
              clr1='red', clr2='orange',
-             median_flag=True,yLimFlag=True)
+             median_flag=True, yLimFlag=True)
 
     ax = fig.add_subplot(gs[:, 3])
     ax.set_title(r'(d) generalized $CNR$ $vs.$ $𝜆$')
@@ -413,7 +417,7 @@ if __name__ == '__main__':
     ax.xaxis.set_minor_locator(locmin)
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
-    ax.legend(loc='best', ncol=2, mode= 'expand', fontsize=20)
+    ax.legend(loc='best', ncol=2, mode='expand', fontsize=20)
     plt.show()
 
     # fig.savefig('../Images/lambda_gCNR.svg',
@@ -432,20 +436,20 @@ if __name__ == '__main__':
     print(tabulate(table, headers=['IQA', 'Region', 'Reference image', 'Deconvolved image'],
                    tablefmt='fancy_grid', floatfmt='.2f', numalign='right'))
 
-    ssim_vx,ssim_vr  =  [], []
+    ssim_vx, ssim_vr = [], []
     for i in range(len(value)):
         temp = value[i]
         ssim_vx.append(temp[4])
         ssim_vr.append(temp[5])
 
-    fig,ax = plt.subplots(1,1, figsize=(16,9))
-    ax.semilogx(lmbda, ssim_vx, label= 'sparse vector image')
-    ax.semilogx(lmbda, ssim_vr, label= 'sparse estimate image')
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    ax.semilogx(lmbda, ssim_vx, label='sparse vector image')
+    ax.semilogx(lmbda, ssim_vr, label='sparse estimate image')
 
     median_ssim = ssimPlot(s_log, b_log)
 
     ax.set_ylabel(r'${SSIM}$', fontsize=22)
     ax.set_xlabel(r'$𝜆$', fontsize=22)
-    ax.axhline(median_ssim, color='red', linestyle='--', label = 'median filtering at $𝜆$ = %.3f ' % best)
+    ax.axhline(median_ssim, color='red', linestyle='--', label='median filtering at $𝜆$ = %.3f ' % best)
     ax.legend()
     plt.show()
