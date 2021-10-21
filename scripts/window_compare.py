@@ -14,6 +14,7 @@ from sporco import cnvrep
 import pickle
 from scipy.ndimage import median_filter
 from sporco.admm import cbpdn
+import time
 
 def get_PSF(s, lmbda):
     l2f, snorm = processing.to_l2_normed(s)
@@ -208,6 +209,7 @@ eps = 1e-14
 legend_font = 20
 bins = 32
 if __name__ == '__main__':
+    t = time.process_time()
     # Image processing and display paramaters
     speckle_weight = 0.1
     rvmin, vmax = 5, 55  # dB
@@ -317,6 +319,9 @@ if __name__ == '__main__':
     anote(ax,x_intensity)
     plt.show()
 
+    elapsed_time = time.process_time() - t
+
+    print(elapsed_time)
     # fig,ax = plt.subplots(figsize=(16,9))
     # ax.set_title('𝜆 = %.2f, $W$ = %.1f'
     #              % (lmbda, speckle_weight), fontsize=25)
