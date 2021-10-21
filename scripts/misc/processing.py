@@ -16,8 +16,10 @@ from numpy.fft import fft, fftshift, ifft
 from scipy import signal
 import numpy as np
 import pickle
-from sporco.admm import cbpdn
-
+from sporco.cupy import (cupy_enabled, np2cp, cp2np, select_device_by_load,
+                         gpu_info)
+# from sporco.admm import cbpdn
+from sporco.cupy.admm import cbpdn
 
 
 
@@ -113,9 +115,9 @@ def load_data(dataset_name, decimation_factor, data_only=False):
 def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False):
     l2f, snorm = to_l2_normed(s)
 
-    b = cbpdn.ConvBPDN(D, snorm, w_lmbda, opt=opt_par, dimK=1, dimN=1)
+    b = cbpdn.ConvBPDN(np2cp(D), np2cp(snorm), w_lmbda, opt=opt_par, dimK=1, dimN=1)
     # Calculate the sparse vector and an an epsilon to keep the log finite
-    xnorm = b.solve().squeeze() + eps
+    xnorm = cp2np(b.solve()).squeeze() + eps
     # Caclulate sparse reconstruction
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 
@@ -188,11 +190,11 @@ def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight,
     W = np.roll(getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par=opt_par,Ear = Ear), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
-                                      'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
+                                      'RelaxParam': 1.515, 'L1Weight': np2cp(W), 'AutoRho': {'Enabled': True}})
 
-    b = cbpdn.ConvBPDN(D, snorm, lmbda, opt=opt_par, dimK=1, dimN=1)
+    b = cbpdn.ConvBPDN(np2cp(D), np2cp(snorm), lmbda, opt=opt_par, dimK=1, dimN=1)
 
-    xnorm = b.solve().squeeze() + eps
+    xnorm = cp2np(b.solve()).squeeze() + eps
     # calculate sparsity
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 

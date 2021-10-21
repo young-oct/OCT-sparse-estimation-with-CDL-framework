@@ -9,11 +9,13 @@ import numpy as np
 import matplotlib
 from matplotlib import pyplot as plt
 from sporco.dictlrn import dictlrn
-from sporco.admm import cbpdn, ccmod
+from sporco.admm import ccmod
 from sporco import cnvrep
+from sporco.cupy.admm import cbpdn
 import pickle
+from sporco.cupy import (cupy_enabled, np2cp, cp2np, select_device_by_load,
+                         gpu_info)
 from scipy.ndimage import median_filter
-from sporco.admm import cbpdn
 import time
 
 
@@ -210,6 +212,14 @@ eps = 1e-14
 legend_font = 20
 bins = 32
 if __name__ == '__main__':
+
+    if not cupy_enabled():
+        print('CuPy/GPU device not available: running without GPU acceleration\n')
+    else:
+        id = select_device_by_load()
+        info = gpu_info()
+        if info:
+            print('Running on GPU %d (%s)\n' % (id, info[id].name))
     t = time.process_time()
     # Image processing and display paramaters
     speckle_weight = 0.1
