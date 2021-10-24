@@ -3,9 +3,8 @@
 # @Author  : young wang
 # @FileName: processing.py
 # @Software: PyCharm
-import numpy as np
+
 from sporco import prox
-import pickle
 from pathlib import Path
 from skimage.morphology import disk,square,star,diamond,octagon
 from skimage.morphology import dilation, erosion
@@ -17,9 +16,6 @@ from scipy import signal
 import numpy as np
 import pickle
 from sporco.admm import cbpdn
-
-
-
 
 # Module level constants
 eps = 1e-14

@@ -93,6 +93,7 @@ def anote(ax, s, median_flag=False):
         textstr = '\n'.join((
             '${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar, improvement=True)),
             '${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar, improvement=True)),
+            '${gCNR_{{H_1}/B}}$: %.2f' % (quality.log_gCNR(h1, ba, improvement=True)),
             '${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba, improvement=True)),
             '${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2, improvement=True))))
         ax.text(0.60, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font,
@@ -110,6 +111,7 @@ def anote(ax, s, median_flag=False):
         textstr = '\n'.join((
             r'${gCNR_{{H_1}/{A}}}$: %.2f' % (quality.log_gCNR(h1, ar)),
             r'${gCNR_{{H_2}/{A}}}$: %.2f' % (quality.log_gCNR(h2, ar)),
+            '${gCNR_{{H_1}/B}}$: %.2f' % (quality.log_gCNR(h1, ba)),
             r'${gCNR_{{H_2}/B}}$: %.2f' % (quality.log_gCNR(h2, ba)),
             r'${gCNR_{{H_1}/{H_2}}}$: %.2f' % (quality.log_gCNR(h1, h2))))
         ax.text(0.60, 0.98, textstr, transform=ax.transAxes, fontsize=legend_font, weight='bold',
@@ -140,16 +142,19 @@ def lmbda_search(s, lmbda, speckle_weight):
     # 'gCNR ', 'H_1/A',
     gcnrh1a = quality.log_gCNR(ho_s_1, ar_s), quality.log_gCNR(ho_x_1, ar_x)
 
+    # 'gCNR', 'H_2/A',
+    gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
+
+    # 'gCNR', 'H_1/B',
+    gcnrh1b = quality.log_gCNR(ho_s_1, ba_s), quality.log_gCNR(ho_x_1, ba_x)
+
     # 'gCNR', 'H_2/B',
     gcnrh2b = quality.log_gCNR(ho_s_2, ba_s), quality.log_gCNR(ho_x_2, ba_x)
 
     # 'gCNR', 'H_1/H_2',
     gcnrh12 = quality.log_gCNR(ho_s_1, ho_s_2), quality.log_gCNR(ho_x_1, ho_x_2)
 
-    # 'gCNR', 'H_2/A',
-    gcnrh2a = quality.log_gCNR(ho_s_2, ar_s), quality.log_gCNR(ho_x_2, ar_x)
-
-    return (gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a)
+    return (gcnrh1a,gcnrh2a, gcnrh1b,gcnrh2b, gcnrh12)
 
 
 def value_plot(lmbda, value):
@@ -157,29 +162,33 @@ def value_plot(lmbda, value):
     ax.set_title(r'Generalized $CNR$ versus $𝜆$')
     reference = []
 
-    for i in range(4):
+    for i in range(5):
         temp = value[0]
         reference.append(temp[i][0])
 
-    gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a = [], [], [], []
+    gcnrh1a, gcnrh2a, gcnrh1b, gcnrh2b, gcnrh12 = [], [], [], [], []
     for i in range(len(value)):
         temp = value[i]
         gcnrh1a.append(temp[0][1])
-        gcnrh2b.append(temp[1][1])
-        gcnrh12.append(temp[2][1])
-        gcnrh2a.append(temp[3][1])
+        gcnrh2a.append(temp[1][1])
+        gcnrh1b.append(temp[2][1])
+        gcnrh2b.append(temp[3][1])
+        gcnrh12.append(temp[4][1])
 
     ax.plot(lmbda, gcnrh1a, color='green', label=r'${gCNR_{{H_1}/{A}}}$')
     ax.axhline(reference[0], color='green', linestyle='--')
 
-    ax.plot(lmbda, gcnrh2b, color='red', label=r'${gCNR_{{H_2}/{B}}}$')
+    ax.plot(lmbda, gcnrh2a, color='red', label=r'${gCNR_{{H_2}/{A}}}$')
     ax.axhline(reference[1], color='red', linestyle='--')
 
-    ax.plot(lmbda, gcnrh12, color='orange', label=r'${gCNR_{{H_1}/{H_2}}}$')
+    ax.plot(lmbda, gcnrh1b, color='orange', label=r'${gCNR_{{H_1}/{B}}}$')
     ax.axhline(reference[2], color='orange', linestyle='--')
 
-    ax.plot(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
+    ax.plot(lmbda, gcnrh2b, color='purple', label=r'${gCNR_{{H_2}/{B}}}$')
     ax.axhline(reference[3], color='purple', linestyle='--')
+
+    ax.plot(lmbda, gcnrh12, color='blue', label=r'${gCNR_{{H_1}/{H_2}}}$')
+    ax.axhline(reference[4], color='blue', linestyle='--')
 
     ax.set_ylabel(r'${gCNR}$')
     ax.set_xlabel(r'$𝜆$')
@@ -254,8 +263,8 @@ if __name__ == '__main__':
         value.append(lmbda_search(s, lmbda=lmbda[i],
                                   speckle_weight=speckle_weight))
 
-    # best = value_plot(lmbda, value)
-    best = 1e-4
+    best = value_plot(lmbda, value)
+    # best = 1e-4
 
     x = processing.make_sparse_representation(s, D, best, w_lmbda, speckle_weight)
 
@@ -345,31 +354,33 @@ if __name__ == '__main__':
     ax.set_title(r'(d) generalized $CNR$ $vs.$ $𝜆$')
     reference = []
 
-    for i in range(4):
+    for i in range(5):
         temp = value[0]
         reference.append(temp[i][0])
 
-    gcnrh1a, gcnrh2b, gcnrh12, gcnrh2a = [], [], [], []
+    gcnrh1a, gcnrh2a, gcnrh1b, gcnrh2b, gcnrh12 = [],[],[], [],[]
     for i in range(len(value)):
         temp = value[i]
         gcnrh1a.append(temp[0][1])
-        gcnrh2b.append(temp[1][1])
-        gcnrh12.append(temp[2][1])
-        gcnrh2a.append(temp[3][1])
+        gcnrh2a.append(temp[1][1])
+        gcnrh1b.append(temp[2][1])
+        gcnrh2b.append(temp[3][1])
+        gcnrh12.append(temp[4][1])
 
     ax.semilogx(lmbda, gcnrh1a, color='green', label=r'${gCNR_{{H_1}/{A}}}$')
-
     ax.axhline(reference[0], color='green', linestyle='--')
 
-    ax.semilogx(lmbda, gcnrh2b, color='red', label=r'${gCNR_{{H_2}/{B}}}$')
-
+    ax.semilogx(lmbda, gcnrh2a, color='red', label=r'${gCNR_{{H_2}/{A}}}$')
     ax.axhline(reference[1], color='red', linestyle='--')
-    ax.semilogx(lmbda, gcnrh12, color='orange', label=r'${gCNR_{{H_1}/{H_2}}}$')
 
+    ax.semilogx(lmbda, gcnrh1b, color='orange', label=r'${gCNR_{{H_1}/{B}}}$')
     ax.axhline(reference[2], color='orange', linestyle='--')
 
-    ax.semilogx(lmbda, gcnrh2a, color='purple', label=r'${gCNR_{{H_2}/{A}}}$')
+    ax.semilogx(lmbda, gcnrh2b, color='purple', label=r'${gCNR_{{H_2}/{B}}}$')
     ax.axhline(reference[3], color='purple', linestyle='--')
+
+    ax.semilogx(lmbda, gcnrh12, color='blue', label=r'${gCNR_{{H_1}/{H_2}}}$')
+    ax.axhline(reference[4], color='blue', linestyle='--')
 
     ax.set_ylabel(r'${gCNR}$', fontsize=22)
     ax.set_xlabel(r'$𝜆$', fontsize=22)
@@ -381,7 +392,8 @@ if __name__ == '__main__':
     ax.xaxis.set_minor_locator(locmin)
     ax.xaxis.set_minor_formatter(matplotlib.ticker.NullFormatter())
 
-    ax.legend(loc='best', ncol=2, mode= 'expand', fontsize=20)
+    # ax.legend(loc='best', ncol=2, mode= 'expand', fontsize=14)
+    ax.legend(loc='best',bbox_to_anchor=(0.59, 0.25), fontsize=22)
     plt.show()
 
     # fig.savefig('../Images/lambda_gCNR.svg',
