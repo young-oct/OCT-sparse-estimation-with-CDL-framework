@@ -43,7 +43,8 @@ if __name__ == '__main__':
     speckle_weight = 0.1
 
     lmbda = np.linspace(0, 0.2,5)
-    lmbda[0]=0.01
+    lmbda[0] = 1e-4
+    lmbda[4] = 0.5
     w_lmbda = 0.05
 
     index = 400 # index A-line
