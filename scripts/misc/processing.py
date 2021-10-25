@@ -61,6 +61,9 @@ def imag2uint(data, vmin, vmax):
     pixel_vals = np.uint8(np.around(255 * (data - vmin) / (vmax - vmin), 0))
     return pixel_vals
 
+def display_range(data, vmin, vmax):
+    return np.clip(data, vmin, vmax)
+
 def to_l2_normed(s):
     l2f = prox.norm_l2(s, axis=0).squeeze()
     return (l2f, s / l2f)
