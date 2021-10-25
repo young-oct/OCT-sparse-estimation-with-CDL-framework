@@ -140,7 +140,7 @@ if __name__ == '__main__':
         ax.set_xlabel('axial depth [pixels]')
     plt.show()
 
-    fig.savefig('../Images/lambda_compare.svg',
-                dpi = 1200,
-                transparent=True,format = 'svg')
+    # fig.savefig('../Images/lambda_compare.svg',
+    #             dpi = 1200,
+    #             transparent=True,format = 'svg')
 

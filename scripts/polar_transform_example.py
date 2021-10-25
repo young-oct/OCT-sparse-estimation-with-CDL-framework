@@ -33,6 +33,7 @@ if __name__ == '__main__':
                                                                     initialAngle=-opening_angle*np.pi/360, 
                                                                     finalAngle=opening_angle*np.pi/360)
     plt.figure()
-    plt.imshow(polarImage.T,cmap='gray') 
+    plt.imshow(polarImage.T,cmap='gray')
+    plt.show()
                
     
