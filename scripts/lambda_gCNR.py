@@ -396,9 +396,9 @@ if __name__ == '__main__':
     ax.legend(loc='best',bbox_to_anchor=(0.59, 0.25), fontsize=22)
     plt.show()
 
-    # fig.savefig('../Images/lambda_gCNR.svg',
-    #             dpi = 1200,
-    #             transparent=True,format = 'svg')
+    fig.savefig('../Images/lambda_gCNR.jpeg',
+                dpi = 800,
+                transparent=True,format = 'jpeg')
 
     # table formant original then sparse
     table = [['SNR', 'H_2/B', quality.SNR(ho_s_2, ba_s), quality.SNR(ho_x_2, ba_x)],

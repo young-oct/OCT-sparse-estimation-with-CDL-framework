@@ -108,6 +108,6 @@ if __name__ == '__main__':
 
     plt.show()
 
-    fig.savefig('../Images/sidelobe_deom.svg',
-                dpi = 1200,
-                transparent=True,format = 'svg')
+    fig.savefig('../Images/sidelobe_deom.jpeg',
+                dpi = 800,
+                transparent=True,format = 'jpeg')

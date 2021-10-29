@@ -157,7 +157,7 @@ if __name__ == '__main__':
         ax.set_xlabel('axial depth [pixels]')
     plt.show()
 
-    fig.savefig('../Images/omega_compare.svg',
-                dpi = 1200,
-                transparent=True,format = 'svg')
+    fig.savefig('../Images/omega_compare.jpeg',
+                dpi = 800,
+                transparent=True,format = 'jpeg')
 

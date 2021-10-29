@@ -216,6 +216,6 @@ if __name__ == '__main__':
         ax.set_xlabel('axial depth [pixels]', fontsize = 14)
     plt.show()
 
-    fig.savefig('../Images/lambda_compare.svg',
-                dpi=1200,
-                transparent=True, format='svg')
+    fig.savefig('../Images/lambda_compare.jpeg',
+                dpi=800,
+                transparent=True, format='jpeg')

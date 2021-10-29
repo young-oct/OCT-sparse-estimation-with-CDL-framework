@@ -114,9 +114,9 @@ def plot_images(plot_titles, image,
     plt.tight_layout(pad=0.5)
     plt.show()
     #
-    fig.savefig('../Images/weighted.svg',
-                dpi = 1200,
-                transparent=True,format = 'svg')
+    fig.savefig('../Images/weighted.jpeg',
+                dpi = 800,
+                transparent=True,format = 'jpeg')
 
 if __name__ == '__main__':
     plt.close('all')

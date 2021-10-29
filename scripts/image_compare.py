@@ -98,31 +98,31 @@ if __name__ == '__main__':
 
     plt.show()
 
-    fig.savefig('../Images/image_compare.svg',
-                dpi = 1200,
-                transparent=True,format = 'svg')
+    fig.savefig('../Images/image_compare.jpeg',
+                dpi = 800,
+                transparent=True,format = 'jpeg')
 
     
-    from numpy import pi
-    #plt.close('all')
-    ear_image=sparse[0]
-    ear_image[0,:]=vmax
-    ear_image[-1,:]=vmax
-    ear_image[:,0]=vmax
-    ear_image[:,-1]=vmax
-    ear_image = median_filter(ear_image, size=(2, 2))
-    for i in range(ear_image.shape[0]):
-        for j in range(ear_image.shape[1]):
-            if ear_image[i,j]<rvmin:
-                ear_image[i,j]=rvmin
-            if ear_image[i,j]>vmax:
-                ear_image[i,j]=vmax
-                
-        
-    
-    opening_angle=60 #deg
-    polarImage, ptSettings = polarTransform.convertToCartesianImage(ear_image.T, initialRadius=300, finalRadius=812, initialAngle=-opening_angle*pi/360, finalAngle=opening_angle*pi/360)
-    plt.figure()
-    plt.imshow(polarImage.T[::-1,:], 'gray',aspect=aspect,vmax=vmax, interpolation='none', vmin=rvmin, origin='lower')
-    plt.figure()
-    plt.imshow(ear_image, 'gray',aspect=aspect,vmax=vmax, vmin=rvmin, interpolation='none', origin='lower')
+    # from numpy import pi
+    # #plt.close('all')
+    # ear_image=sparse[0]
+    # ear_image[0,:]=vmax
+    # ear_image[-1,:]=vmax
+    # ear_image[:,0]=vmax
+    # ear_image[:,-1]=vmax
+    # ear_image = median_filter(ear_image, size=(2, 2))
+    # for i in range(ear_image.shape[0]):
+    #     for j in range(ear_image.shape[1]):
+    #         if ear_image[i,j]<rvmin:
+    #             ear_image[i,j]=rvmin
+    #         if ear_image[i,j]>vmax:
+    #             ear_image[i,j]=vmax
+    #
+    #
+    #
+    # opening_angle=60 #deg
+    # polarImage, ptSettings = polarTransform.convertToCartesianImage(ear_image.T, initialRadius=300, finalRadius=812, initialAngle=-opening_angle*pi/360, finalAngle=opening_angle*pi/360)
+    # plt.figure()
+    # plt.imshow(polarImage.T[::-1,:], 'gray',aspect=aspect,vmax=vmax, interpolation='none', vmin=rvmin, origin='lower')
+    # plt.figure()
+    # plt.imshow(ear_image, 'gray',aspect=aspect,vmax=vmax, vmin=rvmin, interpolation='none', origin='lower')

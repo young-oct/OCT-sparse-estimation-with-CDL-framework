@@ -331,6 +331,6 @@ if __name__ == '__main__':
     # ax.set_axis_off()
     # plt.show()
 
-    # fig.savefig('../Images/window_compare.jpeg',
-    #             dpi = 1200,
-    #             transparent=True,format = 'jpeg')
+    fig.savefig('../Images/window_compare.pdf',
+                dpi = 800,
+                transparent=True,format = 'pdf')

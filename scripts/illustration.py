@@ -43,6 +43,6 @@ if __name__ == '__main__':
 
     plt.show()
 
-    fig.savefig('../Images/illustration.svg',
-                dpi = 1200,
-                transparent=True,format = 'svg')
+    fig.savefig('../Images/illustration.jpeg',
+                dpi = 800,
+                transparent=True,format = 'jpeg')
