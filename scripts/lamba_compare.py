@@ -104,11 +104,11 @@ if __name__ == '__main__':
                 horizontalalignment='right', verticalalignment='top',
                 )
 
-    ax.annotate('', xy=(100, 280), xycoords='data',
-                xytext=(40, 320), textcoords='data',
-                arrowprops=dict(facecolor='green', shrink=0.05),
-                horizontalalignment='right', verticalalignment='top',
-                )
+    # ax.annotate('', xy=(100, 280), xycoords='data',
+    #             xytext=(40, 320), textcoords='data',
+    #             arrowprops=dict(facecolor='green', shrink=0.05),
+    #             horizontalalignment='right', verticalalignment='top',
+    #             )
 
     for k in range(len(homogeneous)):
         for j in annotation.get_homogeneous(*homogeneous[k]):
@@ -171,11 +171,11 @@ if __name__ == '__main__':
                     horizontalalignment='right', verticalalignment='top',
                     )
 
-        ax.annotate('', xy=(100, 280), xycoords='data',
-                    xytext=(40, 320), textcoords='data',
-                    arrowprops=dict(facecolor='green', shrink=0.05),
-                    horizontalalignment='right', verticalalignment='top',
-                    )
+        # ax.annotate('', xy=(100, 280), xycoords='data',
+        #             xytext=(40, 320), textcoords='data',
+        #             arrowprops=dict(facecolor='green', shrink=0.05),
+        #             horizontalalignment='right', verticalalignment='top',
+        #             )
 
         if i == 0:
             textstr = '\n'.join((
