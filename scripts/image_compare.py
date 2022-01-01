@@ -86,11 +86,11 @@ if __name__ == '__main__':
         ax[0, i].imshow(original[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')
         
         
-        #ax[0, i].annotate('', xy=(x_head[i], y_head[i]), xycoords='data',
-        #                  xytext=(x_end[i], y_end[i]), textcoords='data',
-        #                  arrowprops=dict(facecolor='white', shrink=0.05),
-        #                  horizontalalignment='right', verticalalignment='top',
-        #                  )
+        ax[0, i].annotate('', xy=(x_head[i], y_head[i]), xycoords='data',
+                         xytext=(x_end[i], y_end[i]), textcoords='data',
+                         arrowprops=dict(facecolor='white', shrink=0.05),
+                         horizontalalignment='right', verticalalignment='top',
+                         )
 
         ax[1, i].imshow(sparse[i], 'gray',aspect=aspect,vmax=vmax, vmin=rvmin,interpolation='none')
         ax[0, i].set_axis_off()
@@ -102,27 +102,3 @@ if __name__ == '__main__':
                 dpi = 800,
                 transparent=True,format = 'jpeg')
 
-    
-    # from numpy import pi
-    # #plt.close('all')
-    # ear_image=sparse[0]
-    # ear_image[0,:]=vmax
-    # ear_image[-1,:]=vmax
-    # ear_image[:,0]=vmax
-    # ear_image[:,-1]=vmax
-    # ear_image = median_filter(ear_image, size=(2, 2))
-    # for i in range(ear_image.shape[0]):
-    #     for j in range(ear_image.shape[1]):
-    #         if ear_image[i,j]<rvmin:
-    #             ear_image[i,j]=rvmin
-    #         if ear_image[i,j]>vmax:
-    #             ear_image[i,j]=vmax
-    #
-    #
-    #
-    # opening_angle=60 #deg
-    # polarImage, ptSettings = polarTransform.convertToCartesianImage(ear_image.T, initialRadius=300, finalRadius=812, initialAngle=-opening_angle*pi/360, finalAngle=opening_angle*pi/360)
-    # plt.figure()
-    # plt.imshow(polarImage.T[::-1,:], 'gray',aspect=aspect,vmax=vmax, interpolation='none', vmin=rvmin, origin='lower')
-    # plt.figure()
-    # plt.imshow(ear_image, 'gray',aspect=aspect,vmax=vmax, vmin=rvmin, interpolation='none', origin='lower')
