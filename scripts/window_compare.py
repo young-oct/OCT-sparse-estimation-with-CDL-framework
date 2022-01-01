@@ -227,7 +227,8 @@ if __name__ == '__main__':
 
     start, decimation_factor = 420, 20
     # gaussian std
-    std = 292
+    gawidth = 0.1 #gaussain window width 0.1
+    std = 1460*gawidth
     d_lmbda = 0.1
 
     raw = processing.load_raw('../data/finger(raw).npz')
@@ -322,15 +323,20 @@ if __name__ == '__main__':
     elapsed_time = time.process_time() - t
 
     print(elapsed_time)
-    # fig,ax = plt.subplots(figsize=(16,9))
-    # ax.set_title('𝜆 = %.2f, $W$ = %.1f'
-    #              % (lmbda, speckle_weight), fontsize=25)
-    #
-    # ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
-    #           vmax=vmax, vmin=rvmin, interpolation='none')
-    # ax.set_axis_off()
-    # plt.show()
 
-    fig.savefig('../Images/window_compare.pdf',
+    fig.savefig('../Images/window_compare.jpeg',
                 dpi = 800,
-                transparent=True,format = 'pdf')
+                transparent=True,format = 'jpeg')
+
+    fig,ax = plt.subplots(figsize=(16,9))
+    ax.set_title('𝜆 = %.2f, $W$ = %.1f'
+                 % (lmbda, speckle_weight), fontsize=25)
+
+    ax.imshow(x_log, 'gray', aspect=x_log.shape[1] / x_log.shape[0],
+              vmax=vmax, vmin=rvmin, interpolation='none')
+    ax.set_axis_off()
+    plt.show()
+
+    # fig.savefig('../Images/window_compare.pdf',
+    #             dpi = 800,
+    #             transparent=True,format = 'pdf')
