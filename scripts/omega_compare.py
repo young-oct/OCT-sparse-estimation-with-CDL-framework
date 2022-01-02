@@ -51,7 +51,8 @@ if __name__ == '__main__':
 
     # Weigth factor to apply to the fidelity (l2) term in the cost function
     # in regions segmented as containing speckle
-    speckle_weight = np.linspace(0.1,1,5)
+    # speckle_weight = np.linspace(0.1,1,5)
+    speckle_weight = [0.001,0.05, 0.1, 0.5,1]
     lmbda = 0.05
     w_lmbda = 0.05
 
@@ -121,9 +122,19 @@ if __name__ == '__main__':
         ax.imshow(sparse[:, :, i], 'gray', aspect=aspect, vmax=vmax, vmin=rvmin,interpolation='none')
         ax.axvline(x=index, linewidth=1, color='orange', linestyle='--')
 
-        textstr = '\n'.join((
-            r'$𝜆$ = %.2f ' % (lmbda),
-            r'$W$ = %.1f' % (speckle_weight[i])))
+        if i == 0:
+            textstr = '\n'.join((
+                r'$𝜆$ = %.2f ' % (lmbda),
+                r'$W$ = %.3f' % (speckle_weight[i])))
+        elif i ==1:
+            textstr = '\n'.join((
+                r'$𝜆$ = %.2f ' % (lmbda),
+                r'$W$ = %.2f' % (speckle_weight[i])))
+        else:
+            textstr = '\n'.join((
+                r'$𝜆$ = %.2f ' % (lmbda),
+                r'$W$ = %.1f' % (speckle_weight[i])))
+
         ax.set_title(textstr)
 
         ax.set_axis_off()
