@@ -109,7 +109,7 @@ def load_data(dataset_name, decimation_factor, data_only=False):
             raise Exception("Dataset %s not found" % dataset_name)
 
 
-def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False):
+def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = False,rvmin=55, vmax=100):
     l2f, snorm = to_l2_normed(s)
 
     b = cbpdn.ConvBPDN(D, snorm, w_lmbda, opt=opt_par, dimK=1, dimN=1)
@@ -119,7 +119,6 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
     xnorm = np.roll(xnorm, np.argmax(D), axis=0)
 
     # Convert back from normalized
-    rvmin, vmax = 5, 55
     x = from_l2_normed(xnorm, l2f)
     x_log = 10 * np.log10(abs(x) ** 2)
     x_log = imag2uint(x_log, rvmin, vmax)
@@ -167,7 +166,7 @@ def getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par={},Ear = Fal
     return W
 
 def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight,
-                               Line=False, index=None, Mask=False, Ear =False):
+                               Line=False, index=None, Mask=False, Ear =False,rvmin=55, vmax=100):
     ''' s -- 2D array of complex A-lines with dims (width, depth)
     '''
     # l2 norm data and save the scaling factor
@@ -184,7 +183,7 @@ def make_sparse_representation(s, D, lmbda,w_lmbda, speckle_weight,
     # else:
     #     pass
 
-    W = np.roll(getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par=opt_par,Ear = Ear), np.argmax(D), axis=0)
+    W = np.roll(getWeight(s, D, w_lmbda, speckle_weight, Paddging=True, opt_par=opt_par,Ear = Ear,rvmin=rvmin, vmax=vmax), np.argmax(D), axis=0)
     opt_par = cbpdn.ConvBPDN.Options({'FastSolve': True, 'Verbose': False, 'StatusHeader': False,
                                       'MaxMainIter': 200, 'RelStopTol': 5e-5, 'AuxVarObj': True,
                                       'RelaxParam': 1.515, 'L1Weight': W, 'AutoRho': {'Enabled': True}})
