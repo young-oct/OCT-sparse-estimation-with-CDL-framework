@@ -22,6 +22,7 @@ from matplotlib import pyplot as plt
 import pickle
 import os
 
+
 def find_variable_name(variable):
     for name, value in globals().items():
         if value is variable:
@@ -97,6 +98,7 @@ def locatepeaks(D, mask_size=10, include_range=15, dB=True):
     return D_log, highest_peak_index, \
            highest_peak_value, second_highest_peak_index, \
            second_highest_peak_value, avg_excluding_range
+
 
 if __name__ == '__main__':
     plt.close('all')
@@ -192,13 +194,13 @@ if __name__ == '__main__':
                     linewidth=1)
 
     ax[1, 1].annotate("",
-                      xy=(x_indice , D1_second_highest_peak_value), xycoords='data',
-                      xytext=(x_indice , D1_highest_peak_value), textcoords='data',
+                      xy=(x_indice, D1_second_highest_peak_value), xycoords='data',
+                      xytext=(x_indice, D1_highest_peak_value), textcoords='data',
                       arrowprops=dict(arrowstyle="<->",
                                       connectionstyle="arc3", color='r', lw=1),
                       )
-    ax[1, 1].text(x_left - 2 *offset,
-                  D1_avg_excluding_range + offset*2.5,
+    ax[1, 1].text(x_left - 2 * offset,
+                  D1_avg_excluding_range + offset * 2.5,
                   'PSF - ''sidelobe: %.2f dB' % (D1_highest_peak_value - D1_second_highest_peak_value),
                   fontsize=8.5, fontweight='bold', rotation='vertical')
 
@@ -236,7 +238,7 @@ if __name__ == '__main__':
     folder_path = os.path.join(desktop_path, 'Master/Thesis/Figure/Chapter 2/2.15 PSF comparison')
     if not os.path.exists(folder_path):
         os.makedirs(folder_path)
-    file_path = os.path.join(folder_path,'PSF comparison.pdf')
+    file_path = os.path.join(folder_path, 'PSF comparison.pdf')
 
     plt.savefig(file_path, dpi=600,
                 format='pdf',
@@ -244,3 +246,64 @@ if __name__ == '__main__':
                 facecolor='auto', edgecolor='auto')
 
     plt.show()
+
+    ## only the measured
+
+    fig, ax = plt.subplots(1, 1, figsize=(16, 9))
+    x_indice, offset = D0_second_highest_peak_index, 10
+    x_left = x_indice - offset
+    x_right = x_indice + offset
+
+    ax.plot(D0_log)
+
+    ax.hlines(y=D0_highest_peak_value, xmin=x_left, xmax=x_right, colors='r', linestyle='dotted', linewidth=1)
+    ax.hlines(y=D0_second_highest_peak_value, xmin=x_left, xmax=x_right, colors='r', linestyle='dotted',
+                    linewidth=1)
+
+    ax.annotate("",
+                      xy=(x_indice - offset / 2, D0_second_highest_peak_value), xycoords='data',
+                      xytext=(x_indice - offset / 2, D0_highest_peak_value), textcoords='data',
+                      arrowprops=dict(arrowstyle="<->",
+                                      connectionstyle="arc3", color='r', lw=1),
+                      )
+    ax.text(x_left - offset / 2,
+                  D0_avg_excluding_range + (D0_highest_peak_value - D0_second_highest_peak_value) / 2,
+                  'PSF - ''sidelobe: %.2f dB' % (D0_highest_peak_value - D0_second_highest_peak_value),
+                  fontsize=8.5, fontweight='bold', rotation='vertical')
+
+    ax.hlines(y=D0_highest_peak_value, xmin=x_left + offset * 10, xmax=x_right + offset * 12, colors='r',
+                    linestyle='dotted',
+                    linewidth=1)
+    ax.hlines(y=D0_avg_excluding_range, xmin=x_left + offset * 10, xmax=x_right + offset * 12, colors='r',
+                    linestyle='dotted',
+                    linewidth=1)
+
+    ax.annotate("",
+                      xy=(x_right + offset * 10, D0_avg_excluding_range), xycoords='data',
+                      xytext=(x_right + offset * 10, D0_highest_peak_value), textcoords='data',
+                      arrowprops=dict(arrowstyle="<->",
+                                      connectionstyle="arc3", color='r', lw=1),
+                      )
+    ax.text(x_right + offset * 8.5, D0_avg_excluding_range + offset,
+                  'PSF - ''background: %.2f dB' % (D0_highest_peak_value - D0_avg_excluding_range),
+                  fontsize=8.5, fontweight='bold', rotation='vertical')
+
+    ax.set_ylabel('20 log(magnitude) [dB]', fontweight='bold')
+    ax.set_xlabel('depth [pixels]', fontweight='bold')
+    ax.set_title('averaged axial point spread function (PSF)', fontweight='bold')
+    ax.minorticks_on()
+    ax.tick_params(which='minor', width=2)  # Set the width of the minor ticks to 1 (you can adjust this value)
+
+    plt.tight_layout()
+
+    folder_path = os.path.join(desktop_path, 'Master/Thesis/Figure/Chapter 2/2.16 PSF setup')
+    if not os.path.exists(folder_path):
+        os.makedirs(folder_path)
+    file_path = os.path.join(folder_path, 'measured PSF.pdf')
+    plt.savefig(file_path, dpi=600,
+                format='pdf',
+                bbox_inches='tight', pad_inches=0,
+                facecolor='auto', edgecolor='auto')
+
+    plt.show()
+    plt.close(fig)
