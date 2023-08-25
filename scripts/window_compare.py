@@ -12,9 +12,12 @@ from sporco.dictlrn import dictlrn
 from sporco.admm import cbpdn, ccmod
 from sporco import cnvrep
 import pickle
-from scipy.ndimage import median_filter
-from sporco.admm import cbpdn
 import time
+from OssiviewBufferReader import OssiviewBufferReader
+from numpy.fft import fft, ifft
+import scipy.signal as signal
+from scipy.signal import hilbert, firwin, filtfilt
+    
 
 def get_PSF(s, lmbda):
     l2f, snorm = processing.to_l2_normed(s)
@@ -280,7 +283,7 @@ if __name__ == '__main__':
 
     fig = plt.figure(figsize=(16, 9),constrained_layout=True)
 
-    gs = fig.add_gridspec(ncols=4, nrows=1)
+    gs = fig.add_gridspec(ncols=3, nrows=2)
 
     ax = fig.add_subplot(gs[0])
     ax.set_title('(a) no window')
@@ -322,6 +325,83 @@ if __name__ == '__main__':
 
     elapsed_time = time.process_time() - t
 
+
+
+    # fig.savefig('../Images/window_compare.pdf',
+    #             dpi = 800,
+    #             transparent=True,format = 'pdf')
+
+#%%
+    file = '../data/mirror.bin'
+
+    reader = OssiviewBufferReader(file)
+    data = np.array(reader.data["DAQ Buffer"], dtype='float64')
+    #
+    div = reader.header.metaData['Header']['Meta Data']['DIV']
+    div = np.array(div)
+    div = div[div < data.shape[3]]
+
+    clean = np.zeros([data.shape[0], data.shape[2], data.shape[3] - len(div)], dtype=data.dtype)
+
+    for g in range(data.shape[0]):
+        for i in range(0, data.shape[2]):
+            k = 0
+            for j in range(data.shape[3]):
+                if j not in div:
+                    clean[g, i, k] = data[g, :, i, j]
+                    k = k + 1
+
+    A_lines = fft(clean, axis=2).reshape(-1, 1460)
+
+
+    
+    
+    #%%
+    import scipy.signal
+    sg=clean[0,2500,:]
+    
+    sg=np.mean(np.mean(clean[:,:,:],axis=0),axis=0)
+    
+    b=firwin(401,0.05,pass_zero='highpass')
+    sg=filtfilt(b, 1, sg)
+    sg=sg[10:1450]
+    env=abs(hilbert(sg))
+
+    #sg=sg/env
+    sg2=scipy.signal.resample(sg,len(sg)*5, t=None, axis=0, window=None, domain='time')
+    
+    no_window_mag = 20*np.log10(abs(ifft(sg)))-np.argmax(20*np.log10(abs(ifft(sg))))
+    
+    ax=fig.add_subplot(gs[4])
+    ax.set_title('(e) Windowed PSFs')
+    ax.plot(20*np.log10(abs(ifft(sg)))-np.amax(20*np.log10(abs(ifft(sg)))), label="No window")
+
+    hann_win=signal.windows.hann(len(sg))/0.63
+    ax.plot(20*np.log10(abs(ifft(hann_win*sg)))-np.amax(20*np.log10(abs(ifft(hann_win*sg)))),label='Hanning window')
+    std=146
+    gauss_win=signal.windows.gaussian(len(sg), std=std)
+    gauss_offset=np.amax(20*np.log10(abs(ifft(gauss_win*sg))))-np.amax(20*np.log10(abs(ifft(gauss_win*sg))))
+    ax.plot(20*np.log10(abs(ifft(gauss_win*sg)))-np.amax(20*np.log10(abs(ifft(gauss_win*sg)))), label='Gaussian window')
+    ax.legend()
+    ax.grid()
+    ax.set_xlim(200,500)
+    ax.set_ylabel(r"Normalized Magnitude [dB]]")
+    ax.set_xlabel('Axial Depth [Pixel #]')
+
+    ax=fig.add_subplot(gs[5])     
+    x=np.linspace(2*np.pi/1570e-9/100,2*np.pi/1530e-9/100,len(sg2))
+    hann_win=signal.windows.hann(len(sg2))/0.63
+    ax.set_title('(f) Windowed spectrograms')
+    ax.plot(x,sg2, label="No window")
+    ax.plot(x,hann_win*0.63*sg2,label='Hanning window')
+    gauss_win=signal.windows.gaussian(len(sg2), std=std*5)
+    ax.plot(x,sg2*gauss_win, label='Gaussian window')
+    ax.grid()
+    ax.set_xlabel(r"Angular Wavenumber ($k=2\pi/\lambda$) [cm${}^{-1}$]")
+    ax.set_ylabel("Amplitude (a.u.)")
+    ax.legend()
+
+
     print(elapsed_time)
 
     fig.savefig('../Images/window_compare.jpeg',
@@ -336,7 +416,3 @@ if __name__ == '__main__':
               vmax=vmax, vmin=rvmin, interpolation='none')
     ax.set_axis_off()
     plt.show()
-
-    # fig.savefig('../Images/window_compare.pdf',
-    #             dpi = 800,
-    #             transparent=True,format = 'pdf')
