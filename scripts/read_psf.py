@@ -29,6 +29,7 @@ from numpy.fft import fft, ifft
 import scipy.signal as signal
 from scipy.signal import hilbert, firwin, filtfilt
 
+
 def find_variable_name(variable):
     for name, value in globals().items():
         if value is variable:
@@ -105,9 +106,13 @@ def locatepeaks(D, mask_size=10, include_range=15, dB=True):
            highest_peak_value, second_highest_peak_index, \
            second_highest_peak_value, avg_excluding_range
 
+<<<<<<< HEAD
 eps = 1e-14
 legend_font = 20
 bins = 32
+=======
+
+>>>>>>> d88af756dc081ad1a5305c53e64a87b3fd0d7f36
 if __name__ == '__main__':
     rvmin, vmax = 5, 55  # dB
 
@@ -292,6 +297,7 @@ if __name__ == '__main__':
     ax.hlines(y=D0_avg_excluding_range, xmin=x_left + offset * 10, xmax=x_right + offset * 12, colors='r',
                     linestyle='dotted',
                     linewidth=1)
+<<<<<<< HEAD
 
     ax.annotate("",
                       xy=(x_right + offset * 10, D0_avg_excluding_range), xycoords='data',
@@ -303,6 +309,19 @@ if __name__ == '__main__':
                   'PSF - ''background: %.2f dB' % (D0_highest_peak_value - D0_avg_excluding_range),
                   fontsize=8.5, fontweight='bold', rotation='vertical')
 
+=======
+
+    ax.annotate("",
+                      xy=(x_right + offset * 10, D0_avg_excluding_range), xycoords='data',
+                      xytext=(x_right + offset * 10, D0_highest_peak_value), textcoords='data',
+                      arrowprops=dict(arrowstyle="<->",
+                                      connectionstyle="arc3", color='r', lw=1),
+                      )
+    ax.text(x_right + offset * 8.5, D0_avg_excluding_range + offset,
+                  'PSF - ''background: %.2f dB' % (D0_highest_peak_value - D0_avg_excluding_range),
+                  fontsize=8.5, fontweight='bold', rotation='vertical')
+
+>>>>>>> d88af756dc081ad1a5305c53e64a87b3fd0d7f36
     ax.set_ylabel('20 log(magnitude) [dB]', fontweight='bold')
     ax.set_xlabel('depth [pixels]', fontweight='bold')
     ax.set_title('averaged axial point spread function (PSF)', fontweight='bold')
@@ -321,6 +340,7 @@ if __name__ == '__main__':
                 facecolor='auto', edgecolor='auto')
 
     plt.show()
+<<<<<<< HEAD
     plt.close(fig)
 
     with open('../data/mirror_Alines.npy', 'rb') as f:
@@ -385,3 +405,6 @@ if __name__ == '__main__':
     # # ax.legend(fontsize=25)
     # # plt.tight_layout()
     # # plt.show()
+=======
+    plt.close(fig)
+>>>>>>> d88af756dc081ad1a5305c53e64a87b3fd0d7f36
