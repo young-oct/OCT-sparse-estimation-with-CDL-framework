@@ -1,32 +1,18 @@
 # -*- coding: utf-8 -*-
-# @Time    : 2023-08-08 14:57
+# @Time    : 2023-08-26 03:52
 # @Author  : young wang
-# @FileName: read_psf.py
+# @FileName: psf_v2.py
 # @Software: PyCharm
-"""
-1. https://www.sweptlaser.com/clean-optical-performance
-2. https://opg.optica.org/oe/fulltext.cfm?uri=oe-22-3-2632&id=279023
-3. https://opg.optica.org/abstract.cfm?uri=acp-2011-831116
-4. https://www.spiedigitallibrary.org/conference-proceedings-of-
-spie/8213/82130T/Long-coherence-length-and-linear-sweep-without-an-external-
-optical/10.1117/12.911477.short
-This script is to calculate the PSF for the the thesis proposal
-this is the learned psf, not the actual one
 
-"""
-
-from scripts.OssiviewBufferReader import OssiviewBufferReader
 import numpy as np
 from scipy.signal import find_peaks
 import matplotlib
 from matplotlib import pyplot as plt
 import pickle
 import os
-import scipy.signal
 import time
-
+from numpy import linalg as LA
 from numpy.fft import fft, ifft
-import scipy.signal as signal
 from scipy.signal import hilbert, firwin, filtfilt
 
 def find_variable_name(variable):
@@ -45,7 +31,7 @@ def locatepeaks(D, mask_size=10, include_range=15, dB=True):
 
     # use find_peaks to get the indices of the peaks
 
-    indices, _ = find_peaks(D_log, height=np.mean(D_log))
+    indices, _ = find_peaks(D_log, height=np.median(D_log))
 
     # use find_peaks to get the indices of the peaks
     # get the highest peak index and value
@@ -105,9 +91,6 @@ def locatepeaks(D, mask_size=10, include_range=15, dB=True):
            highest_peak_value, second_highest_peak_index, \
            second_highest_peak_value, avg_excluding_range
 
-eps = 1e-14
-legend_font = 20
-bins = 32
 if __name__ == '__main__':
     rvmin, vmax = 5, 55  # dB
 
@@ -124,10 +107,17 @@ if __name__ == '__main__':
         }
     )
 
-    D0_PATH = '../Data/PSF/measured'
-    with open(D0_PATH, 'rb') as f:
-        D0 = pickle.load(f)
-        f.close()
+    with open('../data/mirror_clean.npy', 'rb') as f:
+        clean = np.load(f)
+
+    sg = np.mean(np.mean(clean[:, :, :], axis=0), axis=0)
+    b = firwin(401, 0.05, pass_zero='highpass')
+    sg = filtfilt(b, 1, sg)
+
+    temp_aline = ifft(sg) / LA.norm(ifft(sg))
+    peak_aline = np.argmax(np.abs(temp_aline))
+    A_line = temp_aline[int(peak_aline-165):int(peak_aline+165)]
+    D0 = A_line[:,np.newaxis]
 
     file_name = ['nail']
     D_PATH = '../Data/PSF/' + file_name[0]
@@ -138,16 +128,14 @@ if __name__ == '__main__':
 
     fig, ax = plt.subplots(2, 3, figsize=(16, 9))
 
-    window = np.hanning(D0.shape[1])
-
-    ax[0, 0].plot(abs(D0)*window)
+    ax[0, 0].plot(abs(D0))
     ax[0, 0].set_title('measured PSF')
     ax[0, 0].set_ylabel('magnitude [a.u.]')
 
     ax[0, 1].plot(abs(D1))
     ax[0, 1].set_title('learned PSF')
 
-    include_range, exclude_range = 10, 45
+    include_range, exclude_range = 20, 100
 
     D0_log, D0_highest_peak_index, D0_highest_peak_value, \
     D0_second_highest_peak_index, D0_second_highest_peak_value, \
@@ -171,8 +159,8 @@ if __name__ == '__main__':
                       arrowprops=dict(arrowstyle="<->",
                                       connectionstyle="arc3", color='r', lw=1),
                       )
-    ax[1, 0].text(x_left - offset / 2,
-                  D0_avg_excluding_range + (D0_highest_peak_value - D0_second_highest_peak_value) / 2,
+    ax[1, 0].text(x_left - offset *1.5 ,
+                  D0_avg_excluding_range + (D0_highest_peak_value - D0_second_highest_peak_value) *0.8,
                   'PSF - ''sidelobe: %.2f dB' % (D0_highest_peak_value - D0_second_highest_peak_value),
                   fontsize=8.5, fontweight='bold', rotation='vertical')
 
@@ -323,65 +311,4 @@ if __name__ == '__main__':
     plt.show()
     plt.close(fig)
 
-    with open('../data/mirror_Alines.npy', 'rb') as f:
-        A_lines = np.load(f)
 
-    with open('../data/mirror_clean.npy', 'rb') as f:
-        clean = np.load(f)
-    #
-    sg = clean[0, 2500, :]
-    #
-    sg = np.mean(np.mean(clean[:, :, :], axis=0), axis=0)
-    #
-    b = firwin(401, 0.05, pass_zero='highpass')
-    sg = filtfilt(b, 1, sg)
-    env = abs(hilbert(sg))
-    #
-    sg2 = scipy.signal.resample(sg, len(sg) * 5, t=None, axis=0, window=None, domain='time')
-    #
-    no_window_mag = 20 * np.log10(abs(ifft(sg))) - np.argmax(20 * np.log10(abs(ifft(sg))))
-    max_peak = np.argmax(no_window_mag)
-    measured_log = no_window_mag[int(max_peak-165):int(max_peak+165)]
-
-    from numpy import linalg as LA
-    norm = LA.norm(A_lines,axis = 1)[:,np.newaxis]
-    norm_Alines = A_lines/norm
-
-    A_line = np.mean(np.abs(norm_Alines) - np.abs(np.mean(norm_Alines[:, :], axis=0)), axis=0)
-    norm_Aline = A_line/LA.norm(A_line)
-
-    peak_loc = np.argmax(norm_Aline)
-
-    A_line_mag = norm_Aline[int(peak_loc-165):int(peak_loc+165)]
-
-    plt.plot(norm_Aline[int(peak_loc-165):int(peak_loc+165)])
-    plt.show()
-
-    A_line_log = 20*np.log10(A_line_mag)
-
-    plt.plot(A_line_log-A_line_log.min())
-    plt.show()
-    #
-    # norm_Aline = np.abs(A_line)/LA.norm(A_line)
-    #
-    # mag = np.abs(A_line)[int(A_line.shape[0]//2)::]
-    # plt.plot(mag)
-    # plt.show()
-    #
-    #
-    # A_line_log = 20*np.log10(np.abs(A_line))
-    #
-    # # A_line_log
-    # #
-    # # A_line_sec = A_line_log[int(max_peak-165):int(max_peak+165)]
-    # #
-    # # fig,ax = plt.subplots(1,1,figsize = (16,9))
-    # # max_peak = np.argmax(no_window_mag)
-    # # measured_log = no_window_mag[int(max_peak-165):int(max_peak+165)]
-    # # ax.plot(A_line_sec-A_line_sec.min(),label='direct PSF' )
-    # # # ax.plot(measured_log-measured_log.min(),label='envelope PSF' )
-    # # # ax.plot(D1_log,label='learned PSF' )
-    # #
-    # # ax.legend(fontsize=25)
-    # # plt.tight_layout()
-    # # plt.show()
